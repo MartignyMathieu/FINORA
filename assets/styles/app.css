@@ -544,4 +544,6 @@ form ul { list-style: none; padding: 0; margin: 6px 0 0; color: var(--red); font
 
 /* La pastille de profil de la barre latérale ne reprend pas le style des liens du menu. */
 .nav .avatar-link, .nav .avatar-link:hover { padding: 0; background: none; box-shadow: none; }
-.nav .avatar-link .avatar { padding: 0; border-radius: 50%; color: #fff; }
+.nav .avatar-link .avatar { display: grid; place-items: center; padding: 0; gap: 0; border-radius: 50%; color: #fff; }
+.nav .theme-toggle span { padding: 0; gap: 0; }
+.nav .sidebar-actions a, .nav .sidebar-actions button { padding: 0; gap: 0; }
