@@ -16,6 +16,8 @@ et on automatise les opérations qui reviennent chaque mois. Chaque utilisateur 
 - **Transactions récurrentes** : loyer, salaire, abonnements… Une règle (fréquence quotidienne, hebdomadaire, mensuelle ou
   annuelle) génère automatiquement les transactions à chaque échéance ; elle peut être mise en pause, reprise ou supprimée
 - **Tableau de bord** : solde total, revenus, dépenses et épargne du mois, évolution sur 6 mois, répartition des dépenses
+- **Calendrier** : vue mensuelle avec les opérations de chaque jour, les récurrences à venir et les totaux du mois ;
+  un clic sur un jour affiche son détail et permet d'y ajouter une transaction
 - **Statistiques** : répartition par catégorie en pourcentage et en montant, pour les dépenses ou les revenus
 - **Comptes utilisateurs** : inscription, connexion, réinitialisation du mot de passe par e-mail, données cloisonnées par utilisateur
 - **Interface** adaptée au bureau (barre latérale) et au mobile (barre d'onglets), entièrement en français
@@ -116,7 +118,7 @@ src/
 ├── Enum/            types de transaction, fréquences, types de compte, icônes
 ├── Form/            formulaires (listes de comptes et catégories limitées à l'utilisateur)
 ├── Security/        OwnerVoter : seul le propriétaire accède à ses données
-├── Service/         FinanceStats (agrégats), RecurringTransactionGenerator
+├── Service/         FinanceStats (agrégats), CalendarBuilder, RecurringTransactionGenerator
 ├── Command/         app:recurring:generate
 ├── Twig/            icônes, montants et dates en français
 └── DataFixtures/    utilisateurs de démonstration et de test
