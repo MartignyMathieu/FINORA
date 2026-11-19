@@ -3,6 +3,7 @@
 namespace App\Repository;
 
 use App\Entity\Goal;
+use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -17,9 +18,11 @@ class GoalRepository extends ServiceEntityRepository
     }
 
     /** @return list<Goal> */
-    public function findAllByDeadline(): array
+    public function findAllByDeadline(User $owner): array
     {
         return $this->createQueryBuilder('g')
+            ->where('g.owner = :owner')
+            ->setParameter('owner', $owner)
             ->orderBy('g.targetDate', 'ASC')
             ->addOrderBy('g.id', 'ASC')
             ->getQuery()

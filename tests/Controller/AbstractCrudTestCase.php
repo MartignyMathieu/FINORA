@@ -7,15 +7,24 @@ use App\Entity\Budget;
 use App\Entity\Category;
 use App\Entity\Goal;
 use App\Entity\Transaction;
+use App\Entity\User;
 use App\Enum\TransactionType;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
+use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
+/**
+ * Base des tests fonctionnels : base vidée avant chaque test, et un utilisateur connecté
+ * ($this->user) propriétaire par défaut des données créées par les helpers.
+ */
 abstract class AbstractCrudTestCase extends WebTestCase
 {
+    protected const PASSWORD = 'mot-de-passe-de-test';
+
     protected KernelBrowser $client;
     protected EntityManagerInterface $manager;
+    protected User $user;
 
     protected function setUp(): void
     {
@@ -23,32 +32,49 @@ abstract class AbstractCrudTestCase extends WebTestCase
         $this->manager = static::getContainer()->get('doctrine')->getManager();
 
         // Ordre imposé par les clés étrangères.
-        foreach ([Transaction::class, Budget::class, Goal::class, Category::class, Account::class] as $class) {
+        foreach ([Transaction::class, Budget::class, Goal::class, Category::class, Account::class, User::class] as $class) {
             $this->manager->createQuery(sprintf('DELETE FROM %s e', $class))->execute();
         }
+
+        // Le limiteur de tentatives de connexion est persistant : on le remet à zéro.
+        static::getContainer()->get('cache.rate_limiter')->clear();
+
+        $this->user = $this->createUser('alice@example.test', 'Alice');
+        $this->client->loginUser($this->user);
     }
 
-    protected function createAccount(string $name = 'Compte courant', string $currency = 'EUR'): Account
+    protected function createUser(string $email, string $displayName = 'Utilisateur'): User
     {
-        $account = (new Account())->setName($name)->setCurrency($currency);
+        $user = (new User())->setEmail($email)->setDisplayName($displayName);
+        $user->setPassword(static::getContainer()->get(UserPasswordHasherInterface::class)->hashPassword($user, self::PASSWORD));
+        $this->manager->persist($user);
+        $this->manager->flush();
+
+        return $user;
+    }
+
+    protected function createAccount(string $name = 'Compte courant', string $currency = 'EUR', ?User $owner = null): Account
+    {
+        $account = (new Account())->setOwner($owner ?? $this->user)->setName($name)->setCurrency($currency);
         $this->manager->persist($account);
         $this->manager->flush();
 
         return $account;
     }
 
-    protected function createCategory(string $name = 'Courses', ?string $color = null): Category
+    protected function createCategory(string $name = 'Courses', ?string $color = null, ?User $owner = null): Category
     {
-        $category = (new Category())->setName($name)->setColor($color);
+        $category = (new Category())->setOwner($owner ?? $this->user)->setName($name)->setColor($color);
         $this->manager->persist($category);
         $this->manager->flush();
 
         return $category;
     }
 
-    protected function createGoal(string $name = 'Vacances', string $target = '2000.00', string $saved = '500.00'): Goal
+    protected function createGoal(string $name = 'Vacances', string $target = '2000.00', string $saved = '500.00', ?User $owner = null): Goal
     {
         $goal = (new Goal())
+            ->setOwner($owner ?? $this->user)
             ->setName($name)
             ->setTargetAmount($target)
             ->setSavedAmount($saved)
@@ -83,17 +109,7 @@ abstract class AbstractCrudTestCase extends WebTestCase
 
     protected function createTransaction(Account $account, Category $category, string $label = 'Supermarché'): Transaction
     {
-        $transaction = (new Transaction())
-            ->setLabel($label)
-            ->setAmount('42.50')
-            ->setType(TransactionType::Expense)
-            ->setDate(new \DateTimeImmutable('2026-11-15'))
-            ->setAccount($account)
-            ->setCategory($category);
-        $this->manager->persist($transaction);
-        $this->manager->flush();
-
-        return $transaction;
+        return $this->createDatedTransaction($account, $category, TransactionType::Expense, '42.50', '2026-11-15', $label);
     }
 
     protected function createBudget(Category $category, string $month = '2026-11-01', string $amount = '300.00'): Budget

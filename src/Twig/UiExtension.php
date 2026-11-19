@@ -47,7 +47,8 @@ final class UiExtension
         'arrow-down' => '<path d="M12 5v14M5.5 12.5 12 19l6.5-6.5"/>',
         'trend' => '<path d="m3 17 6-6 4 4 8-8M15 7h6v6"/>',
         'eye' => '<path d="M2 12s3.5-6.5 10-6.5S22 12 22 12s-3.5 6.5-10 6.5S2 12 2 12Z"/><circle cx="12" cy="12" r="2.8"/>',
-        'bell' => '<path d="M6 16.5V11a6 6 0 0 1 12 0v5.5l1.5 2h-15L6 16.5ZM10 21h4"/>',
+        'logout' => '<path d="M9 4H6a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h3M16 8l4 4-4 4M20 12H9"/>',
+        'bell' =>'<path d="M6 16.5V11a6 6 0 0 1 12 0v5.5l1.5 2h-15L6 16.5ZM10 21h4"/>',
     ];
 
     #[AsTwigFunction('icon', isSafe: ['html'])]

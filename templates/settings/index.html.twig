@@ -12,6 +12,12 @@
 
     <ul class="list settings">
         <li>
+            <div class="list-card">
+                <span class="avatar" aria-hidden="true">{{ app.user.displayName|first|upper }}</span>
+                <span class="grow"><span class="name">{{ app.user.displayName }}</span><span class="muted">{{ app.user.userIdentifier }}</span></span>
+            </div>
+        </li>
+        <li>
             <a class="list-card" href="{{ path('app_category_index') }}">
                 <span class="tile">{{ icon('tag', 24) }}</span>
                 <span class="grow"><span class="name">Catégories</span><span class="muted">Nom, icône et couleur de chaque catégorie</span></span>
@@ -30,6 +36,12 @@
                 <span class="tile">{{ icon('target', 24) }}</span>
                 <span class="grow"><span class="name">Objectifs d'épargne</span><span class="muted">Suivez l'avancement de vos projets</span></span>
                 <span class="chev">{{ icon('chevron-right') }}</span>
+            </a>
+        </li>
+        <li>
+            <a class="list-card" href="{{ path('app_logout') }}">
+                <span class="tile tile-red">{{ icon('logout', 24) }}</span>
+                <span class="grow"><span class="name">Se déconnecter</span></span>
             </a>
         </li>
     </ul>

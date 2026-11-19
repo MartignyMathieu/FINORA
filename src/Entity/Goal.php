@@ -10,12 +10,16 @@ use Symfony\Component\Validator\Constraints as Assert;
 
 /** Objectif d'épargne. */
 #[ORM\Entity(repositoryClass: GoalRepository::class)]
-class Goal
+class Goal implements OwnedInterface
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
     private ?int $id = null;
+
+    #[ORM\ManyToOne]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?User $owner = null;
 
     #[ORM\Column(length: 100)]
     #[Assert\NotBlank]
@@ -46,6 +50,18 @@ class Goal
     public function getId(): ?int
     {
         return $this->id;
+    }
+
+    public function getOwner(): ?User
+    {
+        return $this->owner;
+    }
+
+    public function setOwner(User $owner): static
+    {
+        $this->owner = $owner;
+
+        return $this;
     }
 
     public function getName(): ?string

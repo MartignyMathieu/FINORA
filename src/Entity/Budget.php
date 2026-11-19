@@ -11,7 +11,7 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 #[ORM\Entity(repositoryClass: BudgetRepository::class)]
 #[ORM\UniqueConstraint(name: 'uniq_budget_category_month', columns: ['category_id', 'month'])]
 #[UniqueEntity(fields: ['category', 'month'], message: 'Un budget existe déjà pour cette catégorie et ce mois.')]
-class Budget
+class Budget implements OwnedInterface
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -42,6 +42,12 @@ class Budget
     public function getId(): ?int
     {
         return $this->id;
+    }
+
+    /** Un budget appartient au propriétaire de sa catégorie. */
+    public function getOwner(): ?User
+    {
+        return $this->category?->getOwner();
     }
 
     public function getAmount(): ?string

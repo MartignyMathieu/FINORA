@@ -1,0 +1,22 @@
+{% extends 'base.html.twig' %}
+
+{# Gabarit des pages publiques (connexion, inscription) : pas de navigation. #}
+{% block layout %}
+    <main class="auth">
+        <div class="auth-card">
+            <div class="auth-brand">
+                {{ include('_logo_mark.html.twig', {size: 84}) }}
+                <div class="auth-word">FINORA</div>
+                <p class="auth-tagline">Maîtrisez votre argent.</p>
+            </div>
+
+            {% for label, messages in app.flashes %}
+                {% for message in messages %}
+                    <div class="flash flash-{{ label }}" role="alert">{{ message }}</div>
+                {% endfor %}
+            {% endfor %}
+
+            {% block auth_body %}{% endblock %}
+        </div>
+    </main>
+{% endblock %}

@@ -11,6 +11,8 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Attribute\MapQueryParameter;
 use Symfony\Component\Routing\Attribute\Route;
+use App\Security\OwnerVoter;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 #[Route('/budget')]
 final class BudgetController extends AbstractController
@@ -46,6 +48,7 @@ final class BudgetController extends AbstractController
         ]);
     }
 
+    #[IsGranted(OwnerVoter::MANAGE, 'budget')]
     #[Route('/{id}', name: 'app_budget_show', methods: ['GET'])]
     public function show(Budget $budget): Response
     {
@@ -54,6 +57,7 @@ final class BudgetController extends AbstractController
         ]);
     }
 
+    #[IsGranted(OwnerVoter::MANAGE, 'budget')]
     #[Route('/{id}/edit', name: 'app_budget_edit', methods: ['GET', 'POST'])]
     public function edit(Request $request, Budget $budget, EntityManagerInterface $entityManager): Response
     {
@@ -72,6 +76,7 @@ final class BudgetController extends AbstractController
         ]);
     }
 
+    #[IsGranted(OwnerVoter::MANAGE, 'budget')]
     #[Route('/{id}', name: 'app_budget_delete', methods: ['POST'])]
     public function delete(Request $request, Budget $budget, EntityManagerInterface $entityManager): Response
     {

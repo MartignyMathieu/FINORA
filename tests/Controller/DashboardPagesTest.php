@@ -34,12 +34,12 @@ final class DashboardPagesTest extends AbstractCrudTestCase
         self::assertSelectorExists('.chart svg polyline');
     }
 
-    public function testHomeGreetsTheConfiguredName(): void
+    public function testHomeGreetsTheLoggedInUser(): void
     {
         $this->client->request('GET', '/');
 
         self::assertResponseIsSuccessful();
-        self::assertSelectorTextContains('h1', 'Bonjour Mathieu');
+        self::assertSelectorTextContains('h1', 'Bonjour Alice');
     }
 
     public function testHomeFallsBackToCurrentMonthOnInvalidParameter(): void

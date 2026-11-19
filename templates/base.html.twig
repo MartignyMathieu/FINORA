@@ -17,6 +17,7 @@
         {% endblock %}
     </head>
     <body>
+        {% block layout %}
         {% set route = app.current_route|default('') %}
         {% set nav = [
             {key: 'home', label: 'Accueil', icon: 'home', path: path('app_home'), active: route == 'app_home'},
@@ -40,6 +41,13 @@
                 <span class="disabled" title="Bientôt disponible">{{ icon('calendar', 20) }}Calendrier</span>
                 <div class="nav-bottom">
                     <a href="{{ path('app_settings') }}" class="{{ settings_active ? 'active' }}">{{ icon('gear', 20) }}Paramètres</a>
+                    {% if app.user %}
+                        <div class="sidebar-user">
+                            <span class="avatar avatar-sm" aria-hidden="true">{{ app.user.displayName|first|upper }}</span>
+                            <span class="sidebar-user-name">{{ app.user.displayName }}</span>
+                            <a href="{{ path('app_logout') }}" class="logout" title="Se déconnecter" aria-label="Se déconnecter">{{ icon('logout', 18) }}</a>
+                        </div>
+                    {% endif %}
                 </div>
             </nav>
         </aside>
@@ -62,5 +70,6 @@
             <a href="{{ path('app_stats') }}" class="{{ route == 'app_stats' ? 'active' }}">{{ icon('chart', 22) }}Stats</a>
             <a href="{{ path('app_settings') }}" class="{{ settings_active ? 'active' }}">{{ icon('gear', 22) }}Plus</a>
         </nav>
+        {% endblock %}
     </body>
 </html>

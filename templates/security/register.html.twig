@@ -1,0 +1,14 @@
+{% extends 'security/_auth_layout.html.twig' %}
+
+{% block title %}Créer un compte{% endblock %}
+
+{% block auth_body %}
+    <div class="auth-form">
+        {{ form_start(form) }}
+            {{ form_widget(form) }}
+            <button class="btn btn-primary btn-block" type="submit">Commencer</button>
+        {{ form_end(form) }}
+    </div>
+
+    <a class="btn btn-block btn-soft" href="{{ path('app_login') }}">J'ai déjà un compte</a>
+{% endblock %}

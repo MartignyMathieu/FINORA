@@ -5,15 +5,18 @@ namespace App\Service;
 use App\Entity\Account;
 use App\Entity\Budget;
 use App\Entity\Transaction;
+use App\Entity\User;
 use App\Enum\Icon;
 use App\Enum\TransactionType;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
 
 /**
  * Agrégats affichés par le tableau de bord, les budgets et les statistiques.
  *
+ * Toutes les données sont restreintes à l'utilisateur connecté.
  * Les totaux ne portent que sur les comptes dans la devise par défaut :
  * il n'y a pas de conversion entre devises.
  */
@@ -25,6 +28,7 @@ final class FinanceStats
 
     public function __construct(
         private readonly EntityManagerInterface $em,
+        private readonly Security $security,
         #[Autowire(param: 'app.default_currency')]
         private readonly string $currency,
     ) {
@@ -49,16 +53,16 @@ final class FinanceStats
     public function totalBalance(\DateTimeImmutable $month): float
     {
         $initial = $this->em->createQuery(
-            'SELECT COALESCE(SUM(a.initialBalance), 0) FROM '.Account::class.' a WHERE a.currency = :c'
-        )->setParameter('c', $this->currency)->getSingleScalarResult();
+            'SELECT COALESCE(SUM(a.initialBalance), 0) FROM '.Account::class.' a WHERE a.currency = :c AND a.owner = :user'
+        )->setParameter('c', $this->currency)->setParameter('user', $this->user())->getSingleScalarResult();
 
         $net = $this->em->createQuery(
             'SELECT COALESCE(SUM(CASE WHEN t.type = :income THEN t.amount ELSE -t.amount END), 0)
              FROM '.Transaction::class.' t JOIN t.account a
-             WHERE a.currency = :c AND t.date <= :end'
+             WHERE a.currency = :c AND a.owner = :user AND t.date <= :end'
         )
             ->setParameter('income', TransactionType::Income)
-            ->setParameter('c', $this->currency)
+            ->setParameter('c', $this->currency)->setParameter('user', $this->user())
             ->setParameter('end', $this->endOf($month), Types::DATE_IMMUTABLE)
             ->getSingleScalarResult();
 
@@ -71,10 +75,10 @@ final class FinanceStats
         $rows = $this->em->createQuery(
             'SELECT t.type AS type, SUM(t.amount) AS total
              FROM '.Transaction::class.' t JOIN t.account a
-             WHERE a.currency = :c AND t.date BETWEEN :start AND :end
+             WHERE a.currency = :c AND a.owner = :user AND t.date BETWEEN :start AND :end
              GROUP BY t.type'
         )
-            ->setParameter('c', $this->currency)
+            ->setParameter('c', $this->currency)->setParameter('user', $this->user())
             ->setParameter('start', $month, Types::DATE_IMMUTABLE)
             ->setParameter('end', $this->endOf($month), Types::DATE_IMMUTABLE)
             ->getArrayResult();
@@ -109,14 +113,14 @@ final class FinanceStats
         $net = [];
         $rows = $this->em->createQuery(
             'SELECT a.id AS id, SUM(CASE WHEN t.type = :income THEN t.amount ELSE -t.amount END) AS net
-             FROM '.Transaction::class.' t JOIN t.account a GROUP BY a.id'
-        )->setParameter('income', TransactionType::Income)->getArrayResult();
+             FROM '.Transaction::class.' t JOIN t.account a WHERE a.owner = :user GROUP BY a.id'
+        )->setParameter('income', TransactionType::Income)->setParameter('user', $this->user())->getArrayResult();
         foreach ($rows as $row) {
             $net[$row['id']] = (float) $row['net'];
         }
 
         $result = [];
-        foreach ($this->em->getRepository(Account::class)->findBy([], ['id' => 'ASC']) as $account) {
+        foreach ($this->em->getRepository(Account::class)->findBy(['owner' => $this->user()], ['id' => 'ASC']) as $account) {
             $result[] = [
                 'account' => $account,
                 'balance' => (float) $account->getInitialBalance() + ($net[$account->getId()] ?? 0.0),
@@ -136,12 +140,12 @@ final class FinanceStats
         $rows = $this->em->createQuery(
             'SELECT c.name AS name, c.color AS color, c.icon AS icon, SUM(t.amount) AS total
              FROM '.Transaction::class.' t JOIN t.category c JOIN t.account a
-             WHERE t.type = :type AND a.currency = :c AND t.date BETWEEN :start AND :end
+             WHERE t.type = :type AND a.currency = :c AND a.owner = :user AND t.date BETWEEN :start AND :end
              GROUP BY c.id, c.name, c.color, c.icon
              ORDER BY total DESC, c.name ASC'
         )
             ->setParameter('type', $type)
-            ->setParameter('c', $this->currency)
+            ->setParameter('c', $this->currency)->setParameter('user', $this->user())
             ->setParameter('start', $month, Types::DATE_IMMUTABLE)
             ->setParameter('end', $this->endOf($month), Types::DATE_IMMUTABLE)
             ->getArrayResult();
@@ -213,9 +217,9 @@ final class FinanceStats
         $rows = $this->em->createQuery(
             'SELECT t.type AS type, t.date AS date, t.amount AS amount
              FROM '.Transaction::class.' t JOIN t.account a
-             WHERE a.currency = :c AND t.date BETWEEN :start AND :end'
+             WHERE a.currency = :c AND a.owner = :user AND t.date BETWEEN :start AND :end'
         )
-            ->setParameter('c', $this->currency)
+            ->setParameter('c', $this->currency)->setParameter('user', $this->user())
             ->setParameter('start', $first, Types::DATE_IMMUTABLE)
             ->setParameter('end', $this->endOf($month), Types::DATE_IMMUTABLE)
             ->getResult();
@@ -305,10 +309,11 @@ final class FinanceStats
         $spentRows = $this->em->createQuery(
             'SELECT c.id AS cid, a.currency AS currency, SUM(t.amount) AS total
              FROM '.Transaction::class.' t JOIN t.category c JOIN t.account a
-             WHERE t.type = :expense AND t.date BETWEEN :start AND :end
+             WHERE t.type = :expense AND a.owner = :user AND t.date BETWEEN :start AND :end
              GROUP BY c.id, a.currency'
         )
             ->setParameter('expense', TransactionType::Expense)
+            ->setParameter('user', $this->user())
             ->setParameter('start', $month, Types::DATE_IMMUTABLE)
             ->setParameter('end', $this->endOf($month), Types::DATE_IMMUTABLE)
             ->getArrayResult();
@@ -318,8 +323,8 @@ final class FinanceStats
         }
 
         $budgets = $this->em->createQuery(
-            'SELECT b, c FROM '.Budget::class.' b JOIN b.category c WHERE b.month = :month ORDER BY c.name ASC'
-        )->setParameter('month', $month, Types::DATE_IMMUTABLE)->getResult();
+            'SELECT b, c FROM '.Budget::class.' b JOIN b.category c WHERE b.month = :month AND c.owner = :user ORDER BY c.name ASC'
+        )->setParameter('month', $month, Types::DATE_IMMUTABLE)->setParameter('user', $this->user())->getResult();
 
         $result = [];
         foreach ($budgets as $budget) {
@@ -335,6 +340,16 @@ final class FinanceStats
         }
 
         return $result;
+    }
+
+    private function user(): User
+    {
+        $user = $this->security->getUser();
+        if (!$user instanceof User) {
+            throw new \LogicException('Les statistiques nécessitent un utilisateur connecté.');
+        }
+
+        return $user;
     }
 
     private function endOf(\DateTimeImmutable $month): \DateTimeImmutable

@@ -9,8 +9,6 @@
 parameters:
     # Devise dans laquelle sont agrégés les totaux du tableau de bord (pas de conversion entre devises).
     app.default_currency: 'EUR'
-    # Prénom affiché dans le message d'accueil (en attendant une gestion des utilisateurs).
-    app.display_name: 'Mathieu'
 
 services:
     # default configuration for services in *this* file

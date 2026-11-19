@@ -11,15 +11,20 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: CategoryRepository::class)]
-#[UniqueEntity(fields: ['name'], message: 'Une catégorie porte déjà ce nom.')]
-class Category
+#[ORM\UniqueConstraint(name: 'uniq_category_owner_name', columns: ['owner_id', 'name'])]
+#[UniqueEntity(fields: ['owner', 'name'], message: 'Une catégorie porte déjà ce nom.', errorPath: 'name')]
+class Category implements OwnedInterface
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\Column(length: 100, unique: true)]
+    #[ORM\ManyToOne]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?User $owner = null;
+
+    #[ORM\Column(length: 100)]
     #[Assert\NotBlank]
     #[Assert\Length(max: 100)]
     private ?string $name = null;
@@ -48,6 +53,18 @@ class Category
     public function getId(): ?int
     {
         return $this->id;
+    }
+
+    public function getOwner(): ?User
+    {
+        return $this->owner;
+    }
+
+    public function setOwner(User $owner): static
+    {
+        $this->owner = $owner;
+
+        return $this;
     }
 
     public function getName(): ?string

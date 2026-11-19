@@ -12,7 +12,7 @@ use Symfony\Component\Validator\Context\ExecutionContextInterface;
 
 #[ORM\Entity(repositoryClass: TransactionRepository::class)]
 #[ORM\Index(columns: ['date'])]
-class Transaction
+class Transaction implements OwnedInterface
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -63,6 +63,12 @@ class Transaction
     public function getId(): ?int
     {
         return $this->id;
+    }
+
+    /** Une transaction appartient au propriétaire de son compte. */
+    public function getOwner(): ?User
+    {
+        return $this->account?->getOwner();
     }
 
     public function getAccount(): ?Account

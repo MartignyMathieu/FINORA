@@ -10,22 +10,26 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
+use App\Security\OwnerVoter;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
+use App\Entity\User;
+use Symfony\Component\Security\Http\Attribute\CurrentUser;
 
 #[Route('/category')]
 final class CategoryController extends AbstractController
 {
     #[Route(name: 'app_category_index', methods: ['GET'])]
-    public function index(CategoryRepository $categoryRepository): Response
+    public function index(CategoryRepository $categoryRepository, #[CurrentUser] User $user): Response
     {
         return $this->render('category/index.html.twig', [
-            'categories' => $categoryRepository->findAll(),
+            'categories' => $categoryRepository->findBy(['owner' => $user], ['name' => 'ASC']),
         ]);
     }
 
     #[Route('/new', name: 'app_category_new', methods: ['GET', 'POST'])]
-    public function new(Request $request, EntityManagerInterface $entityManager): Response
+    public function new(Request $request, EntityManagerInterface $entityManager, #[CurrentUser] User $user): Response
     {
-        $category = new Category();
+        $category = (new Category())->setOwner($user);
         $form = $this->createForm(CategoryType::class, $category);
         $form->handleRequest($request);
 
@@ -42,6 +46,7 @@ final class CategoryController extends AbstractController
         ]);
     }
 
+    #[IsGranted(OwnerVoter::MANAGE, 'category')]
     #[Route('/{id}', name: 'app_category_show', methods: ['GET'])]
     public function show(Category $category): Response
     {
@@ -50,6 +55,7 @@ final class CategoryController extends AbstractController
         ]);
     }
 
+    #[IsGranted(OwnerVoter::MANAGE, 'category')]
     #[Route('/{id}/edit', name: 'app_category_edit', methods: ['GET', 'POST'])]
     public function edit(Request $request, Category $category, EntityManagerInterface $entityManager): Response
     {
@@ -68,6 +74,7 @@ final class CategoryController extends AbstractController
         ]);
     }
 
+    #[IsGranted(OwnerVoter::MANAGE, 'category')]
     #[Route('/{id}', name: 'app_category_delete', methods: ['POST'])]
     public function delete(Request $request, Category $category, EntityManagerInterface $entityManager): Response
     {

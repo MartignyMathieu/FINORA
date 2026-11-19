@@ -4,7 +4,10 @@ namespace App\Form;
 
 use App\Entity\Budget;
 use App\Entity\Category;
+use Doctrine\ORM\EntityRepository;
+use Doctrine\ORM\QueryBuilder;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
+use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CurrencyType;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
@@ -14,12 +17,21 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class BudgetType extends AbstractType
 {
+    public function __construct(private readonly Security $security)
+    {
+    }
+
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
             ->add('category', EntityType::class, [
                 'label' => 'Catégorie',
                 'class' => Category::class,
+                // Ne propose que les catégories de l'utilisateur connecté.
+                'query_builder' => fn (EntityRepository $repository): QueryBuilder => $repository->createQueryBuilder('c')
+                    ->where('c.owner = :owner')
+                    ->setParameter('owner', $this->security->getUser())
+                    ->orderBy('c.name', 'ASC'),
                 'choice_label' => 'name',
             ])
             ->add('month', DateType::class, [

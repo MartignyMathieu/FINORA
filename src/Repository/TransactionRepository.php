@@ -3,6 +3,7 @@
 namespace App\Repository;
 
 use App\Entity\Transaction;
+use App\Entity\User;
 use App\Enum\TransactionType;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
@@ -24,12 +25,14 @@ class TransactionRepository extends ServiceEntityRepository
      *
      * @return list<Transaction>
      */
-    public function search(?TransactionType $type = null, string $text = ''): array
+    public function search(User $owner, ?TransactionType $type = null, string $text = ''): array
     {
         $qb = $this->createQueryBuilder('t')
             ->addSelect('c', 'a')
             ->join('t.category', 'c')
             ->join('t.account', 'a')
+            ->where('a.owner = :owner')
+            ->setParameter('owner', $owner)
             ->orderBy('t.date', 'DESC')
             ->addOrderBy('t.id', 'DESC')
             ->setMaxResults(self::LIMIT);

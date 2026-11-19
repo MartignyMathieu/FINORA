@@ -7,7 +7,10 @@ use App\Entity\Category;
 use App\Entity\Transaction;
 use App\Enum\RecurrenceFrequency;
 use App\Enum\TransactionType as Type;
+use Doctrine\ORM\EntityRepository;
+use Doctrine\ORM\QueryBuilder;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
+use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\Form\Extension\Core\Type\EnumType;
@@ -19,6 +22,19 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class TransactionType extends AbstractType
 {
+    public function __construct(private readonly Security $security)
+    {
+    }
+
+    /** Ne propose que les comptes et catégories de l'utilisateur connecté. */
+    private function ownedByCurrentUser(): \Closure
+    {
+        return fn (EntityRepository $repository): QueryBuilder => $repository->createQueryBuilder('e')
+            ->where('e.owner = :owner')
+            ->setParameter('owner', $this->security->getUser())
+            ->orderBy('e.name', 'ASC');
+    }
+
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
@@ -44,11 +60,13 @@ class TransactionType extends AbstractType
             ->add('account', EntityType::class, [
                 'label' => 'Compte',
                 'class' => Account::class,
+                'query_builder' => $this->ownedByCurrentUser(),
                 'choice_label' => 'name',
             ])
             ->add('category', EntityType::class, [
                 'label' => 'Catégorie',
                 'class' => Category::class,
+                'query_builder' => $this->ownedByCurrentUser(),
                 'choice_label' => 'name',
             ])
             ->add('recurrence', EnumType::class, [
