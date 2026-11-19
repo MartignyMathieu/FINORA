@@ -97,6 +97,25 @@ final class UiExtension
         return sprintf("%s%s\u{00A0}%s", $sign, $text, $symbol);
     }
 
+    /** « 1 250 € » : montant arrondi à l'euro, pour les espaces réduits (cases du calendrier). */
+    #[AsTwigFilter('money_short')]
+    public function moneyShort(string|float|int|null $amount, string $currency = 'EUR', bool $signed = false): string
+    {
+        $value = round((float) $amount);
+        $text = number_format(abs($value), 0, ',', "\u{202F}");
+        $symbol = self::CURRENCY_SYMBOLS[$currency] ?? $currency;
+        $sign = $value < 0 ? "\u{2212}" : ($signed && $value > 0 ? '+' : '');
+
+        return sprintf("%s%s\u{00A0}%s", $sign, $text, $symbol);
+    }
+
+    /** « Jeudi 19 novembre 2026 ». */
+    #[AsTwigFilter('long_date')]
+    public function longDate(\DateTimeInterface $date): string
+    {
+        return mb_strtoupper(mb_substr($text = $this->format($date, 'EEEE d MMMM y'), 0, 1)).mb_substr($text, 1);
+    }
+
     /** « Novembre 2026 ». */
     #[AsTwigFilter('month_label')]
     public function monthLabel(\DateTimeInterface $date): string

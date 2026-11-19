@@ -39,7 +39,7 @@
                 {% for item in nav %}
                     <a href="{{ item.path }}" class="{{ item.active ? 'active' }}"{% if item.active %} aria-current="page"{% endif %}>{{ icon(item.icon, 20) }}{{ item.label }}</a>
                 {% endfor %}
-                <span class="disabled" title="Bientôt disponible">{{ icon('calendar', 20) }}Calendrier</span>
+                <a href="{{ path('app_calendar') }}" class="{{ route == 'app_calendar' ? 'active' }}"{% if route == 'app_calendar' %} aria-current="page"{% endif %}>{{ icon('calendar', 20) }}Calendrier</a>
                 <div class="nav-bottom">
                     <a href="{{ path('app_settings') }}" class="{{ settings_active ? 'active' }}">{{ icon('gear', 20) }}Paramètres</a>
                     {% if app.user %}

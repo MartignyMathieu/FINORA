@@ -44,6 +44,19 @@ final class TransactionControllerTest extends AbstractCrudTestCase
         self::assertNull($transaction->getRecurringTransaction(), 'Une saisie manuelle n\'a pas de règle d\'origine.');
     }
 
+    public function testNewFormDateIsPrefilledFromTheQueryOrDefaultsToToday(): void
+    {
+        $this->client->request('GET', '/transaction/new?date=2030-06-12');
+        self::assertInputValueSame('transaction[date]', '2030-06-12');
+
+        // Date invalide ou absente : aujourd'hui.
+        $today = (new \DateTimeImmutable('today'))->format('Y-m-d');
+        foreach (['/transaction/new?date=pas-une-date', '/transaction/new?date=2030-02-31', '/transaction/new'] as $url) {
+            $this->client->request('GET', $url);
+            self::assertInputValueSame('transaction[date]', $today, $url);
+        }
+    }
+
     public function testNewWithNegativeAmountIsRejected(): void
     {
         $account = $this->createAccount();

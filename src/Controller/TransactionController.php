@@ -38,9 +38,11 @@ final class TransactionController extends AbstractController
     }
 
     #[Route('/new', name: 'app_transaction_new', methods: ['GET', 'POST'])]
-    public function new(Request $request, EntityManagerInterface $entityManager): Response
+    public function new(Request $request, EntityManagerInterface $entityManager, #[MapQueryParameter] ?string $date = null): Response
     {
-        $transaction = new Transaction();
+        // Date pré-remplie : celle du jour choisi dans le calendrier (?date=AAAA-MM-JJ), sinon aujourd'hui.
+        $day = null !== $date ? \DateTimeImmutable::createFromFormat('!Y-m-d', $date) : false;
+        $transaction = (new Transaction())->setDate(false !== $day && $day->format('Y-m-d') === $date ? $day : new \DateTimeImmutable('today'));
         $form = $this->createForm(TransactionType::class, $transaction);
         $form->handleRequest($request);
 

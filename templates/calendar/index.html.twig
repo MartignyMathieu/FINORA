@@ -1,0 +1,106 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Calendrier{% endblock %}
+
+{% block body %}
+    {% set totals = calendar.totals %}
+    {% set selected = calendar.selected %}
+
+    <header class="page-head">
+        <div>
+            <h1>Calendrier</h1>
+            <p class="muted only-desktop">Vos opérations jour par jour, et les récurrences à venir.</p>
+        </div>
+        {{ include('_month_nav.html.twig') }}
+    </header>
+
+    <section class="cal-kpis" aria-label="Totaux du mois">
+        <div class="card kpi"><span class="tile tile-green">{{ icon('arrow-up', 22) }}</span><div><small>Revenus</small><strong>{{ totals.income|money(currency) }}</strong></div></div>
+        <div class="card kpi"><span class="tile tile-red">{{ icon('arrow-down', 22) }}</span><div><small>Dépenses</small><strong>{{ totals.expense|money(currency) }}</strong></div></div>
+        <div class="card kpi"><span class="tile">{{ icon('wallet', 22) }}</span><div><small>Solde du mois</small><strong>{{ totals.net|money(currency, true) }}</strong></div></div>
+        <div class="card kpi"><span class="tile">{{ icon('repeat', 22) }}</span><div><small>À venir (récurrences)</small><strong>{{ (totals.plannedIncome - totals.plannedExpense)|money(currency, true) }}</strong></div></div>
+    </section>
+
+    <section class="card calendar" aria-label="Calendrier de {{ month|month_label }}">
+        <div class="cal-grid cal-head" aria-hidden="true">
+            {% for name in ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim'] %}<span>{{ name }}</span>{% endfor %}
+        </div>
+        <div class="cal-grid cal-body">
+            {% for week in calendar.weeks %}
+                {% for day in week %}
+                    {% set busy = day.count > 0 or day.plannedCount > 0 %}
+                    {% if day.inMonth %}
+                        <a class="cal-day {{ day.today ? 'is-today' }} {{ day.selected ? 'is-selected' }} {{ busy ? 'has-items' }}"
+                           href="{{ path('app_calendar', {month: month|date('Y-m'), day: day.date|date('Y-m-d')}) }}#detail"
+                           aria-label="{{ day.date|date('j') }} {{ month|month_label }} : {{ day.count }} opération(s){{ day.plannedCount ? ', ' ~ day.plannedCount ~ ' prévue(s)' }}"
+                           {% if day.selected %}aria-current="date"{% endif %}>
+                            <span class="cal-num">{{ day.date|date('j') }}</span>
+                            <span class="cal-chips">
+                                {% if day.income > 0 %}<span class="cal-chip cal-in">{{ day.income|money_short(currency, true) }}</span>{% endif %}
+                                {% if day.expense > 0 %}<span class="cal-chip cal-out">{{ (-day.expense)|money_short(currency) }}</span>{% endif %}
+                                {% if day.plannedCount > 0 %}<span class="cal-chip cal-plan">{{ icon('repeat', 12) }}{{ day.plannedCount }}</span>{% endif %}
+                            </span>
+                            <span class="cal-dots" aria-hidden="true">
+                                {% if day.income > 0 %}<i class="dot-in"></i>{% endif %}
+                                {% if day.expense > 0 %}<i class="dot-out"></i>{% endif %}
+                                {% if day.plannedCount > 0 %}<i class="dot-plan"></i>{% endif %}
+                            </span>
+                        </a>
+                    {% else %}
+                        <span class="cal-day is-outside" aria-hidden="true"><span class="cal-num">{{ day.date|date('j') }}</span></span>
+                    {% endif %}
+                {% endfor %}
+            {% endfor %}
+        </div>
+        <div class="cal-legend">
+            <span><i class="dot-in"></i>Revenus</span>
+            <span><i class="dot-out"></i>Dépenses</span>
+            <span><i class="dot-plan"></i>Récurrence prévue</span>
+        </div>
+    </section>
+
+    <section class="card cal-detail" id="detail" aria-live="polite">
+        {% if selected %}
+            <div class="cal-detail-head">
+                <h2>{{ selected.date|long_date }}</h2>
+                <a class="btn btn-primary" href="{{ path('app_transaction_new', {date: selected.date|date('Y-m-d')}) }}">{{ icon('plus', 18) }}Ajouter une transaction</a>
+            </div>
+
+            {% if selected.transactions is empty and selected.planned is empty %}
+                <p class="empty">Aucune opération ce jour-là.</p>
+            {% else %}
+                <ul class="tx-list cal-list">
+                    {% for transaction in selected.transactions %}
+                        {% set income = transaction.type.value == 'income' %}
+                        <li>
+                            <a class="tx" href="{{ path('app_transaction_show', {id: transaction.id}) }}">
+                                <span class="tile {{ income ? 'tile-green' }}">{{ icon(transaction.category.icon ?? (income ? 'arrow-up' : 'tag'), 22) }}</span>
+                                <span class="grow">
+                                    <span class="name">{{ transaction.label }}</span>
+                                    <span class="sub">{{ transaction.category }} &bull; {{ transaction.account }}{% if transaction.recurringTransaction %} &bull; <span class="recurring-tag">{{ icon('repeat', 14) }}{{ transaction.recurringTransaction.frequency.label|lower }}</span>{% endif %}</span>
+                                </span>
+                                <span class="{{ income ? 'amount-in' : 'amount-out' }}">{{ (income ? transaction.amount : '-' ~ transaction.amount)|money(transaction.account.currency, true) }}</span>
+                            </a>
+                        </li>
+                    {% endfor %}
+                    {% for planned in selected.planned %}
+                        {% set rule = planned.rule %}
+                        {% set income = rule.type.value == 'income' %}
+                        <li>
+                            <a class="tx tx-planned" href="{{ path('app_recurring_edit', {id: rule.id}) }}">
+                                <span class="tile {{ income ? 'tile-green' }}">{{ icon(rule.category.icon ?? 'repeat', 22) }}</span>
+                                <span class="grow">
+                                    <span class="name">{{ rule.label }} <span class="badge badge-planned">Prévue</span></span>
+                                    <span class="sub">{{ rule.category }} &bull; {{ rule.account }} &bull; <span class="recurring-tag">{{ icon('repeat', 14) }}{{ rule.frequency.label|lower }}</span></span>
+                                </span>
+                                <span class="{{ income ? 'amount-in' : 'amount-out' }}">{{ (income ? rule.amount : '-' ~ rule.amount)|money(rule.account.currency, true) }}</span>
+                            </a>
+                        </li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+        {% else %}
+            <p class="empty">Sélectionnez un jour pour voir le détail de ses opérations.</p>
+        {% endif %}
+    </section>
+{% endblock %}

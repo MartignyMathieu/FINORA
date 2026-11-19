@@ -18,7 +18,7 @@ final class AuthenticationTest extends AbstractCrudTestCase
     /** @return iterable<string, array{string}> */
     public static function protectedUrls(): iterable
     {
-        foreach (['/', '/account', '/account/new', '/transaction', '/transaction/new', '/budget', '/budget/new', '/goal', '/goal/new', '/category', '/category/new', '/stats', '/settings'] as $url) {
+        foreach (['/', '/account', '/account/new', '/transaction', '/transaction/new', '/budget', '/budget/new', '/goal', '/goal/new', '/category', '/category/new', '/stats', '/settings', '/recurring', '/calendar'] as $url) {
             yield $url => [$url];
         }
     }
