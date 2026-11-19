@@ -26,6 +26,31 @@ et on automatise les opérations qui reviennent chaque mois. Chaque utilisateur 
 - **Thème clair ou sombre** : automatique selon l'appareil par défaut, au choix dans Paramètres → Apparence, ou en un clic
   depuis la barre latérale ; le choix est mémorisé dans le navigateur et appliqué avant l'affichage (pas d'éclair clair)
 
+## Mise en page : bureau et mobile
+
+Une seule interface, qui s'adapte à la largeur de l'écran (point de rupture à **900 px**, mobile d'abord) :
+
+| | Bureau (≥ 900 px) | Mobile (< 900 px) |
+| --- | --- | --- |
+| Navigation | Barre latérale : Accueil, Comptes, Transactions, Récurrences, Budgets, Objectifs, Statistiques, Calendrier, Paramètres, profil et bouton de thème | Barre d'onglets en bas : **Accueil, Comptes, Budgets, Stats, Plus** |
+| Accès au reste | Directement dans la barre latérale | Onglet **Plus** : profil, transactions, calendrier, récurrences, objectifs, catégories, apparence (clair / sombre) et déconnexion |
+| Accueil | Message d'accueil, quatre cartes (solde, revenus, dépenses, épargne), courbe sur 6 mois et répartition des dépenses | Prénom avec avatar, carte de solde avec l'évolution du mois, accès rapides (Ajouter, Transactions, Objectifs, Plus) et aperçu du mois |
+| Calendrier | Montants du jour dans chaque case | De simples points colorés (revenus, dépenses, récurrence prévue) ; le détail s'affiche en touchant un jour |
+| Statistiques | Sous-titre explicatif | Donut au-dessus de la légende sur les écrans très étroits (< 480 px) |
+| Listes et cartes | Cartes d'objectifs sur plusieurs colonnes, totaux en rangée de 4 | Une colonne ; totaux sur 1 colonne (accueil, récurrences), 2 (calendrier) ou 3 (profil) ; lignes de récurrences qui passent à la ligne |
+
+Les écrans intermédiaires (900 à 1 180 px) gardent la barre latérale, passent les cartes de totaux sur deux colonnes et
+placent les graphiques l'un sous l'autre.
+
+Détails de mise en œuvre :
+
+- Les zones réservées au bureau ou au mobile sont repérées par les classes `only-desktop` et `only-mobile`
+  (`assets/styles/app.css`), pas par du JavaScript : une seule page HTML est servie.
+- La barre d'onglets tient compte des zones d'encoche et de la barre d'accueil des téléphones (`viewport-fit=cover` et
+  `env(safe-area-inset-bottom)`), et le contenu garde une marge basse pour ne jamais passer dessous.
+- La couleur de la barre d'état du navigateur suit le thème clair ou sombre.
+- Aucun défilement horizontal attendu, quel que soit l'écran : à vérifier avec `docs/TESTING.md` (section « Affichage »).
+
 ## Technologies
 
 - PHP 8.4+ et Symfony 8.1 (Security, Form, Validator, Messenger, Scheduler, Lock, Mailer, Rate Limiter)
