@@ -1,0 +1,15 @@
+{# Symbole « F » FINORA (dégradés bleus). Paramètre : size (px). #}
+<svg width="{{ size|default(40) }}" height="{{ size|default(40) }}" viewBox="120 40 520 500" role="img" aria-label="FINORA">
+    <defs>
+        <linearGradient id="finora-top" x1="0.1" y1="1" x2="0.95" y2="0">
+            <stop offset="0" stop-color="#1f6fef"/>
+            <stop offset="1" stop-color="#5cd9ff"/>
+        </linearGradient>
+        <linearGradient id="finora-bottom" x1="0.1" y1="1" x2="0.9" y2="0.1">
+            <stop offset="0" stop-color="#0a45ff"/>
+            <stop offset="1" stop-color="#19aaff"/>
+        </linearGradient>
+    </defs>
+    <path fill="url(#finora-top)" d="M190 308C198 150 300 62 470 60L606 58C596 135 560 196 478 199L330 201C262 206 218 256 190 308Z"/>
+    <path fill="url(#finora-bottom)" d="M148 514C176 400 206 252 342 246L518 243C536 244 522 300 490 336C466 360 440 366 396 366L342 368C316 372 308 400 300 432C284 486 232 520 148 514Z"/>
+</svg>

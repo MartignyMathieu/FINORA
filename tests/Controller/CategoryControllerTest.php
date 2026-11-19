@@ -20,7 +20,7 @@ final class CategoryControllerTest extends AbstractCrudTestCase
     public function testNew(): void
     {
         $this->client->request('GET', '/category/new');
-        $this->client->submitForm('Save', [
+        $this->client->submitForm('Enregistrer', [
             'category[name]' => 'Transport',
             'category[color]' => '#3366ff',
         ]);
@@ -35,7 +35,7 @@ final class CategoryControllerTest extends AbstractCrudTestCase
     public function testNewWithInvalidColorIsRejected(): void
     {
         $this->client->request('GET', '/category/new');
-        $this->client->submitForm('Save', [
+        $this->client->submitForm('Enregistrer', [
             'category[name]' => 'Transport',
             'category[color]' => 'bleu',
         ]);
@@ -49,7 +49,7 @@ final class CategoryControllerTest extends AbstractCrudTestCase
         $this->createCategory('Transport');
 
         $this->client->request('GET', '/category/new');
-        $this->client->submitForm('Save', ['category[name]' => 'Transport']);
+        $this->client->submitForm('Enregistrer', ['category[name]' => 'Transport']);
 
         self::assertResponseStatusCodeSame(422);
         self::assertSame(1, $this->manager->getRepository(Category::class)->count([]));
@@ -70,7 +70,7 @@ final class CategoryControllerTest extends AbstractCrudTestCase
         $category = $this->createCategory();
 
         $this->client->request('GET', sprintf('/category/%d/edit', $category->getId()));
-        $this->client->submitForm('Update', ['category[name]' => 'Alimentation']);
+        $this->client->submitForm('Mettre à jour', ['category[name]' => 'Alimentation']);
 
         self::assertResponseRedirects('/category');
         $this->manager->clear();
@@ -84,7 +84,7 @@ final class CategoryControllerTest extends AbstractCrudTestCase
         $this->manager->clear();
 
         $this->client->request('GET', '/category/'.$category->getId());
-        $this->client->submitForm('Delete');
+        $this->client->submitForm('Supprimer');
 
         self::assertResponseRedirects('/category');
         self::assertSame(0, $this->manager->getRepository(Category::class)->count([]));
@@ -98,7 +98,7 @@ final class CategoryControllerTest extends AbstractCrudTestCase
         $this->manager->clear();
 
         $this->client->request('GET', '/category/'.$category->getId());
-        $this->client->submitForm('Delete');
+        $this->client->submitForm('Supprimer');
 
         self::assertResponseRedirects('/category/'.$category->getId());
         self::assertSame(1, $this->manager->getRepository(Category::class)->count([]));

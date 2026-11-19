@@ -10,11 +10,10 @@ final class BudgetControllerTest extends AbstractCrudTestCase
     {
         $this->createBudget($this->createCategory('Loisirs'));
 
-        $this->client->request('GET', '/budget');
+        $this->client->request('GET', '/budget?month=2026-11');
 
         self::assertResponseIsSuccessful();
-        self::assertSelectorTextContains('table', 'Loisirs');
-        self::assertSelectorTextContains('table', '2026-11');
+        self::assertSelectorTextContains('.list', 'Loisirs');
     }
 
     public function testNewNormalizesMonthToFirstDay(): void
@@ -22,7 +21,7 @@ final class BudgetControllerTest extends AbstractCrudTestCase
         $category = $this->createCategory();
 
         $this->client->request('GET', '/budget/new');
-        $this->client->submitForm('Save', [
+        $this->client->submitForm('Enregistrer', [
             'budget[category]' => (string) $category->getId(),
             'budget[month]' => '2026-12-17',
             'budget[amount]' => '250',
@@ -43,7 +42,7 @@ final class BudgetControllerTest extends AbstractCrudTestCase
         $this->createBudget($category, '2026-11-01');
 
         $this->client->request('GET', '/budget/new');
-        $this->client->submitForm('Save', [
+        $this->client->submitForm('Enregistrer', [
             'budget[category]' => (string) $category->getId(),
             'budget[month]' => '2026-11-20',
             'budget[amount]' => '100',
@@ -59,7 +58,7 @@ final class BudgetControllerTest extends AbstractCrudTestCase
         $category = $this->createCategory();
 
         $this->client->request('GET', '/budget/new');
-        $this->client->submitForm('Save', [
+        $this->client->submitForm('Enregistrer', [
             'budget[category]' => (string) $category->getId(),
             'budget[month]' => '2026-11-01',
             'budget[amount]' => '0',
@@ -84,7 +83,7 @@ final class BudgetControllerTest extends AbstractCrudTestCase
         $budget = $this->createBudget($this->createCategory());
 
         $this->client->request('GET', sprintf('/budget/%d/edit', $budget->getId()));
-        $this->client->submitForm('Update', ['budget[amount]' => '450']);
+        $this->client->submitForm('Mettre à jour', ['budget[amount]' => '450']);
 
         self::assertResponseRedirects('/budget');
         $this->manager->clear();
@@ -96,7 +95,7 @@ final class BudgetControllerTest extends AbstractCrudTestCase
         $budget = $this->createBudget($this->createCategory());
 
         $this->client->request('GET', '/budget/'.$budget->getId());
-        $this->client->submitForm('Delete');
+        $this->client->submitForm('Supprimer');
 
         self::assertResponseRedirects('/budget');
         self::assertSame(0, $this->manager->getRepository(Budget::class)->count([]));

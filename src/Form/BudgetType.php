@@ -18,21 +18,24 @@ class BudgetType extends AbstractType
     {
         $builder
             ->add('category', EntityType::class, [
+                'label' => 'Catégorie',
                 'class' => Category::class,
                 'choice_label' => 'name',
             ])
             ->add('month', DateType::class, [
+                'label' => 'Mois',
                 'widget' => 'single_text',
                 'input' => 'datetime_immutable',
                 'help' => 'N\'importe quel jour du mois : il est ramené au premier jour.',
             ])
             ->add('amount', NumberType::class, [
+                'label' => 'Plafond',
                 'input' => 'string',
                 'scale' => 2,
                 'html5' => true,
                 'attr' => ['step' => '0.01', 'min' => '0.01'],
             ])
-            ->add('currency', CurrencyType::class)
+            ->add('currency', CurrencyType::class, ['label' => 'Devise'])
         ;
     }
 

@@ -1,29 +1,66 @@
 <!DOCTYPE html>
-<html>
+<html lang="fr">
     <head>
         <meta charset="UTF-8">
-        <title>{% block title %}Welcome!{% endblock %}</title>
-        <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 128 128%22><text y=%221.2em%22 font-size=%2296%22>⚫️</text><text y=%221.3em%22 x=%220.2em%22 font-size=%2276%22 fill=%22%23fff%22>sf</text></svg>">
+        <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+        <meta name="theme-color" content="#0b1f3c">
+        <title>{% block title %}Accueil{% endblock %} · FINORA</title>
+        <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 640 620'%3E%3Cpath fill='%231f6fef' d='M190 308C198 150 300 62 470 60L606 58C596 135 560 196 478 199L330 201C262 206 218 256 190 308Z'/%3E%3Cpath fill='%2319aaff' d='M148 514C176 400 206 252 342 246L518 243C536 244 522 300 490 336C466 360 440 366 396 366L342 368C316 372 308 400 300 432C284 486 232 520 148 514Z'/%3E%3C/svg%3E">
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Montserrat:wght@700;800&display=swap">
         {% block stylesheets %}
         {% endblock %}
 
         {% block javascripts %}
             {% block importmap %}{{ importmap('app') }}{% endblock %}
         {% endblock %}
-
-        {% set frankenphp_hot_reload = app.request.server.get('FRANKENPHP_HOT_RELOAD') %}
-        {% if frankenphp_hot_reload %}
-        <meta name="frankenphp-hot-reload:url" content="{{ frankenphp_hot_reload }}">
-        <script src="https://cdn.jsdelivr.net/npm/idiomorph"></script>
-        <script src="https://cdn.jsdelivr.net/npm/frankenphp-hot-reload/+esm" type="module"></script>
-        {% endif %}
     </head>
     <body>
-        {% for label, messages in app.flashes %}
-            {% for message in messages %}
-                <div class="flash flash-{{ label }}" role="alert">{{ message }}</div>
-            {% endfor %}
-        {% endfor %}
-        {% block body %}{% endblock %}
+        {% set route = app.current_route|default('') %}
+        {% set nav = [
+            {key: 'home', label: 'Accueil', icon: 'home', path: path('app_home'), active: route == 'app_home'},
+            {key: 'accounts', label: 'Comptes', icon: 'wallet', path: path('app_account_index'), active: route starts with 'app_account'},
+            {key: 'transactions', label: 'Transactions', icon: 'card', path: path('app_transaction_index'), active: route starts with 'app_transaction'},
+            {key: 'budgets', label: 'Budgets', icon: 'basket', path: path('app_budget_index'), active: route starts with 'app_budget'},
+            {key: 'goals', label: 'Objectifs', icon: 'target', path: path('app_goal_index'), active: route starts with 'app_goal'},
+            {key: 'stats', label: 'Statistiques', icon: 'chart', path: path('app_stats'), active: route == 'app_stats'},
+        ] %}
+        {% set settings_active = route == 'app_settings' or route starts with 'app_category' %}
+
+        <aside class="sidebar">
+            <a class="logo" href="{{ path('app_home') }}" aria-label="FINORA — accueil">
+                {{ include('_logo_mark.html.twig', {size: 40}) }}
+                <span class="logo-word">FINORA</span>
+            </a>
+            <nav class="nav" aria-label="Navigation principale">
+                {% for item in nav %}
+                    <a href="{{ item.path }}" class="{{ item.active ? 'active' }}"{% if item.active %} aria-current="page"{% endif %}>{{ icon(item.icon, 20) }}{{ item.label }}</a>
+                {% endfor %}
+                <span class="disabled" title="Bientôt disponible">{{ icon('calendar', 20) }}Calendrier</span>
+                <div class="nav-bottom">
+                    <a href="{{ path('app_settings') }}" class="{{ settings_active ? 'active' }}">{{ icon('gear', 20) }}Paramètres</a>
+                </div>
+            </nav>
+        </aside>
+
+        <div class="main">
+            <main class="content">
+                {% for label, messages in app.flashes %}
+                    {% for message in messages %}
+                        <div class="flash flash-{{ label }}" role="alert">{{ message }}</div>
+                    {% endfor %}
+                {% endfor %}
+                {% block body %}{% endblock %}
+            </main>
+        </div>
+
+        <nav class="tabbar" aria-label="Navigation principale">
+            <a href="{{ path('app_home') }}" class="{{ route == 'app_home' ? 'active' }}">{{ icon('home', 22) }}Accueil</a>
+            <a href="{{ path('app_account_index') }}" class="{{ route starts with 'app_account' ? 'active' }}">{{ icon('wallet', 22) }}Comptes</a>
+            <a href="{{ path('app_budget_index') }}" class="{{ route starts with 'app_budget' ? 'active' }}">{{ icon('basket', 22) }}Budgets</a>
+            <a href="{{ path('app_stats') }}" class="{{ route == 'app_stats' ? 'active' }}">{{ icon('chart', 22) }}Stats</a>
+            <a href="{{ path('app_settings') }}" class="{{ settings_active ? 'active' }}">{{ icon('gear', 22) }}Plus</a>
+        </nav>
     </body>
 </html>

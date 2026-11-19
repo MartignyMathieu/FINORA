@@ -3,56 +3,29 @@
 {% block title %}Transaction{% endblock %}
 
 {% block body %}
-    <h1>Transaction</h1>
+    <header class="page-head">
+        <h1>{{ transaction.label }}</h1>
+        <a class="btn btn-ghost" href="{{ path('app_transaction_index') }}">{{ icon('chevron-left', 16) }}Retour</a>
+    </header>
 
-    <table class="table">
-        <tbody>
-            <tr>
-                <th>Id</th>
-                <td>{{ transaction.id }}</td>
-            </tr>
-            <tr>
-                <th>Label</th>
-                <td>{{ transaction.label }}</td>
-            </tr>
-            <tr>
-                <th>Amount</th>
-                <td>{{ transaction.amount }} {{ transaction.account.currency }}</td>
-            </tr>
-            <tr>
-                <th>Type</th>
-                <td>{{ transaction.type.value }}</td>
-            </tr>
-            <tr>
-                <th>Account</th>
-                <td>{{ transaction.account }}</td>
-            </tr>
-            <tr>
-                <th>Category</th>
-                <td>{{ transaction.category }}</td>
-            </tr>
-            <tr>
-                <th>Date</th>
-                <td>{{ transaction.date ? transaction.date|date('Y-m-d') : '' }}</td>
-            </tr>
-            <tr>
-                <th>Note</th>
-                <td>{{ transaction.note }}</td>
-            </tr>
-            <tr>
-                <th>Recurrence</th>
-                <td>{{ transaction.recurrence ? transaction.recurrence.value : '' }}</td>
-            </tr>
-            <tr>
-                <th>RecurrenceEndDate</th>
-                <td>{{ transaction.recurrenceEndDate ? transaction.recurrenceEndDate|date('Y-m-d') : '' }}</td>
-            </tr>
-        </tbody>
-    </table>
+    <div class="card form-card">
+        <table class="table">
+            <tbody>
+                <tr><th>Libellé</th><td>{{ transaction.label }}</td></tr>
+                <tr><th>Montant</th><td>{{ transaction.amount|money(transaction.account.currency) }}</td></tr>
+                <tr><th>Type</th><td>{{ transaction.type.label }}</td></tr>
+                <tr><th>Date</th><td>{{ transaction.date|date('d/m/Y') }}</td></tr>
+                <tr><th>Compte</th><td>{{ transaction.account }}</td></tr>
+                <tr><th>Catégorie</th><td>{{ transaction.category }}</td></tr>
+                <tr><th>Note</th><td>{{ transaction.note ?: '—' }}</td></tr>
+                <tr><th>Récurrence</th><td>{{ transaction.recurrence ? transaction.recurrence.label : 'Ponctuelle' }}</td></tr>
+                <tr><th>Fin de la récurrence</th><td>{{ transaction.recurrenceEndDate ? transaction.recurrenceEndDate|date('d/m/Y') : '—' }}</td></tr>
+            </tbody>
+        </table>
 
-    <a href="{{ path('app_transaction_index') }}">back to list</a>
-
-    <a href="{{ path('app_transaction_edit', {'id': transaction.id}) }}">edit</a>
-
-    {{ include('transaction/_delete_form.html.twig') }}
+        <div class="actions">
+            <a class="btn btn-primary" href="{{ path('app_transaction_edit', {'id': transaction.id}) }}">Modifier</a>
+            {{ include('transaction/_delete_form.html.twig') }}
+        </div>
+    </div>
 {% endblock %}

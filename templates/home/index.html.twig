@@ -1,0 +1,74 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Accueil{% endblock %}
+
+{% block body %}
+    <header class="page-head">
+        <div class="only-desktop">
+            <h1>Bonjour {{ displayName }} ! 👋</h1>
+            <p class="muted">Voici un aperçu de vos finances.</p>
+        </div>
+        <div class="greeting only-mobile">
+            <span class="avatar" aria-hidden="true">{{ displayName|first|upper }}</span>
+            <span class="grow">Bonjour <strong>{{ displayName }}</strong> ! 👋</span>
+        </div>
+        {{ include('_month_nav.html.twig') }}
+    </header>
+
+    {# Mobile : carte de solde, accès rapides et aperçu #}
+    <section class="balance-card only-mobile" aria-label="Solde total">
+        <div class="balance-top"><span>Solde total</span>{{ icon('eye', 22) }}</div>
+        <div class="balance-amount">{{ balance|money(currency) }}</div>
+        {% if variation is not null %}
+            <span class="chip {{ variation < 0 ? 'negative' }}">{{ icon('trend', 16) }}{{ variation|number_format(1, ',', ' ') }}&nbsp;% ce mois-ci</span>
+        {% endif %}
+    </section>
+
+    <nav class="quick-actions only-mobile" aria-label="Accès rapides">
+        <a href="{{ path('app_transaction_new') }}"><span class="tile">{{ icon('plus', 22) }}</span>Ajouter</a>
+        <a href="{{ path('app_transaction_index') }}"><span class="tile">{{ icon('card', 22) }}</span>Transactions</a>
+        <a href="{{ path('app_goal_index') }}"><span class="tile">{{ icon('target', 22) }}</span>Objectifs</a>
+        <a href="{{ path('app_settings') }}"><span class="tile">{{ icon('gear', 22) }}</span>Plus</a>
+    </nav>
+
+    <section class="card overview only-mobile" aria-label="Aperçu du mois">
+        <h2>Mon aperçu <small>({{ month|month_label }})</small></h2>
+        <div class="overview-row"><span class="tile tile-green">{{ icon('arrow-up', 22) }}</span><span class="grow">Revenus</span><strong>{{ totals.income|money(currency) }}</strong></div>
+        <div class="overview-row"><span class="tile tile-red">{{ icon('arrow-down', 22) }}</span><span class="grow">Dépenses</span><strong>{{ (-totals.expense)|money(currency) }}</strong></div>
+        <div class="overview-row"><span class="tile">{{ icon('piggy', 22) }}</span><span class="grow">Épargne</span><strong>{{ totals.savings|money(currency) }}</strong></div>
+    </section>
+
+    {# Bureau : indicateurs et graphiques #}
+    <section class="kpis only-desktop" aria-label="Indicateurs du mois">
+        <div class="card kpi"><span class="tile">{{ icon('wallet', 24) }}</span><div><small>Solde total</small><strong>{{ balance|money(currency) }}</strong></div></div>
+        <div class="card kpi"><span class="tile tile-green">{{ icon('arrow-up', 24) }}</span><div><small>Revenus</small><strong>{{ totals.income|money(currency) }}</strong></div></div>
+        <div class="card kpi"><span class="tile tile-red">{{ icon('arrow-down', 24) }}</span><div><small>Dépenses</small><strong>{{ totals.expense|money(currency) }}</strong></div></div>
+        <div class="card kpi"><span class="tile">{{ icon('piggy', 24) }}</span><div><small>Épargne</small><strong>{{ totals.savings|money(currency) }}</strong></div></div>
+    </section>
+
+    <section class="grid-2 only-desktop">
+        <div class="card">
+            <h2>Évolution de vos finances</h2>
+            <div class="legend">
+                <span><span class="dot" style="background:#1f6fef"></span>Revenus</span>
+                <span><span class="dot" style="background:#7dbcff"></span>Dépenses</span>
+            </div>
+            {{ include('_line_chart.html.twig') }}
+        </div>
+        <div class="card">
+            <h2>Répartition des dépenses</h2>
+            {% if donut.items is empty %}
+                <p class="empty">Aucune dépense en {{ month|month_label }}.</p>
+            {% else %}
+                <div class="donut-wrap">
+                    {{ include('_donut.html.twig', {donut: donut, currency: currency, label: 'Dépenses'}) }}
+                    <ul class="donut-legend">
+                        {% for item in donut.items %}
+                            <li><span><span class="dot" style="background:{{ item.color }}"></span>{{ item.name }}</span><span class="pct">{{ item.percent }}&nbsp;%</span></li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            {% endif %}
+        </div>
+    </section>
+{% endblock %}

@@ -1,13 +1,15 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Edit Account{% endblock %}
+{% block title %}Modifier le compte{% endblock %}
 
 {% block body %}
-    <h1>Edit Account</h1>
+    <header class="page-head">
+        <h1>Modifier le compte</h1>
+        <a class="btn btn-ghost" href="{{ path('app_account_index') }}">{{ icon('chevron-left', 16) }}Retour</a>
+    </header>
 
-    {{ include('account/_form.html.twig', {'button_label': 'Update'}) }}
-
-    <a href="{{ path('app_account_index') }}">back to list</a>
-
-    {{ include('account/_delete_form.html.twig') }}
+    <div class="card form-card">
+        {{ include('account/_form.html.twig', {'button_label': 'Mettre à jour'}) }}
+        <div class="actions">{{ include('account/_delete_form.html.twig') }}</div>
+    </div>
 {% endblock %}

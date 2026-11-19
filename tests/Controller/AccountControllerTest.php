@@ -3,6 +3,7 @@
 namespace App\Tests\Controller;
 
 use App\Entity\Account;
+use App\Enum\AccountType;
 
 final class AccountControllerTest extends AbstractCrudTestCase
 {
@@ -13,14 +14,15 @@ final class AccountControllerTest extends AbstractCrudTestCase
         $this->client->request('GET', '/account');
 
         self::assertResponseIsSuccessful();
-        self::assertSelectorTextContains('table', 'Livret A');
+        self::assertSelectorTextContains('.list', 'Livret A');
     }
 
     public function testNew(): void
     {
         $this->client->request('GET', '/account/new');
-        $this->client->submitForm('Save', [
+        $this->client->submitForm('Enregistrer', [
             'account[name]' => 'Compte joint',
+            'account[type]' => 'savings',
             'account[currency]' => 'USD',
             'account[initialBalance]' => '150.5',
         ]);
@@ -29,6 +31,7 @@ final class AccountControllerTest extends AbstractCrudTestCase
 
         $account = $this->manager->getRepository(Account::class)->findOneBy(['name' => 'Compte joint']);
         self::assertNotNull($account);
+        self::assertSame(AccountType::Savings, $account->getType());
         self::assertSame('USD', $account->getCurrency());
         self::assertSame('150.50', $account->getInitialBalance());
     }
@@ -36,7 +39,7 @@ final class AccountControllerTest extends AbstractCrudTestCase
     public function testNewWithBlankNameIsRejected(): void
     {
         $this->client->request('GET', '/account/new');
-        $this->client->submitForm('Save', ['account[name]' => '']);
+        $this->client->submitForm('Enregistrer', ['account[name]' => '']);
 
         self::assertResponseStatusCodeSame(422);
         self::assertSame(0, $this->manager->getRepository(Account::class)->count([]));
@@ -57,7 +60,7 @@ final class AccountControllerTest extends AbstractCrudTestCase
         $account = $this->createAccount();
 
         $this->client->request('GET', sprintf('/account/%d/edit', $account->getId()));
-        $this->client->submitForm('Update', ['account[name]' => 'Renommé']);
+        $this->client->submitForm('Mettre à jour', ['account[name]' => 'Renommé']);
 
         self::assertResponseRedirects('/account');
         $this->manager->clear();
@@ -69,7 +72,7 @@ final class AccountControllerTest extends AbstractCrudTestCase
         $account = $this->createAccount();
 
         $this->client->request('GET', '/account/'.$account->getId());
-        $this->client->submitForm('Delete');
+        $this->client->submitForm('Supprimer');
 
         self::assertResponseRedirects('/account');
         self::assertSame(0, $this->manager->getRepository(Account::class)->count([]));
@@ -82,7 +85,7 @@ final class AccountControllerTest extends AbstractCrudTestCase
         $this->manager->clear();
 
         $this->client->request('GET', '/account/'.$account->getId());
-        $this->client->submitForm('Delete');
+        $this->client->submitForm('Supprimer');
 
         self::assertResponseRedirects('/account/'.$account->getId());
         self::assertSame(1, $this->manager->getRepository(Account::class)->count([]));

@@ -1,30 +1,25 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Category{% endblock %}
+{% block title %}Catégorie{% endblock %}
 
 {% block body %}
-    <h1>Category</h1>
+    <header class="page-head">
+        <h1>{{ category.name }}</h1>
+        <a class="btn btn-ghost" href="{{ path('app_category_index') }}">{{ icon('chevron-left', 16) }}Retour</a>
+    </header>
 
-    <table class="table">
-        <tbody>
-            <tr>
-                <th>Id</th>
-                <td>{{ category.id }}</td>
-            </tr>
-            <tr>
-                <th>Name</th>
-                <td>{{ category.name }}</td>
-            </tr>
-            <tr>
-                <th>Color</th>
-                <td>{{ category.color }}</td>
-            </tr>
-        </tbody>
-    </table>
+    <div class="card form-card">
+        <table class="table">
+            <tbody>
+                <tr><th>Nom</th><td>{{ category.name }}</td></tr>
+                <tr><th>Icône</th><td><span class="inline-icon">{{ icon(category.icon ?? 'tag', 20) }}{{ category.icon ? category.icon.label : '—' }}</span></td></tr>
+                <tr><th>Couleur</th><td>{% if category.color %}<span class="swatch" style="background:{{ category.color }}"></span>{{ category.color }}{% else %}—{% endif %}</td></tr>
+            </tbody>
+        </table>
 
-    <a href="{{ path('app_category_index') }}">back to list</a>
-
-    <a href="{{ path('app_category_edit', {'id': category.id}) }}">edit</a>
-
-    {{ include('category/_delete_form.html.twig') }}
+        <div class="actions">
+            <a class="btn btn-primary" href="{{ path('app_category_edit', {'id': category.id}) }}">Modifier</a>
+            {{ include('category/_delete_form.html.twig') }}
+        </div>
+    </div>
 {% endblock %}

@@ -4,7 +4,7 @@ namespace App\Controller;
 
 use App\Entity\Account;
 use App\Form\AccountType;
-use App\Repository\AccountRepository;
+use App\Service\FinanceStats;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -15,10 +15,10 @@ use Symfony\Component\Routing\Attribute\Route;
 final class AccountController extends AbstractController
 {
     #[Route(name: 'app_account_index', methods: ['GET'])]
-    public function index(AccountRepository $accountRepository): Response
+    public function index(FinanceStats $stats): Response
     {
         return $this->render('account/index.html.twig', [
-            'accounts' => $accountRepository->findAll(),
+            'rows' => $stats->accountBalances(),
         ]);
     }
 

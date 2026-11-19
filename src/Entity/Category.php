@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use App\Enum\Icon;
 use App\Repository\CategoryRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -26,6 +27,9 @@ class Category
     #[ORM\Column(length: 7, nullable: true)]
     #[Assert\Regex(pattern: '/^#[0-9a-fA-F]{6}$/', message: 'La couleur doit être au format hexadécimal (#RRGGBB).')]
     private ?string $color = null;
+
+    #[ORM\Column(enumType: Icon::class, nullable: true)]
+    private ?Icon $icon = null;
 
     /** @var Collection<int, Transaction> */
     #[ORM\OneToMany(targetEntity: Transaction::class, mappedBy: 'category')]
@@ -66,6 +70,18 @@ class Category
     public function setColor(?string $color): static
     {
         $this->color = $color;
+
+        return $this;
+    }
+
+    public function getIcon(): ?Icon
+    {
+        return $this->icon;
+    }
+
+    public function setIcon(?Icon $icon): static
+    {
+        $this->icon = $icon;
 
         return $this;
     }

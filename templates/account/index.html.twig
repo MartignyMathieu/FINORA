@@ -1,39 +1,28 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Account index{% endblock %}
+{% block title %}Comptes{% endblock %}
 
 {% block body %}
-    <h1>Account index</h1>
+    <header class="page-head">
+        <h1>Comptes</h1>
+        <a class="round-btn" href="{{ path('app_account_new') }}" aria-label="Nouveau compte">{{ icon('plus', 22) }}</a>
+    </header>
 
-    <table class="table">
-        <thead>
-            <tr>
-                <th>Id</th>
-                <th>Name</th>
-                <th>Currency</th>
-                <th>InitialBalance</th>
-                <th>actions</th>
-            </tr>
-        </thead>
-        <tbody>
-        {% for account in accounts %}
-            <tr>
-                <td>{{ account.id }}</td>
-                <td>{{ account.name }}</td>
-                <td>{{ account.currency }}</td>
-                <td>{{ account.initialBalance }}</td>
-                <td>
-                    <a href="{{ path('app_account_show', {'id': account.id}) }}">show</a>
-                    <a href="{{ path('app_account_edit', {'id': account.id}) }}">edit</a>
-                </td>
-            </tr>
+    <ul class="list">
+        {% for row in rows %}
+            {% set account = row.account %}
+            <li>
+                <a class="list-card" href="{{ path('app_account_show', {id: account.id}) }}">
+                    <span class="tile">{{ icon(account.type, 26) }}</span>
+                    <span class="grow">
+                        <span class="name">{{ account.name }}</span>
+                        <strong class="amount">{{ row.balance|money(account.currency) }}</strong>
+                    </span>
+                    <span class="chev">{{ icon('chevron-right') }}</span>
+                </a>
+            </li>
         {% else %}
-            <tr>
-                <td colspan="5">no records found</td>
-            </tr>
+            <li class="card empty">Aucun compte pour le moment. <a href="{{ path('app_account_new') }}">Créer un compte</a></li>
         {% endfor %}
-        </tbody>
-    </table>
-
-    <a href="{{ path('app_account_new') }}">Create new</a>
+    </ul>
 {% endblock %}

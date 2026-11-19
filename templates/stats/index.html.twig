@@ -1,0 +1,37 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Statistiques{% endblock %}
+
+{% block body %}
+    <header class="page-head">
+        <div>
+            <h1>Statistiques</h1>
+            <p class="muted only-desktop">Où part votre argent, et d'où vient-il.</p>
+        </div>
+        {{ include('_month_nav.html.twig') }}
+    </header>
+
+    <nav class="segmented" aria-label="Type de transactions" style="max-width:420px">
+        <a href="{{ path('app_stats', {month: month|date('Y-m'), type: 'expense'}) }}" class="{{ type == 'expense' ? 'active' }}">Dépenses</a>
+        <a href="{{ path('app_stats', {month: month|date('Y-m'), type: 'income'}) }}" class="{{ type == 'income' ? 'active' }}">Revenus</a>
+    </nav>
+
+    <div class="card">
+        {% if donut.items is empty %}
+            <p class="empty">Aucune transaction de ce type en {{ month|month_label }}.</p>
+        {% else %}
+            <div class="donut-wrap" style="justify-content:center;flex-wrap:wrap">
+                <div style="width:260px">{{ include('_donut.html.twig', {donut: donut, currency: currency, label: type == 'expense' ? 'Dépenses' : 'Revenus'}) }}</div>
+                <ul class="donut-legend" style="min-width:280px">
+                    {% for item in donut.items %}
+                        <li>
+                            <span><span class="dot" style="background:{{ item.color }}"></span>{{ item.name }}</span>
+                            <span class="pct">{{ item.percent }}&nbsp;%</span>
+                            <span class="amt">{{ item.total|money(currency) }}</span>
+                        </li>
+                    {% endfor %}
+                </ul>
+            </div>
+        {% endif %}
+    </div>
+{% endblock %}

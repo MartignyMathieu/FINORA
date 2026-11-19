@@ -1,0 +1,30 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Objectifs d'épargne{% endblock %}
+
+{% block body %}
+    <header class="page-head">
+        <div>
+            <h1>Objectifs d'épargne</h1>
+            <p class="muted">Suivez l'avancement de vos projets.</p>
+        </div>
+        <a class="btn btn-primary" href="{{ path('app_goal_new') }}">{{ icon('plus', 18) }}Nouvel objectif</a>
+    </header>
+
+    <div class="goals">
+        {% for goal in goals %}
+            <a class="card goal" href="{{ path('app_goal_show', {id: goal.id}) }}">
+                <span class="goal-visual">{{ icon(goal.icon ?? 'target', 64) }}</span>
+                <h3>{{ goal.name }}</h3>
+                <span class="target">{{ goal.targetAmount|money(goal.currency) }}</span>
+                <span class="sub">{{ goal.savedAmount|money(goal.currency) }} ({{ goal.progress }}&nbsp;%)</span>
+                <span class="bar" role="progressbar" aria-valuenow="{{ goal.progress }}" aria-valuemin="0" aria-valuemax="100"><span style="width:{{ goal.progress }}%"></span></span>
+                {% if goal.targetDate %}
+                    <span class="deadline">{{ icon('calendar', 18) }}Échéance : {{ goal.targetDate|month_label }}</span>
+                {% endif %}
+            </a>
+        {% else %}
+            <div class="card empty" style="grid-column:1/-1">Aucun objectif pour le moment. <a href="{{ path('app_goal_new') }}">Créer un objectif</a></div>
+        {% endfor %}
+    </div>
+{% endblock %}

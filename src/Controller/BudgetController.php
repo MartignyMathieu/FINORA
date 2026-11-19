@@ -4,21 +4,25 @@ namespace App\Controller;
 
 use App\Entity\Budget;
 use App\Form\BudgetType;
-use App\Repository\BudgetRepository;
+use App\Service\FinanceStats;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Attribute\MapQueryParameter;
 use Symfony\Component\Routing\Attribute\Route;
 
 #[Route('/budget')]
 final class BudgetController extends AbstractController
 {
     #[Route(name: 'app_budget_index', methods: ['GET'])]
-    public function index(BudgetRepository $budgetRepository): Response
+    public function index(FinanceStats $stats, #[MapQueryParameter] ?string $month = null): Response
     {
+        $month = FinanceStats::resolveMonth($month);
+
         return $this->render('budget/index.html.twig', [
-            'budgets' => $budgetRepository->findAll(),
+            'month' => $month,
+            'rows' => $stats->budgetProgress($month),
         ]);
     }
 

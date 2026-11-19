@@ -15,8 +15,8 @@ final class TransactionControllerTest extends AbstractCrudTestCase
         $this->client->request('GET', '/transaction');
 
         self::assertResponseIsSuccessful();
-        self::assertSelectorTextContains('table', 'Supermarché');
-        self::assertSelectorTextContains('table', 'Courses');
+        self::assertSelectorTextContains('.tx-list', 'Supermarché');
+        self::assertSelectorTextContains('.tx-list', 'Courses');
     }
 
     public function testNew(): void
@@ -25,7 +25,7 @@ final class TransactionControllerTest extends AbstractCrudTestCase
         $category = $this->createCategory();
 
         $this->client->request('GET', '/transaction/new');
-        $this->client->submitForm('Save', [
+        $this->client->submitForm('Enregistrer', [
             'transaction[label]' => 'Loyer',
             'transaction[amount]' => '750',
             'transaction[type]' => TransactionType::Expense->value,
@@ -52,7 +52,7 @@ final class TransactionControllerTest extends AbstractCrudTestCase
         $category = $this->createCategory();
 
         $this->client->request('GET', '/transaction/new');
-        $this->client->submitForm('Save', [
+        $this->client->submitForm('Enregistrer', [
             'transaction[label]' => 'Café',
             'transaction[amount]' => '2.4',
             'transaction[type]' => TransactionType::Expense->value,
@@ -73,7 +73,7 @@ final class TransactionControllerTest extends AbstractCrudTestCase
         $category = $this->createCategory();
 
         $this->client->request('GET', '/transaction/new');
-        $this->client->submitForm('Save', [
+        $this->client->submitForm('Enregistrer', [
             'transaction[label]' => 'Erreur',
             'transaction[amount]' => '-5',
             'transaction[type]' => TransactionType::Income->value,
@@ -92,7 +92,7 @@ final class TransactionControllerTest extends AbstractCrudTestCase
         $category = $this->createCategory();
 
         $this->client->request('GET', '/transaction/new');
-        $this->client->submitForm('Save', [
+        $this->client->submitForm('Enregistrer', [
             'transaction[label]' => 'Abonnement',
             'transaction[amount]' => '10',
             'transaction[type]' => TransactionType::Expense->value,
@@ -115,7 +115,7 @@ final class TransactionControllerTest extends AbstractCrudTestCase
 
         self::assertResponseIsSuccessful();
         self::assertSelectorTextContains('table', 'Pharmacie');
-        self::assertSelectorTextContains('table', 'expense');
+        self::assertSelectorTextContains('table', 'Dépense');
     }
 
     public function testEdit(): void
@@ -123,7 +123,7 @@ final class TransactionControllerTest extends AbstractCrudTestCase
         $transaction = $this->createTransaction($this->createAccount(), $this->createCategory());
 
         $this->client->request('GET', sprintf('/transaction/%d/edit', $transaction->getId()));
-        $this->client->submitForm('Update', [
+        $this->client->submitForm('Mettre à jour', [
             'transaction[label]' => 'Marché',
             'transaction[type]' => TransactionType::Income->value,
         ]);
@@ -140,7 +140,7 @@ final class TransactionControllerTest extends AbstractCrudTestCase
         $transaction = $this->createTransaction($this->createAccount(), $this->createCategory());
 
         $this->client->request('GET', '/transaction/'.$transaction->getId());
-        $this->client->submitForm('Delete');
+        $this->client->submitForm('Supprimer');
 
         self::assertResponseRedirects('/transaction');
         self::assertSame(0, $this->manager->getRepository(Transaction::class)->count([]));

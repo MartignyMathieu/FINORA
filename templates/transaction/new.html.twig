@@ -1,11 +1,14 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}New Transaction{% endblock %}
+{% block title %}Nouvelle transaction{% endblock %}
 
 {% block body %}
-    <h1>Create new Transaction</h1>
+    <header class="page-head">
+        <h1>Nouvelle transaction</h1>
+        <a class="btn btn-ghost" href="{{ path('app_transaction_index') }}">{{ icon('chevron-left', 16) }}Retour</a>
+    </header>
 
-    {{ include('transaction/_form.html.twig') }}
-
-    <a href="{{ path('app_transaction_index') }}">back to list</a>
+    <div class="card form-card">
+        {{ include('transaction/_form.html.twig') }}
+    </div>
 {% endblock %}

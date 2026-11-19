@@ -22,45 +22,44 @@ class TransactionType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
-            ->add('label', TextType::class)
+            ->add('label', TextType::class, ['label' => 'Libellé'])
             ->add('amount', NumberType::class, [
+                'label' => 'Montant',
                 'input' => 'string',
                 'scale' => 2,
                 'html5' => true,
                 'attr' => ['step' => '0.01', 'min' => '0.01'],
             ])
             ->add('type', EnumType::class, [
+                'label' => 'Type',
                 'class' => Type::class,
-                'choice_label' => static fn (Type $t): string => match ($t) {
-                    Type::Income => 'Revenu',
-                    Type::Expense => 'Dépense',
-                },
+                'choice_label' => static fn (Type $t): string => $t->label(),
             ])
             ->add('date', DateType::class, [
+                'label' => 'Date',
                 'widget' => 'single_text',
                 'input' => 'datetime_immutable',
             ])
-            ->add('note', TextareaType::class, ['required' => false])
+            ->add('note', TextareaType::class, ['label' => 'Note', 'required' => false])
             ->add('account', EntityType::class, [
+                'label' => 'Compte',
                 'class' => Account::class,
                 'choice_label' => 'name',
             ])
             ->add('category', EntityType::class, [
+                'label' => 'Catégorie',
                 'class' => Category::class,
                 'choice_label' => 'name',
             ])
             ->add('recurrence', EnumType::class, [
+                'label' => 'Récurrence',
                 'class' => RecurrenceFrequency::class,
                 'required' => false,
                 'placeholder' => 'Ponctuelle',
-                'choice_label' => static fn (RecurrenceFrequency $f): string => match ($f) {
-                    RecurrenceFrequency::Daily => 'Quotidienne',
-                    RecurrenceFrequency::Weekly => 'Hebdomadaire',
-                    RecurrenceFrequency::Monthly => 'Mensuelle',
-                    RecurrenceFrequency::Yearly => 'Annuelle',
-                },
+                'choice_label' => static fn (RecurrenceFrequency $f): string => $f->label(),
             ])
             ->add('recurrenceEndDate', DateType::class, [
+                'label' => 'Fin de la récurrence',
                 'widget' => 'single_text',
                 'input' => 'datetime_immutable',
                 'required' => false,

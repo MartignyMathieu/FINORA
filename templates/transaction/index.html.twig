@@ -1,49 +1,52 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Transaction index{% endblock %}
+{% block title %}Transactions{% endblock %}
 
 {% block body %}
-    <h1>Transaction index</h1>
+    <header class="page-head">
+        <h1>Transactions</h1>
+        <div class="toolbar">
+            <form class="search" method="get" role="search">
+                {% if type != 'all' %}<input type="hidden" name="type" value="{{ type }}">{% endif %}
+                {{ icon('search', 18) }}
+                <input type="search" name="q" value="{{ q }}" placeholder="Rechercher" aria-label="Rechercher une transaction">
+            </form>
+            <a class="round-btn" href="{{ path('app_transaction_new') }}" aria-label="Nouvelle transaction">{{ icon('plus', 22) }}</a>
+        </div>
+    </header>
 
-    <table class="table">
-        <thead>
-            <tr>
-                <th>Id</th>
-                <th>Label</th>
-                <th>Amount</th>
-                <th>Type</th>
-                <th>Date</th>
-                <th>Account</th>
-                <th>Category</th>
-                <th>Recurrence</th>
-                <th>RecurrenceEndDate</th>
-                <th>actions</th>
-            </tr>
-        </thead>
-        <tbody>
-        {% for transaction in transactions %}
-            <tr>
-                <td>{{ transaction.id }}</td>
-                <td>{{ transaction.label }}</td>
-                <td>{{ transaction.amount }} {{ transaction.account.currency }}</td>
-                <td>{{ transaction.type.value }}</td>
-                <td>{{ transaction.date ? transaction.date|date('Y-m-d') : '' }}</td>
-                <td>{{ transaction.account }}</td>
-                <td>{{ transaction.category }}</td>
-                <td>{{ transaction.recurrence ? transaction.recurrence.value : '' }}</td>
-                <td>{{ transaction.recurrenceEndDate ? transaction.recurrenceEndDate|date('Y-m-d') : '' }}</td>
-                <td>
-                    <a href="{{ path('app_transaction_show', {'id': transaction.id}) }}">show</a>
-                    <a href="{{ path('app_transaction_edit', {'id': transaction.id}) }}">edit</a>
-                </td>
-            </tr>
-        {% else %}
-            <tr>
-                <td colspan="9">no records found</td>
-            </tr>
-        {% endfor %}
-        </tbody>
-    </table>
+    {% set base_query = q ? {q: q} : {} %}
+    <nav class="segmented" aria-label="Type de transactions">
+        <a href="{{ path('app_transaction_index', base_query) }}" class="{{ type == 'all' ? 'active' }}">Toutes</a>
+        <a href="{{ path('app_transaction_index', base_query|merge({type: 'income'})) }}" class="{{ type == 'income' ? 'active' }}">Revenus</a>
+        <a href="{{ path('app_transaction_index', base_query|merge({type: 'expense'})) }}" class="{{ type == 'expense' ? 'active' }}">Dépenses</a>
+    </nav>
 
-    <a href="{{ path('app_transaction_new') }}">Create new</a>
+    {% set current = null %}
+    {% for transaction in transactions %}
+        {% set key = transaction.date|date('Y-m') %}
+        {% if key != current %}
+            {% if current is not null %}</ul>{% endif %}
+            <h2 class="month-heading">{{ transaction.date|month_label }}</h2>
+            <ul class="tx-list">
+            {% set current = key %}
+        {% endif %}
+        {% set income = transaction.type.value == 'income' %}
+        <li>
+            <a class="tx" href="{{ path('app_transaction_show', {id: transaction.id}) }}">
+                <span class="tile {{ income ? 'tile-green' }}">{{ icon(transaction.category.icon ?? (income ? 'arrow-up' : 'tag'), 24) }}</span>
+                <span class="grow">
+                    <span class="name">{{ transaction.label }}</span>
+                    <span class="sub">{{ transaction.category }} &bull; {{ transaction.date|short_date }}{% if transaction.recurrence %} &bull; {{ transaction.recurrence.label|lower }}{% endif %}</span>
+                </span>
+                <span class="{{ income ? 'amount-in' : 'amount-out' }}">{{ (income ? transaction.amount : '-' ~ transaction.amount)|money(transaction.account.currency, true) }}</span>
+            </a>
+        </li>
+        {% if loop.last %}</ul>{% endif %}
+    {% else %}
+        <div class="card empty">
+            {% if q or type != 'all' %}Aucune transaction ne correspond à ce filtre.{% else %}Aucune transaction pour le moment.{% endif %}
+            <a href="{{ path('app_transaction_new') }}">Ajouter une transaction</a>
+        </div>
+    {% endfor %}
 {% endblock %}

@@ -1,0 +1,7 @@
+{# Navigation mensuelle. Paramètre : month (DateTimeImmutable, 1er du mois). Conserve les autres paramètres de requête. #}
+{% set query = app.request.query.all %}
+<div class="month-nav" role="group" aria-label="Choisir le mois">
+    <a href="{{ path(app.current_route, query|merge({month: month|date_modify('-1 month')|date('Y-m')})) }}" aria-label="Mois précédent">{{ icon('chevron-left', 18) }}</a>
+    <span>{{ icon('calendar', 18) }}{{ month|month_label }}</span>
+    <a href="{{ path(app.current_route, query|merge({month: month|date_modify('+1 month')|date('Y-m')})) }}" aria-label="Mois suivant">{{ icon('chevron-right', 18) }}</a>
+</div>

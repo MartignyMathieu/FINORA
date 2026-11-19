@@ -1,0 +1,15 @@
+{# Donut SVG. Paramètres : donut (voir FinanceStats::donut), currency, label. #}
+<div class="donut">
+    <svg viewBox="0 0 200 200" role="img" aria-label="{{ label }} : {{ donut.total|money(currency) }}">
+        <circle cx="100" cy="100" r="{{ donut.radius }}" fill="none" stroke="#eef3fb" stroke-width="28"/>
+        {% for segment in donut.segments %}
+            <circle cx="100" cy="100" r="{{ donut.radius }}" fill="none" stroke="{{ segment.color }}" stroke-width="28"
+                    stroke-dasharray="{{ segment.dash|round(2) }} {{ segment.gap|round(2) }}"
+                    stroke-dashoffset="{{ segment.offset|round(2) }}" transform="rotate(-90 100 100)"/>
+        {% endfor %}
+    </svg>
+    <div class="donut-center">
+        <strong>{{ donut.total|money(currency) }}</strong>
+        <small>{{ label }}</small>
+    </div>
+</div>

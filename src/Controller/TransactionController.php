@@ -3,22 +3,32 @@
 namespace App\Controller;
 
 use App\Entity\Transaction;
+use App\Enum\TransactionType as Kind;
 use App\Form\TransactionType;
 use App\Repository\TransactionRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Attribute\MapQueryParameter;
 use Symfony\Component\Routing\Attribute\Route;
 
 #[Route('/transaction')]
 final class TransactionController extends AbstractController
 {
     #[Route(name: 'app_transaction_index', methods: ['GET'])]
-    public function index(TransactionRepository $transactionRepository): Response
-    {
+    public function index(
+        TransactionRepository $transactionRepository,
+        #[MapQueryParameter] string $type = 'all',
+        #[MapQueryParameter] string $q = '',
+    ): Response {
+        $kind = Kind::tryFrom($type);
+        $search = trim($q);
+
         return $this->render('transaction/index.html.twig', [
-            'transactions' => $transactionRepository->findAll(),
+            'transactions' => $transactionRepository->search($kind, $search),
+            'type' => $kind?->value ?? 'all',
+            'q' => $search,
         ]);
     }
 

@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use App\Enum\AccountType;
 use App\Repository\AccountRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -21,6 +22,10 @@ class Account
     #[Assert\NotBlank]
     #[Assert\Length(max: 100)]
     private ?string $name = null;
+
+    #[ORM\Column(enumType: AccountType::class, options: ['default' => 'checking'])]
+    #[Assert\NotNull]
+    private AccountType $type = AccountType::Checking;
 
     /** Code ISO 4217 (EUR, USD, ...). Toutes les transactions du compte sont dans cette devise. */
     #[ORM\Column(length: 3, options: ['default' => 'EUR'])]
@@ -54,6 +59,18 @@ class Account
     public function setName(string $name): static
     {
         $this->name = $name;
+
+        return $this;
+    }
+
+    public function getType(): AccountType
+    {
+        return $this->type;
+    }
+
+    public function setType(AccountType $type): static
+    {
+        $this->type = $type;
 
         return $this;
     }

@@ -1,13 +1,15 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Edit Transaction{% endblock %}
+{% block title %}Modifier la transaction{% endblock %}
 
 {% block body %}
-    <h1>Edit Transaction</h1>
+    <header class="page-head">
+        <h1>Modifier la transaction</h1>
+        <a class="btn btn-ghost" href="{{ path('app_transaction_index') }}">{{ icon('chevron-left', 16) }}Retour</a>
+    </header>
 
-    {{ include('transaction/_form.html.twig', {'button_label': 'Update'}) }}
-
-    <a href="{{ path('app_transaction_index') }}">back to list</a>
-
-    {{ include('transaction/_delete_form.html.twig') }}
+    <div class="card form-card">
+        {{ include('transaction/_form.html.twig', {'button_label': 'Mettre à jour'}) }}
+        <div class="actions">{{ include('transaction/_delete_form.html.twig') }}</div>
+    </div>
 {% endblock %}
