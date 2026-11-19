@@ -395,6 +395,25 @@ final class FinanceStats
         return $totals;
     }
 
+    /**
+     * Dernières transactions du mois (les plus récentes d'abord).
+     *
+     * @return list<Transaction>
+     */
+    public function recentTransactions(\DateTimeImmutable $month, int $limit = 5): array
+    {
+        return $this->em->createQuery(
+            'SELECT t, c, a FROM '.Transaction::class.' t JOIN t.category c JOIN t.account a
+             WHERE a.owner = :user AND t.date BETWEEN :start AND :end
+             ORDER BY t.date DESC, t.id DESC'
+        )
+            ->setParameter('user', $this->user())
+            ->setParameter('start', $month, Types::DATE_IMMUTABLE)
+            ->setParameter('end', $this->endOf($month), Types::DATE_IMMUTABLE)
+            ->setMaxResults($limit)
+            ->getResult();
+    }
+
     private function user(): User
     {
         $user = $this->security->getUser();

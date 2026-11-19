@@ -42,6 +42,33 @@ final class DashboardPagesTest extends AbstractCrudTestCase
         self::assertSelectorTextContains('h1', 'Bonjour Alice');
     }
 
+    public function testHomeListsTheLatestTransactionsNewestFirst(): void
+    {
+        $this->seedNovember();
+
+        $crawler = $this->client->request('GET', '/?month=2026-11');
+
+        $names = $crawler->filter('.home-lists .mini-list')->first()->filter('.name')->each(static fn ($node): string => $node->text());
+        self::assertSame(['Supermarché', 'Loyer', 'Salaire'], $names);
+    }
+
+    public function testHomeShowsTheMostConsumedBudgetsFirst(): void
+    {
+        $account = $this->createAccount('Compte courant');
+        $food = $this->createCategory('Alimentation');
+        $leisure = $this->createCategory('Loisirs');
+        $this->createDatedTransaction($account, $food, TransactionType::Expense, '50.00', '2026-11-05', 'Courses');
+        $this->createDatedTransaction($account, $leisure, TransactionType::Expense, '90.00', '2026-11-06', 'Cinéma');
+        $this->createBudget($food, '2026-11-01', '100.00');
+        $this->createBudget($leisure, '2026-11-01', '100.00');
+
+        $crawler = $this->client->request('GET', '/?month=2026-11');
+
+        $names = $crawler->filter('.home-lists .mini-list')->last()->filter('.name')->each(static fn ($node): string => $node->text());
+        self::assertSame(['Loisirs', 'Alimentation'], $names);
+        self::assertSelectorTextContains('.home-lists', '90');
+    }
+
     public function testHomeFallsBackToCurrentMonthOnInvalidParameter(): void
     {
         $this->client->request('GET', '/?month=nimporte-quoi');

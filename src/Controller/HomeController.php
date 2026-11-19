@@ -21,6 +21,10 @@ final class HomeController extends AbstractController
     ): Response {
         $month = FinanceStats::resolveMonth($month);
 
+        // Les quatre budgets les plus consommés du mois.
+        $budgets = $stats->budgetProgress($month);
+        usort($budgets, static fn (array $a, array $b): int => $b['percent'] <=> $a['percent']);
+
         return $this->render('home/index.html.twig', [
             'month' => $month,
             'displayName' => $user->getDisplayName(),
@@ -29,6 +33,8 @@ final class HomeController extends AbstractController
             'variation' => $stats->balanceVariation($month),
             'totals' => $stats->monthTotals($month),
             'chart' => $stats->lineChart($stats->history($month)),
+            'recent' => $stats->recentTransactions($month),
+            'budgets' => array_slice($budgets, 0, 4),
             'donut' => $stats->donut($stats->totalsByCategory($month, TransactionType::Expense)),
         ]);
     }

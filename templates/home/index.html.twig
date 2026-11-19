@@ -56,7 +56,7 @@
             </div>
             {{ include('_line_chart.html.twig') }}
         </div>
-        <div class="card">
+        <div class="card card-donut">
             <h2>Répartition des dépenses</h2>
             {% if donut.items is empty %}
                 <p class="empty">Aucune dépense en {{ month|month_label }}.</p>
@@ -70,6 +70,47 @@
                         {% endfor %}
                     </ul>
                 </div>
+            {% endif %}
+        </div>
+    </section>
+
+    <section class="grid-2 only-desktop home-lists">
+        <div class="card">
+            <div class="card-head"><h2>Dernières transactions</h2><a href="{{ path('app_transaction_index') }}">Tout voir</a></div>
+            {% if recent is empty %}
+                <p class="empty">Aucune transaction en {{ month|month_label }}.</p>
+            {% else %}
+                <ul class="mini-list">
+                    {% for transaction in recent %}
+                        {% set income = transaction.type.value == 'income' %}
+                        <li>
+                            <a href="{{ path('app_transaction_show', {id: transaction.id}) }}">
+                                <span class="tile {{ income ? 'tile-green' }}">{{ icon(transaction.category.icon ?? (income ? 'arrow-up' : 'tag'), 20) }}</span>
+                                <span class="grow"><span class="name">{{ transaction.label }}</span><span class="sub">{{ transaction.category }} &bull; {{ transaction.date|short_date }}</span></span>
+                                <span class="{{ income ? 'amount-in' : 'amount-out' }}">{{ (income ? transaction.amount : '-' ~ transaction.amount)|money(transaction.account.currency, true) }}</span>
+                            </a>
+                        </li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+        </div>
+        <div class="card">
+            <div class="card-head"><h2>Budgets du mois</h2><a href="{{ path('app_budget_index', {month: month|date('Y-m')}) }}">Tout voir</a></div>
+            {% if budgets is empty %}
+                <p class="empty">Aucun budget pour {{ month|month_label }}. <a href="{{ path('app_budget_new') }}">Créer un budget</a></p>
+            {% else %}
+                <ul class="mini-list">
+                    {% for row in budgets %}
+                        <li>
+                            <a href="{{ path('app_budget_show', {id: row.budget.id}) }}" class="mini-budget">
+                                <span class="tile">{{ icon(row.budget.category.icon ?? 'tag', 20) }}</span>
+                                <span class="grow"><span class="name">{{ row.budget.category }}</span><span class="sub">{{ row.spent|money(row.budget.currency) }} / {{ row.budget.amount|money(row.budget.currency) }}</span></span>
+                                <span class="pct {{ row.level == 'over' ? 'over' }}">{{ row.percent }}&nbsp;%</span>
+                                <span class="bar {{ row.level }}" role="progressbar" aria-label="Budget {{ row.budget.category }}" aria-valuenow="{{ min(row.percent, 100) }}" aria-valuemin="0" aria-valuemax="100"><span style="width:{{ min(row.percent, 100) }}%"></span></span>
+                            </a>
+                        </li>
+                    {% endfor %}
+                </ul>
             {% endif %}
         </div>
     </section>
