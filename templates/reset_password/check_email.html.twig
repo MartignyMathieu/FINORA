@@ -1,0 +1,15 @@
+{% extends 'security/_auth_layout.html.twig' %}
+
+{% block title %}Vérifiez votre boîte mail{% endblock %}
+
+{% block auth_body %}
+    <div class="auth-notice">
+        <span class="tile">{{ icon('bell', 28) }}</span>
+        <h1>Vérifiez votre boîte mail</h1>
+        <p>Si un compte correspond à cette adresse, un e-mail contenant un lien de réinitialisation vient de lui être envoyé.</p>
+        <p class="muted">{{ resetToken.expirationMessageKey|trans(resetToken.expirationMessageData, 'ResetPasswordBundle') }}</p>
+        <p class="muted">Pensez à regarder dans vos courriers indésirables.</p>
+    </div>
+
+    <a class="btn btn-block btn-soft" href="{{ path('app_login') }}">Retour à la connexion</a>
+{% endblock %}

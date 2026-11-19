@@ -1,0 +1,16 @@
+{% extends 'security/_auth_layout.html.twig' %}
+
+{% block title %}Mot de passe oublié{% endblock %}
+
+{% block auth_body %}
+    <p class="auth-help">Saisissez l'adresse e-mail de votre compte : nous vous enverrons un lien pour choisir un nouveau mot de passe.</p>
+
+    <div class="auth-form">
+        {{ form_start(form) }}
+            {{ form_widget(form) }}
+            <button class="btn btn-primary btn-block" type="submit">Envoyer le lien</button>
+        {{ form_end(form) }}
+    </div>
+
+    <a class="btn btn-block btn-soft" href="{{ path('app_login') }}">Retour à la connexion</a>
+{% endblock %}

@@ -1,0 +1,14 @@
+{% extends 'security/_auth_layout.html.twig' %}
+
+{% block title %}Nouveau mot de passe{% endblock %}
+
+{% block auth_body %}
+    <p class="auth-help">Choisissez un nouveau mot de passe pour votre compte.</p>
+
+    <div class="auth-form">
+        {{ form_start(form) }}
+            {{ form_widget(form) }}
+            <button class="btn btn-primary btn-block" type="submit">Enregistrer le mot de passe</button>
+        {{ form_end(form) }}
+    </div>
+{% endblock %}

@@ -5,12 +5,12 @@
 {% block body %}
     <header class="page-head">
         <div class="only-desktop">
-            <h1>Bonjour {{ displayName }} ! 👋</h1>
+            <h1>Bonjour {{ displayName }} ! <span class="wave">{{ icon('wave', 30) }}</span></h1>
             <p class="muted">Voici un aperçu de vos finances.</p>
         </div>
         <div class="greeting only-mobile">
             <span class="avatar" aria-hidden="true">{{ displayName|first|upper }}</span>
-            <span class="grow">Bonjour <strong>{{ displayName }}</strong> ! 👋</span>
+            <span class="grow">Bonjour <strong>{{ displayName }}</strong> ! <span class="wave">{{ icon('wave', 22) }}</span></span>
         </div>
         {{ include('_month_nav.html.twig') }}
     </header>

@@ -9,6 +9,8 @@
 parameters:
     # Devise dans laquelle sont agrégés les totaux du tableau de bord (pas de conversion entre devises).
     app.default_currency: 'EUR'
+    # Adresse d'expédition des e-mails de l'application.
+    app.mailer_from: 'no-reply@finora.local'
 
 services:
     # default configuration for services in *this* file

@@ -1,0 +1,6 @@
+# Configuration du serveur local Symfony CLI (`symfony serve -d`).
+# Les e-mails sont envoyés en asynchrone (Messenger) : ce worker les traite en développement.
+workers:
+    messenger_consume:
+        cmd: ['symfony', 'console', 'messenger:consume', 'async', '--time-limit=3600', '-vv']
+        watch: ['config', 'src', 'templates', 'vendor/composer/installed.json']

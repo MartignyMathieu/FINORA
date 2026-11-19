@@ -291,6 +291,12 @@ form ul { list-style: none; padding: 0; margin: 6px 0 0; color: var(--red); font
 .auth-word { font-family: Montserrat, Inter, sans-serif; font-weight: 800; font-size: 2rem; letter-spacing: 0.01em; color: var(--night); }
 .auth-tagline { color: var(--ink); font-weight: 500; font-size: 1.05rem; }
 .auth-form > div, .auth-form form > div { margin-bottom: 14px; }
+.auth-help { color: var(--muted); text-align: center; }
+.auth-forgot { display: inline-block; margin-top: 8px; font-size: 13.5px; font-weight: 600; }
+.auth-notice { display: grid; justify-items: center; gap: 10px; text-align: center; }
+.auth-notice h1 { font-size: 1.35rem; }
+.auth-notice .tile { width: 56px; height: 56px; border-radius: 50%; }
+.wave { display: inline-flex; vertical-align: middle; color: var(--amber); }
 .btn-block { width: 100%; padding: 14px 20px; }
 .btn-soft { background: var(--light); color: var(--ink); }
 
