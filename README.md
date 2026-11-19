@@ -46,6 +46,29 @@ symfony serve
 
 L'application est accessible sur `http://localhost:8000`.
 
+## Tâches en arrière-plan
+
+Les e-mails (réinitialisation du mot de passe) et la génération nocturne des transactions récurrentes
+(`app:recurring:generate`, planifiée à 3 h) passent par Messenger. Il faut donc un worker qui tourne :
+
+```bash
+symfony console messenger:consume async scheduler_default -vv
+```
+
+En local, `symfony serve -d` le lance automatiquement (voir `.symfony.local.yaml`). La génération peut aussi
+être déclenchée à la main : `symfony console app:recurring:generate [--date=AAAA-MM-JJ]`.
+
+## Données de démonstration (développement uniquement)
+
+```bash
+symfony console doctrine:fixtures:load --group=demo --append
+```
+
+Crée un utilisateur de démonstration avec des comptes, transactions, récurrences, budgets et objectifs
+réalistes ; ses identifiants sont dans `src/DataFixtures/DemoFixtures.php`. Toujours utiliser `--append` :
+sans cette option, Doctrine vide toutes les tables, utilisateurs compris. Recharger les fixtures remplace
+uniquement les données de l'utilisateur de démonstration.
+
 ## Auteur
 
 Projet personnel réalisé dans le cadre de ma formation.

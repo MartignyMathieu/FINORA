@@ -18,8 +18,7 @@
                 <tr><th>Compte</th><td>{{ transaction.account }}</td></tr>
                 <tr><th>Catégorie</th><td>{{ transaction.category }}</td></tr>
                 <tr><th>Note</th><td>{{ transaction.note ?: '—' }}</td></tr>
-                <tr><th>Récurrence</th><td>{{ transaction.recurrence ? transaction.recurrence.label : 'Ponctuelle' }}</td></tr>
-                <tr><th>Fin de la récurrence</th><td>{{ transaction.recurrenceEndDate ? transaction.recurrenceEndDate|date('d/m/Y') : '—' }}</td></tr>
+                <tr><th>Origine</th><td>{% if transaction.recurringTransaction %}Générée par la récurrence « <a href="{{ path('app_recurring_edit', {id: transaction.recurringTransaction.id}) }}">{{ transaction.recurringTransaction.label }}</a> » ({{ transaction.recurringTransaction.frequency.label|lower }}){% else %}Saisie manuelle{% endif %}</td></tr>
             </tbody>
         </table>
 

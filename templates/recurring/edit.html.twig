@@ -1,0 +1,16 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Modifier la récurrence{% endblock %}
+
+{% block body %}
+    <header class="page-head">
+        <h1>Modifier la récurrence</h1>
+        <a class="btn btn-ghost" href="{{ path('app_recurring_index') }}">{{ icon('chevron-left', 16) }}Retour</a>
+    </header>
+
+    <div class="card form-card">
+        <p class="muted" style="margin-bottom:16px">Les modifications ne concernent que les échéances à venir : les transactions déjà générées restent inchangées.</p>
+        {{ include('recurring/_form.html.twig', {button_label: 'Mettre à jour'}) }}
+        <div class="actions">{{ include('recurring/_delete_form.html.twig') }}</div>
+    </div>
+{% endblock %}

@@ -2,16 +2,16 @@
 
 namespace App\Entity;
 
-use App\Enum\RecurrenceFrequency;
 use App\Enum\TransactionType;
 use App\Repository\TransactionRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
-use Symfony\Component\Validator\Context\ExecutionContextInterface;
 
 #[ORM\Entity(repositoryClass: TransactionRepository::class)]
 #[ORM\Index(columns: ['date'])]
+// Garantit en base qu'une échéance n'est jamais générée deux fois, même en cas d'exécutions simultanées.
+#[ORM\UniqueConstraint(name: 'uniq_transaction_recurring_date', columns: ['recurring_transaction_id', 'date'])]
 class Transaction implements OwnedInterface
 {
     #[ORM\Id]
@@ -52,13 +52,10 @@ class Transaction implements OwnedInterface
     #[Assert\NotNull]
     private ?Account $account = null;
 
-    /** Null = transaction ponctuelle. */
-    #[ORM\Column(enumType: RecurrenceFrequency::class, nullable: true)]
-    private ?RecurrenceFrequency $recurrence = null;
-
-    /** Dernière date de récurrence ; null = sans fin. */
-    #[ORM\Column(type: Types::DATE_IMMUTABLE, nullable: true)]
-    private ?\DateTimeImmutable $recurrenceEndDate = null;
+    /** Règle récurrente à l'origine de cette transaction (null = saisie manuelle). */
+    #[ORM\ManyToOne]
+    #[ORM\JoinColumn(nullable: true, onDelete: 'SET NULL')]
+    private ?RecurringTransaction $recurringTransaction = null;
 
     public function getId(): ?int
     {
@@ -83,44 +80,16 @@ class Transaction implements OwnedInterface
         return $this;
     }
 
-    public function getRecurrence(): ?RecurrenceFrequency
+    public function getRecurringTransaction(): ?RecurringTransaction
     {
-        return $this->recurrence;
+        return $this->recurringTransaction;
     }
 
-    public function setRecurrence(?RecurrenceFrequency $recurrence): static
+    public function setRecurringTransaction(?RecurringTransaction $recurringTransaction): static
     {
-        $this->recurrence = $recurrence;
+        $this->recurringTransaction = $recurringTransaction;
 
         return $this;
-    }
-
-    public function getRecurrenceEndDate(): ?\DateTimeImmutable
-    {
-        return $this->recurrenceEndDate;
-    }
-
-    public function setRecurrenceEndDate(?\DateTimeImmutable $recurrenceEndDate): static
-    {
-        $this->recurrenceEndDate = $recurrenceEndDate;
-
-        return $this;
-    }
-
-    #[Assert\Callback]
-    public function validateRecurrence(ExecutionContextInterface $context): void
-    {
-        if (null === $this->recurrence && null !== $this->recurrenceEndDate) {
-            $context->buildViolation('Une date de fin de récurrence nécessite une fréquence.')
-                ->atPath('recurrenceEndDate')
-                ->addViolation();
-        }
-
-        if ($this->recurrenceEndDate && $this->date && $this->recurrenceEndDate < $this->date) {
-            $context->buildViolation('La fin de la récurrence ne peut pas précéder la date de la transaction.')
-                ->atPath('recurrenceEndDate')
-                ->addViolation();
-        }
     }
 
     public function getLabel(): ?string

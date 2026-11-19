@@ -1,0 +1,14 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Nouvelle récurrence{% endblock %}
+
+{% block body %}
+    <header class="page-head">
+        <h1>Nouvelle récurrence</h1>
+        <a class="btn btn-ghost" href="{{ path('app_recurring_index') }}">{{ icon('chevron-left', 16) }}Retour</a>
+    </header>
+
+    <div class="card form-card">
+        {{ include('recurring/_form.html.twig') }}
+    </div>
+{% endblock %}

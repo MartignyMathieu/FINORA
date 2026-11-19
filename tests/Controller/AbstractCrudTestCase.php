@@ -6,8 +6,10 @@ use App\Entity\Account;
 use App\Entity\Budget;
 use App\Entity\Category;
 use App\Entity\Goal;
+use App\Entity\RecurringTransaction;
 use App\Entity\Transaction;
 use App\Entity\User;
+use App\Enum\RecurrenceFrequency;
 use App\Enum\TransactionType;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
@@ -32,7 +34,7 @@ abstract class AbstractCrudTestCase extends WebTestCase
         $this->manager = static::getContainer()->get('doctrine')->getManager();
 
         // Ordre imposé par les clés étrangères.
-        foreach ([Transaction::class, Budget::class, Goal::class, Category::class, Account::class, User::class] as $class) {
+        foreach ([Transaction::class, RecurringTransaction::class, Budget::class, Goal::class, Category::class, Account::class, User::class] as $class) {
             $this->manager->createQuery(sprintf('DELETE FROM %s e', $class))->execute();
         }
 
@@ -110,6 +112,36 @@ abstract class AbstractCrudTestCase extends WebTestCase
     protected function createTransaction(Account $account, Category $category, string $label = 'Supermarché'): Transaction
     {
         return $this->createDatedTransaction($account, $category, TransactionType::Expense, '42.50', '2026-11-15', $label);
+    }
+
+    /** Crée une règle récurrente (aucune transaction n'est générée : voir RecurringTransactionGenerator). */
+    protected function createRecurring(
+        Account $account,
+        Category $category,
+        string $start = '2026-06-05',
+        RecurrenceFrequency $frequency = RecurrenceFrequency::Monthly,
+        string $amount = '500.00',
+        TransactionType $type = TransactionType::Expense,
+        string $label = 'Loyer',
+        ?string $end = null,
+        bool $active = true,
+        ?string $lastGenerated = null,
+    ): RecurringTransaction {
+        $rule = (new RecurringTransaction())
+            ->setLabel($label)
+            ->setAmount($amount)
+            ->setType($type)
+            ->setAccount($account)
+            ->setCategory($category)
+            ->setFrequency($frequency)
+            ->setStartDate(new \DateTimeImmutable($start))
+            ->setEndDate($end ? new \DateTimeImmutable($end) : null)
+            ->setLastGeneratedDate($lastGenerated ? new \DateTimeImmutable($lastGenerated) : null)
+            ->setActive($active);
+        $this->manager->persist($rule);
+        $this->manager->flush();
+
+        return $rule;
     }
 
     protected function createBudget(Category $category, string $month = '2026-11-01', string $amount = '300.00'): Budget

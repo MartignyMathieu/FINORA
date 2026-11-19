@@ -4,6 +4,7 @@ namespace App\Service;
 
 use App\Entity\Account;
 use App\Entity\Budget;
+use App\Entity\RecurringTransaction;
 use App\Entity\Transaction;
 use App\Entity\User;
 use App\Enum\Icon;
@@ -340,6 +341,25 @@ final class FinanceStats
         }
 
         return $result;
+    }
+
+    /**
+     * Revenus et dépenses récurrents ramenés à un équivalent mensuel (règles actives non terminées,
+     * comptes dans la devise par défaut).
+     *
+     * @return array{income: float, expense: float}
+     */
+    public function recurringMonthly(): array
+    {
+        $totals = ['income' => 0.0, 'expense' => 0.0];
+        foreach ($this->em->getRepository(RecurringTransaction::class)->findByOwner($this->user()) as $rule) {
+            if (!$rule->isActive() || $rule->isEnded() || $rule->getAccount()?->getCurrency() !== $this->currency) {
+                continue;
+            }
+            $totals[$rule->getType()->value] += $rule->getMonthlyAmount();
+        }
+
+        return $totals;
     }
 
     private function user(): User

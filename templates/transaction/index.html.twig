@@ -37,7 +37,7 @@
                 <span class="tile {{ income ? 'tile-green' }}">{{ icon(transaction.category.icon ?? (income ? 'arrow-up' : 'tag'), 24) }}</span>
                 <span class="grow">
                     <span class="name">{{ transaction.label }}</span>
-                    <span class="sub">{{ transaction.category }} &bull; {{ transaction.date|short_date }}{% if transaction.recurrence %} &bull; {{ transaction.recurrence.label|lower }}{% endif %}</span>
+                    <span class="sub">{{ transaction.category }} &bull; {{ transaction.date|short_date }}{% if transaction.recurringTransaction %} &bull; <span class="recurring-tag">{{ icon('repeat', 14) }}{{ transaction.recurringTransaction.frequency.label|lower }}</span>{% endif %}</span>
                 </span>
                 <span class="{{ income ? 'amount-in' : 'amount-out' }}">{{ (income ? transaction.amount : '-' ~ transaction.amount)|money(transaction.account.currency, true) }}</span>
             </a>

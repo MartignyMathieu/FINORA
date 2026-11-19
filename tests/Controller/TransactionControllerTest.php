@@ -3,7 +3,6 @@
 namespace App\Tests\Controller;
 
 use App\Entity\Transaction;
-use App\Enum\RecurrenceFrequency;
 use App\Enum\TransactionType;
 
 final class TransactionControllerTest extends AbstractCrudTestCase
@@ -32,7 +31,6 @@ final class TransactionControllerTest extends AbstractCrudTestCase
             'transaction[date]' => '2026-11-01',
             'transaction[account]' => (string) $account->getId(),
             'transaction[category]' => (string) $category->getId(),
-            'transaction[recurrence]' => RecurrenceFrequency::Monthly->value,
         ]);
 
         self::assertResponseRedirects('/transaction');
@@ -41,30 +39,9 @@ final class TransactionControllerTest extends AbstractCrudTestCase
         self::assertNotNull($transaction);
         self::assertSame('750.00', $transaction->getAmount());
         self::assertSame(TransactionType::Expense, $transaction->getType());
-        self::assertSame(RecurrenceFrequency::Monthly, $transaction->getRecurrence());
         self::assertSame('2026-11-01', $transaction->getDate()->format('Y-m-d'));
         self::assertSame($account->getId(), $transaction->getAccount()->getId());
-    }
-
-    public function testNewWithoutRecurrenceIsOneOff(): void
-    {
-        $account = $this->createAccount();
-        $category = $this->createCategory();
-
-        $this->client->request('GET', '/transaction/new');
-        $this->client->submitForm('Enregistrer', [
-            'transaction[label]' => 'Café',
-            'transaction[amount]' => '2.4',
-            'transaction[type]' => TransactionType::Expense->value,
-            'transaction[date]' => '2026-11-02',
-            'transaction[account]' => (string) $account->getId(),
-            'transaction[category]' => (string) $category->getId(),
-        ]);
-
-        self::assertResponseRedirects('/transaction');
-        $transaction = $this->manager->getRepository(Transaction::class)->findOneBy(['label' => 'Café']);
-        self::assertNull($transaction->getRecurrence());
-        self::assertNull($transaction->getRecurrenceEndDate());
+        self::assertNull($transaction->getRecurringTransaction(), 'Une saisie manuelle n\'a pas de règle d\'origine.');
     }
 
     public function testNewWithNegativeAmountIsRejected(): void
@@ -80,27 +57,6 @@ final class TransactionControllerTest extends AbstractCrudTestCase
             'transaction[date]' => '2026-11-02',
             'transaction[account]' => (string) $account->getId(),
             'transaction[category]' => (string) $category->getId(),
-        ]);
-
-        self::assertResponseStatusCodeSame(422);
-        self::assertSame(0, $this->manager->getRepository(Transaction::class)->count([]));
-    }
-
-    public function testNewWithEndDateBeforeTransactionDateIsRejected(): void
-    {
-        $account = $this->createAccount();
-        $category = $this->createCategory();
-
-        $this->client->request('GET', '/transaction/new');
-        $this->client->submitForm('Enregistrer', [
-            'transaction[label]' => 'Abonnement',
-            'transaction[amount]' => '10',
-            'transaction[type]' => TransactionType::Expense->value,
-            'transaction[date]' => '2026-11-10',
-            'transaction[account]' => (string) $account->getId(),
-            'transaction[category]' => (string) $category->getId(),
-            'transaction[recurrence]' => RecurrenceFrequency::Monthly->value,
-            'transaction[recurrenceEndDate]' => '2026-10-01',
         ]);
 
         self::assertResponseStatusCodeSame(422);

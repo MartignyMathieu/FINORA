@@ -5,7 +5,6 @@ namespace App\Form;
 use App\Entity\Account;
 use App\Entity\Category;
 use App\Entity\Transaction;
-use App\Enum\RecurrenceFrequency;
 use App\Enum\TransactionType as Type;
 use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\QueryBuilder;
@@ -68,19 +67,6 @@ class TransactionType extends AbstractType
                 'class' => Category::class,
                 'query_builder' => $this->ownedByCurrentUser(),
                 'choice_label' => 'name',
-            ])
-            ->add('recurrence', EnumType::class, [
-                'label' => 'Récurrence',
-                'class' => RecurrenceFrequency::class,
-                'required' => false,
-                'placeholder' => 'Ponctuelle',
-                'choice_label' => static fn (RecurrenceFrequency $f): string => $f->label(),
-            ])
-            ->add('recurrenceEndDate', DateType::class, [
-                'label' => 'Fin de la récurrence',
-                'widget' => 'single_text',
-                'input' => 'datetime_immutable',
-                'required' => false,
             ])
         ;
     }

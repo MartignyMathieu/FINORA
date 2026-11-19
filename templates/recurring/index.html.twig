@@ -1,0 +1,50 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Récurrences{% endblock %}
+
+{% block body %}
+    <header class="page-head">
+        <div>
+            <h1>Récurrences</h1>
+            <p class="muted">Vos revenus et dépenses qui se répètent, ajoutés automatiquement.</p>
+        </div>
+        <a class="btn btn-primary" href="{{ path('app_recurring_new') }}">{{ icon('plus', 18) }}Nouvelle récurrence</a>
+    </header>
+
+    <section class="kpis kpis-2" aria-label="Totaux mensuels récurrents">
+        <div class="card kpi"><span class="tile tile-green">{{ icon('arrow-up', 24) }}</span><div><small>Revenus récurrents / mois</small><strong>{{ monthly.income|money(currency) }}</strong></div></div>
+        <div class="card kpi"><span class="tile tile-red">{{ icon('arrow-down', 24) }}</span><div><small>Dépenses récurrentes / mois</small><strong>{{ monthly.expense|money(currency) }}</strong></div></div>
+    </section>
+
+    <ul class="list recurring-list">
+        {% for recurring in rules %}
+            {% set income = recurring.type.value == 'income' %}
+            {% set next = recurring.nextDueDate %}
+            {% set status = not recurring.active ? 'paused' : (next is null ? 'ended' : 'active') %}
+            <li class="card recurring {{ status != 'active' ? 'is-inactive' }}">
+                <span class="tile {{ income ? 'tile-green' }}">{{ icon(recurring.category.icon ?? 'repeat', 24) }}</span>
+                <span class="grow">
+                    <span class="name">{{ recurring.label }}</span>
+                    <span class="sub">{{ recurring.frequency.label }} &bull; {{ recurring.category }} &bull; {{ recurring.account }}</span>
+                    <span class="sub">
+                        {% if status == 'paused' %}<span class="badge badge-paused">En pause</span>
+                        {% elseif status == 'ended' %}<span class="badge badge-ended">Terminée</span>
+                        {% else %}{{ icon('calendar', 15) }} Prochaine échéance : {{ next|short_date }} {{ next|date('Y') }}{% endif %}
+                    </span>
+                </span>
+                <span class="{{ income ? 'amount-in' : 'amount-out' }}">{{ (income ? recurring.amount : '-' ~ recurring.amount)|money(recurring.account.currency, true) }}</span>
+                <span class="row-actions">
+                    <a class="round-btn round-btn-sm" href="{{ path('app_recurring_edit', {id: recurring.id}) }}" title="Modifier" aria-label="Modifier {{ recurring.label }}">{{ icon('edit', 18) }}</a>
+                    {% if status != 'ended' %}
+                        <form method="post" action="{{ path('app_recurring_toggle', {id: recurring.id}) }}">
+                            <input type="hidden" name="_token" value="{{ csrf_token('toggle' ~ recurring.id) }}">
+                            <button class="round-btn round-btn-sm" title="{{ recurring.active ? 'Mettre en pause' : 'Reprendre' }}" aria-label="{{ recurring.active ? 'Mettre en pause' : 'Reprendre' }} {{ recurring.label }}">{{ icon(recurring.active ? 'pause' : 'play', 18) }}</button>
+                        </form>
+                    {% endif %}
+                </span>
+            </li>
+        {% else %}
+            <li class="card empty">Aucune récurrence pour le moment. <a href="{{ path('app_recurring_new') }}">Créer une récurrence</a></li>
+        {% endfor %}
+    </ul>
+{% endblock %}
