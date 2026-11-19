@@ -3,6 +3,7 @@
 namespace App\Twig;
 
 use App\Enum\AccountType;
+use App\Enum\Avatar;
 use App\Enum\Icon;
 use Symfony\UX\Icons\IconRendererInterface;
 use Twig\Attribute\AsTwigFilter;
@@ -26,7 +27,6 @@ final class UiExtension
         'calendar' => 'ph:calendar-blank-duotone',
         'gear' => 'ph:gear-six-duotone',
         'search' => 'ph:magnifying-glass-duotone',
-        'filter' => 'ph:funnel-duotone',
         'cart' => 'ph:shopping-cart-duotone',
         'car' => 'ph:car-duotone',
         'wifi' => 'ph:wifi-high-duotone',
@@ -43,10 +43,19 @@ final class UiExtension
         'laptop' => 'ph:laptop-duotone',
         'umbrella' => 'ph:umbrella-simple-duotone',
         'tag' => 'ph:tag-duotone',
+        'rocket' => 'ph:rocket-launch-duotone',
+        'smiley' => 'ph:smiley-duotone',
+        'star' => 'ph:star-duotone',
+        'leaf' => 'ph:leaf-duotone',
+        'cat' => 'ph:cat-duotone',
+        'dog' => 'ph:dog-duotone',
+        'crown' => 'ph:crown-simple-duotone',
+        'planet' => 'ph:planet-duotone',
+        'flame' => 'ph:fire-duotone',
+        'bulb' => 'ph:lightbulb-duotone',
         'eye' => 'ph:eye-duotone',
         'bell' => 'ph:bell-duotone',
         'logout' => 'ph:sign-out-duotone',
-        'wave' => 'ph:hand-waving-duotone',
         'check' => 'ph:check-circle-duotone',
         'download' => 'ph:download-simple-duotone',
         'sun' => 'ph:sun-duotone',
@@ -70,12 +79,12 @@ final class UiExtension
     }
 
     #[AsTwigFunction('icon', isSafe: ['html'])]
-    public function icon(string|Icon|AccountType|null $name, int $size = 20): string
+    public function icon(string|Icon|Avatar|AccountType|null $name, int $size = 20): string
     {
         if ($name instanceof AccountType) {
             $name = $name->icon();
         }
-        $key = $name instanceof Icon ? $name->value : ($name ?? 'tag');
+        $key = $name instanceof Icon || $name instanceof Avatar ? $name->value : ($name ?? 'tag');
 
         return $this->iconRenderer->renderIcon(self::ICONS[$key] ?? self::ICONS['tag'], [
             'class' => 'icon',

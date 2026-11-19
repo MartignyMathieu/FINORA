@@ -5,7 +5,7 @@
 {% block body %}
     <header class="page-head">
         <div class="profile-head">
-            <span class="avatar avatar-lg" aria-hidden="true">{{ app.user.displayName|first|upper }}</span>
+            {{ include('_avatar.html.twig', {user: app.user, class: 'avatar-lg', size: 34}) }}
             <div>
                 <h1>{{ app.user.displayName }}</h1>
                 <p class="muted">{{ app.user.userIdentifier }}</p>
@@ -33,7 +33,21 @@
         <section class="card form-card" id="informations">
             <h2>Informations</h2>
             {{ form_start(profileForm) }}
-                {{ form_widget(profileForm) }}
+                {{ form_row(profileForm.displayName) }}
+                <fieldset class="avatar-picker">
+                    <legend>{{ form_label(profileForm.avatar) }}</legend>
+                    {{ form_errors(profileForm.avatar) }}
+                    <div class="avatar-grid">
+                        {% for choice in profileForm.avatar %}
+                            <label class="avatar-choice">
+                                {{ form_widget(choice) }}
+                                <span class="avatar" aria-hidden="true">{% if choice.vars.value %}{{ icon(choice.vars.value, 26) }}{% else %}{{ app.user.displayName|first|upper }}{% endif %}</span>
+                                <small>{{ choice.vars.label }}</small>
+                            </label>
+                        {% endfor %}
+                    </div>
+                </fieldset>
+                {{ form_rest(profileForm) }}
                 <div class="actions"><button class="btn btn-primary" type="submit">Enregistrer</button></div>
             {{ form_end(profileForm) }}
         </section>

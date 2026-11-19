@@ -1,0 +1,2 @@
+{# Pastille de profil : le pictogramme choisi, à défaut l'initiale du prénom. Paramètres : user, class (optionnel), size (optionnel). #}
+<span class="avatar {{ class|default('') }}" aria-hidden="true">{% if user.avatar %}{{ icon(user.avatar, size|default(24)) }}{% else %}{{ user.displayName|first|upper }}{% endif %}</span>

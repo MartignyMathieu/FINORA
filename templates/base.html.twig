@@ -49,7 +49,7 @@
                     <a href="{{ path('app_settings') }}" class="{{ settings_active ? 'active' }}">{{ icon('gear', 20) }}Paramètres</a>
                     {% if app.user %}
                         <div class="sidebar-user">
-                            <a href="{{ path('app_profile') }}" class="avatar avatar-sm" aria-label="Mon profil" title="Mon profil">{{ app.user.displayName|first|upper }}</a>
+                            <a href="{{ path('app_profile') }}" class="avatar-link" aria-label="Mon profil" title="Mon profil">{{ include('_avatar.html.twig', {user: app.user, class: 'avatar-sm', size: 18}) }}</a>
                             <a href="{{ path('app_profile') }}" class="sidebar-user-name" title="Mon profil">{{ app.user.displayName }}</a>
                             <div class="sidebar-actions">
                                 <button type="button" class="theme-toggle" data-controller="theme" data-action="theme#toggle" title="Changer de thème" aria-label="Basculer entre le thème clair et le thème sombre">

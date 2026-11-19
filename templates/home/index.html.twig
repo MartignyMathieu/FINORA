@@ -9,7 +9,7 @@
             <p class="muted">Voici un aperçu de vos finances.</p>
         </div>
         <div class="greeting only-mobile">
-            <span class="avatar" aria-hidden="true">{{ displayName|first|upper }}</span>
+            {{ include('_avatar.html.twig', {user: app.user, size: 24}) }}
             <span class="grow">Bonjour <strong>{{ displayName }}</strong>,</span>
         </div>
         {{ include('_month_nav.html.twig') }}

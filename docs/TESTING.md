@@ -133,6 +133,7 @@ Pour chaque page, vérifier aussi : aucun message d'erreur, textes en français,
 - En-tête avec le prénom et l'e-mail ; « Mes données » : **5** comptes, plus de 100 transactions, **12** récurrences, **10** budgets,
   **7** objectifs, **14** catégories (chaque tuile mène à la page correspondante).
 - Changer le prénom ; un prénom vide est refusé et le menu garde l'ancien.
+- Choisir une **icône de profil** (10 pictogrammes ou « Initiale ») : elle remplace l'initiale dans la barre latérale, l'accueil mobile, « Plus » et l'en-tête du profil. L'utilisateur de test a la fusée.
 - Changer l'e-mail : le mot de passe actuel est exigé ; une adresse déjà utilisée ou invalide est refusée ; on reste connecté.
 - Changer le mot de passe : mot de passe actuel exigé, 10 caractères minimum, confirmation identique ; **les autres sessions
   (autre navigateur) sont déconnectées**, celle-ci reste ouverte.

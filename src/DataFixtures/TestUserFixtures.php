@@ -10,6 +10,7 @@ use App\Entity\RecurringTransaction;
 use App\Entity\Transaction;
 use App\Entity\User;
 use App\Enum\AccountType;
+use App\Enum\Avatar;
 use App\Enum\Icon;
 use App\Enum\RecurrenceFrequency;
 use App\Enum\TransactionType;
@@ -87,7 +88,7 @@ final class TestUserFixtures extends Fixture implements FixtureGroupInterface
         $this->createOtherUserData($this->createUser(self::OTHER_EMAIL, 'Autre testeur'));
         $this->em->flush();
 
-        $this->createFullUserData($this->createUser(self::EMAIL, self::DISPLAY_NAME));
+        $this->createFullUserData($this->createUser(self::EMAIL, self::DISPLAY_NAME)->setAvatar(Avatar::Rocket));
         $this->em->flush();
     }
 

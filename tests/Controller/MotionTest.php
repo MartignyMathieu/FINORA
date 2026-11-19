@@ -73,7 +73,7 @@ final class MotionTest extends AbstractCrudTestCase
         self::assertCount(1, $close);
         self::assertNotSame('', (string) $close->attr('aria-label'));
         // Le texte du message reste lisible tel quel.
-        self::assertStringContainsString('prénom a été mis à jour', $flash->text());
+        self::assertStringContainsString('profil a été mis à jour', $flash->text());
     }
 
     public function testPublicPagesAlsoHaveDismissibleFlashMessages(): void

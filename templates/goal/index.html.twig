@@ -44,7 +44,7 @@
                                 <span>Échéance</span>
                                 <strong>
                                     {% if months is null %}Aucune
-                                    {% elseif months < 0 %}{{ goal.targetDate|month_label }}{% if not goal.reached %} · dépassée{% endif %}
+                                    {% elseif months < 0 %}{{ goal.targetDate|month_label }}{% if goal.overdue(today) %} · dépassée{% endif %}
                                     {% elseif months == 0 %}Ce mois-ci
                                     {% elseif months == 1 %}Dans 1 mois
                                     {% else %}Dans {{ months }} mois{% endif %}

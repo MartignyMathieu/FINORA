@@ -10,6 +10,7 @@ use App\Entity\RecurringTransaction;
 use App\Entity\ResetPasswordRequest;
 use App\Entity\Transaction;
 use App\Entity\User;
+use App\Enum\Avatar;
 use App\Enum\TransactionType;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
@@ -72,10 +73,43 @@ final class ProfileControllerTest extends AbstractCrudTestCase
 
         self::assertResponseRedirects('/profile');
         $this->client->followRedirect();
-        self::assertSelectorTextContains('.flash-success', 'prénom a été mis à jour');
+        self::assertSelectorTextContains('.flash-success', 'profil a été mis à jour');
         self::assertSelectorTextContains('h1', 'Alicia');
         self::assertSelectorTextContains('.sidebar-user-name', 'Alicia');
         self::assertSame('Alicia', $this->reload()->getDisplayName());
+    }
+
+    public function testChooseAProfileIconThenGoBackToTheInitial(): void
+    {
+        $crawler = $this->client->request('GET', '/profile');
+        // 10 pictogrammes + « Initiale » ; sans choix, la pastille affiche l'initiale.
+        self::assertCount(11, $crawler->filter('.avatar-choice input[type="radio"]'));
+        self::assertSelectorTextContains('.profile-head .avatar', 'A');
+
+        $this->client->submitForm('Enregistrer', ['profile[displayName]' => 'Alice', 'profile[avatar]' => 'rocket']);
+        self::assertResponseRedirects('/profile');
+        $crawler = $this->client->followRedirect();
+        self::assertSame(Avatar::Rocket, $this->reload()->getAvatar());
+        self::assertCount(1, $crawler->filter('.profile-head .avatar svg'));
+        self::assertCount(1, $crawler->filter('.sidebar-user .avatar svg'));
+        self::assertSame('rocket', $crawler->filter('.avatar-choice input:checked')->attr('value'));
+
+        $this->client->submitForm('Enregistrer', ['profile[displayName]' => 'Alice', 'profile[avatar]' => '']);
+        $crawler = $this->client->followRedirect();
+        self::assertNull($this->reload()->getAvatar());
+        self::assertCount(0, $crawler->filter('.profile-head .avatar svg'));
+        self::assertSelectorTextContains('.profile-head .avatar', 'A');
+    }
+
+    public function testAnUnknownProfileIconIsRejected(): void
+    {
+        $crawler = $this->client->request('GET', '/profile');
+        $form = $crawler->selectButton('Enregistrer')->form();
+        $form['profile[avatar]']->disableValidation()->setValue('skull');
+        $this->client->submit($form);
+
+        self::assertResponseStatusCodeSame(422);
+        self::assertNull($this->reload()->getAvatar());
     }
 
     public function testAnEmptyDisplayNameIsRejectedAndTheMenuKeepsTheSavedName(): void

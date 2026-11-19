@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use App\Enum\Avatar;
 use App\Repository\UserRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
@@ -29,6 +30,10 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[Assert\NotBlank]
     #[Assert\Length(max: 100)]
     private ?string $displayName = null;
+
+    /** Pictogramme choisi comme photo de profil ; null : l'initiale du prénom. */
+    #[ORM\Column(length: 20, nullable: true, enumType: Avatar::class)]
+    private ?Avatar $avatar = null;
 
     /** @var list<string> */
     #[ORM\Column]
@@ -63,6 +68,18 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setDisplayName(?string $displayName): static
     {
         $this->displayName = $displayName;
+
+        return $this;
+    }
+
+    public function getAvatar(): ?Avatar
+    {
+        return $this->avatar;
+    }
+
+    public function setAvatar(?Avatar $avatar): static
+    {
+        $this->avatar = $avatar;
 
         return $this;
     }

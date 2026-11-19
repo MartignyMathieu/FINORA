@@ -22,7 +22,7 @@ et on automatise les opérations qui reviennent chaque mois. Chaque utilisateur 
   un clic sur un jour affiche son détail et permet d'y ajouter une transaction
 - **Statistiques** : répartition par catégorie en pourcentage et en montant, pour les dépenses ou les revenus
 - **Comptes utilisateurs** : inscription, connexion, réinitialisation du mot de passe par e-mail, données cloisonnées par utilisateur
-- **Profil** : modification du prénom, de l'adresse e-mail et du mot de passe (mot de passe actuel exigé), récapitulatif de ses
+- **Profil** : modification du prénom et de l'icône de profil (10 pictogrammes ou l'initiale), de l'adresse e-mail et du mot de passe (mot de passe actuel exigé), récapitulatif de ses
   données et suppression définitive du compte
 - **Interface** adaptée au bureau (barre latérale) et au mobile (barre d'onglets), entièrement en français
 - **Thème clair ou sombre** : automatique selon l'appareil par défaut, au choix dans Paramètres → Apparence, ou en un clic

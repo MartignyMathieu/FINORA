@@ -214,7 +214,6 @@ h2 { font-size: 1.05rem; font-weight: 700; }
 }
 .tile-green { background: var(--green-soft); color: var(--green); }
 .tile-red { background: var(--red-soft); color: var(--red); }
-.tile-orange { background: var(--warn-soft); color: var(--warn-ink); }
 
 /* ---------- Tableau de bord ---------- */
 .balance-card {
@@ -348,6 +347,19 @@ li:last-child > .tx { border-bottom: 0; }
 
 /* ---------- Profil ---------- */
 .profile-head { display: flex; align-items: center; gap: 16px; }
+.avatar-link { display: inline-flex; flex: none; border-radius: 50%; }
+.avatar-link:hover { text-decoration: none; }
+.avatar .icon { display: block; }
+.avatar-picker { border: 0; margin: 0 0 16px; padding: 0; min-width: 0; }
+.avatar-picker legend { padding: 0; font-weight: 700; margin-bottom: 8px; }
+.avatar-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(78px, 1fr)); gap: 10px; }
+.avatar-choice { position: relative; display: grid; justify-items: center; gap: 6px; padding: 10px 4px 8px; border: 2px solid transparent; border-radius: 14px; background: var(--light); cursor: pointer; text-align: center; }
+.avatar-choice input { position: absolute; opacity: 0; inset: 0; margin: 0; cursor: pointer; }
+.avatar-choice small { font-weight: 600; color: var(--muted); font-size: 12px; }
+.avatar-choice:hover { border-color: var(--line); }
+.avatar-choice:has(input:checked) { border-color: var(--primary); background: var(--white); box-shadow: var(--shadow); }
+.avatar-choice:has(input:checked) small { color: var(--ink); }
+.avatar-choice:has(input:focus-visible) { outline: 3px solid var(--primary); outline-offset: 2px; }
 .avatar-lg { width: 64px; height: 64px; font-size: 26px; }
 .profile-counts { margin-bottom: 18px; }
 .profile-counts h2 { margin-bottom: 12px; }
@@ -438,7 +450,7 @@ form select, form textarea {
 }
 form input:focus, form select:focus, form textarea:focus { outline: 2px solid var(--pastel); border-color: var(--primary); }
 form ul { list-style: none; padding: 0; margin: 6px 0 0; color: var(--red); font-size: 13px; font-weight: 600; }
-.form-text, .help-text { display: block; margin-top: 4px; color: var(--muted); font-size: 12.5px; }
+.help-text { display: block; margin-top: 4px; color: var(--muted); font-size: 12.5px; }
 
 .table { width: 100%; border-collapse: collapse; }
 .table th, .table td { text-align: left; padding: 12px 10px; border-bottom: 1px solid var(--line); vertical-align: middle; }
@@ -463,7 +475,6 @@ form ul { list-style: none; padding: 0; margin: 6px 0 0; color: var(--red); font
 .auth-notice { display: grid; justify-items: center; gap: 10px; text-align: center; }
 .auth-notice h1 { font-size: 1.35rem; }
 .auth-notice .tile { width: 56px; height: 56px; border-radius: 50%; }
-.wave { display: inline-flex; vertical-align: middle; color: var(--amber); }
 .btn-block { width: 100%; padding: 14px 20px; }
 .btn-soft { background: var(--light); color: var(--ink); }
 
@@ -530,3 +541,7 @@ form ul { list-style: none; padding: 0; margin: 6px 0 0; color: var(--red); font
     .donut-legend li { gap: 8px; }
     .donut-legend .amt { min-width: 0; }
 }
+
+/* La pastille de profil de la barre latérale ne reprend pas le style des liens du menu. */
+.nav .avatar-link, .nav .avatar-link:hover { padding: 0; background: none; box-shadow: none; }
+.nav .avatar-link .avatar { padding: 0; border-radius: 50%; color: #fff; }
