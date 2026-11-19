@@ -19,7 +19,7 @@
             <article class="goal-flip" data-controller="flip">
                 <div class="goal-inner">
                     <div class="card goal goal-face goal-front" data-flip-target="front">
-                        <a class="goal-visual" href="{{ path('app_goal_show', {id: goal.id}) }}" tabindex="-1" aria-hidden="true">{{ icon(goal.icon ?? 'target', 64) }}</a>
+                        <a class="goal-visual" href="{{ path('app_goal_show', {id: goal.id}) }}" tabindex="-1" aria-hidden="true">{{ include('_goal_art.html.twig', {name: goal.icon ? goal.icon.value : 'target'}) }}</a>
                         <button type="button" class="goal-flip-btn" data-flip-target="button" data-action="flip#toggle" aria-expanded="false"
                                 title="Retourner la carte" aria-label="Voir le détail de l'objectif {{ goal.name }}">{{ icon('repeat', 18) }}</button>
                         <h3><a href="{{ path('app_goal_show', {id: goal.id}) }}">{{ goal.name }}</a></h3>

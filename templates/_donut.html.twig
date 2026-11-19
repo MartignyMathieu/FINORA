@@ -1,17 +1,30 @@
-{# Donut SVG. Paramètres : donut (voir FinanceStats::donut), currency, label.
-   Interactif (donut_controller, sur le conteneur parent) : survol d'une part ou d'une ligne de légende. #}
+{# Donut 3D. Paramètres : donut (voir FinanceStats::donut), currency, label.
+   Le dessus (interactif, donut_controller sur le conteneur parent) est incliné en perspective ; l'épaisseur est faite de
+   fines couches décoratives empilées en profondeur. #}
+{% set depth = 9 %}
 <div class="donut">
-    <svg viewBox="0 0 200 200" role="img" aria-label="{{ label }} : {{ donut.total|money(currency) }}">
-        <circle cx="100" cy="100" r="{{ donut.radius }}" fill="none" class="donut-track" stroke-width="28"/>
-        {% for segment in donut.segments %}
-            {% set item = donut.items[loop.index0] %}
-            <circle class="donut-seg" cx="100" cy="100" r="{{ donut.radius }}" fill="none" stroke="{{ segment.color }}" stroke-width="28"
-                    stroke-dasharray="{{ segment.dash|round(2) }} {{ segment.gap|round(2) }}"
-                    stroke-dashoffset="{{ segment.offset|round(2) }}" transform="rotate(-90 100 100)"
-                    style="--i: {{ loop.index0 }}" data-index="{{ loop.index0 }}" data-label="{{ item.name }}" data-amount="{{ item.total|money(currency) }}"
-                    data-donut-target="segment" data-action="mouseenter->donut#enter mouseleave->donut#leave"/>
+    <div class="donut-stage">
+        {% for layer in range(depth, 1) %}
+            <svg class="donut-layer" viewBox="0 0 200 200" aria-hidden="true" focusable="false" style="--z: -{{ layer * 1.6 }}px">
+                {% for segment in donut.segments %}
+                    <circle cx="100" cy="100" r="{{ donut.radius }}" fill="none" stroke="{{ segment.color }}" stroke-width="28"
+                            stroke-dasharray="{{ segment.dash|round(2) }} {{ segment.gap|round(2) }}"
+                            stroke-dashoffset="{{ segment.offset|round(2) }}" transform="rotate(-90 100 100)"/>
+                {% endfor %}
+            </svg>
         {% endfor %}
-    </svg>
+        <svg class="donut-top" viewBox="0 0 200 200" role="img" aria-label="{{ label }} : {{ donut.total|money(currency) }}">
+            <circle cx="100" cy="100" r="{{ donut.radius }}" fill="none" class="donut-track" stroke-width="28"/>
+            {% for segment in donut.segments %}
+                {% set item = donut.items[loop.index0] %}
+                <circle class="donut-seg" cx="100" cy="100" r="{{ donut.radius }}" fill="none" stroke="{{ segment.color }}" stroke-width="28"
+                        stroke-dasharray="{{ segment.dash|round(2) }} {{ segment.gap|round(2) }}"
+                        stroke-dashoffset="{{ segment.offset|round(2) }}" transform="rotate(-90 100 100)"
+                        style="--i: {{ loop.index0 }}" data-index="{{ loop.index0 }}" data-label="{{ item.name }}" data-amount="{{ item.total|money(currency) }}"
+                        data-donut-target="segment" data-action="mouseenter->donut#enter mouseleave->donut#leave"/>
+            {% endfor %}
+        </svg>
+    </div>
     <div class="donut-center">
         <strong data-donut-target="value">{{ donut.total|money(currency) }}</strong>
         <small data-donut-target="label">{{ label }}</small>

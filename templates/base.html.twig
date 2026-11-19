@@ -51,10 +51,12 @@
                         <div class="sidebar-user">
                             <a href="{{ path('app_profile') }}" class="avatar avatar-sm" aria-label="Mon profil" title="Mon profil">{{ app.user.displayName|first|upper }}</a>
                             <a href="{{ path('app_profile') }}" class="sidebar-user-name" title="Mon profil">{{ app.user.displayName }}</a>
-                            <button type="button" class="theme-toggle" data-controller="theme" data-action="theme#toggle" title="Changer de thème" aria-label="Basculer entre le thème clair et le thème sombre">
-                                <span class="theme-to-dark">{{ icon('moon', 18) }}</span><span class="theme-to-light">{{ icon('sun', 18) }}</span>
-                            </button>
-                            <a href="{{ path('app_logout') }}" class="logout" title="Se déconnecter" aria-label="Se déconnecter">{{ icon('logout', 18) }}</a>
+                            <div class="sidebar-actions">
+                                <button type="button" class="theme-toggle" data-controller="theme" data-action="theme#toggle" title="Changer de thème" aria-label="Basculer entre le thème clair et le thème sombre">
+                                    <span class="theme-to-dark">{{ icon('moon', 18) }}</span><span class="theme-to-light">{{ icon('sun', 18) }}</span>
+                                </button>
+                                <a href="{{ path('app_logout') }}" class="logout" title="Se déconnecter" aria-label="Se déconnecter">{{ icon('logout', 18) }}</a>
+                            </div>
                         </div>
                     {% endif %}
                 </div>

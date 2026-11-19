@@ -265,10 +265,17 @@ h2 { font-size: 1.05rem; font-weight: 700; }
 .chart text { font-size: 11px; fill: var(--chart-text); font-family: inherit; }
 
 .donut-wrap { display: flex; align-items: center; gap: 22px; }
-.donut { position: relative; flex: none; width: 190px; }
-.donut svg { width: 100%; display: block; }
-.donut-center { position: absolute; inset: 0; display: grid; place-content: center; text-align: center; }
-.donut-center strong { font-size: 1rem; letter-spacing: -0.02em; white-space: nowrap; }
+/* Donut 3D : le dessus est incliné en perspective, l'épaisseur vient de couches empilées en profondeur. */
+.donut { position: relative; flex: none; width: 190px; aspect-ratio: 190 / 160; perspective: 900px; filter: drop-shadow(0 12px 10px rgba(8, 20, 50, 0.28)); }
+.donut-stage {
+    position: absolute; left: 0; top: 50%; width: 100%; aspect-ratio: 1; margin-top: -50%;
+    transform-style: preserve-3d; transform: translateY(-8px) rotateX(48deg);
+}
+.donut svg { position: absolute; inset: 0; width: 100%; display: block; }
+.donut-layer { transform: translateZ(var(--z)); filter: brightness(0.7) saturate(1.1); }
+.donut-top { overflow: visible; }
+.donut-center { position: absolute; inset: 0; display: grid; place-content: center; text-align: center; pointer-events: none; }
+.donut-center strong { font-size: 0.95rem; letter-spacing: -0.02em; white-space: nowrap; }
 .donut-center small { color: var(--muted); font-weight: 600; max-width: 96px; margin: 0 auto; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .donut-legend { list-style: none; margin: 0; padding: 0; flex: 1; display: grid; gap: 12px; }
 .donut-legend li { display: grid; grid-template-columns: 1fr auto auto; gap: 14px; align-items: center; font-weight: 600; }
@@ -408,11 +415,10 @@ a.cal-day:hover { text-decoration: none; border-color: var(--pastel); background
 .goal { padding: 14px; display: grid; gap: 8px; color: var(--ink); }
 .goal:hover { text-decoration: none; }
 .goal-visual {
-    display: grid; place-items: center; height: 150px; border-radius: 14px; color: #fff;
+    display: block; height: 150px; border-radius: 14px; overflow: hidden; color: #fff;
     background: linear-gradient(135deg, #1558c9, #5cd9ff);
 }
-.goal-flip:nth-child(3n+2) .goal-visual { background: linear-gradient(135deg, #0ea5a4, #7ee0c5); }
-.goal-flip:nth-child(3n+3) .goal-visual { background: linear-gradient(135deg, #5b4bdb, #a78bfa); }
+.goal-art { display: block; width: 100%; height: 100%; }
 .goal h3 { font-size: 1.05rem; font-weight: 800; margin-top: 6px; }
 .goal h3 a { color: var(--ink); }
 .goal h3 a:hover { text-decoration: none; color: var(--primary-ink); }
@@ -461,8 +467,10 @@ form ul { list-style: none; padding: 0; margin: 6px 0 0; color: var(--red); font
 .btn-block { width: 100%; padding: 14px 20px; }
 .btn-soft { background: var(--light); color: var(--ink); }
 
-.sidebar-user { display: flex; align-items: center; gap: 10px; margin-top: 14px; padding: 12px 10px 0; border-top: 1px solid rgba(255, 255, 255, 0.1); }
-.sidebar-user-name { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-weight: 600; font-size: 14px; color: #fff; }
+/* Le prénom s'affiche en entier (il passe à la ligne si besoin) ; les boutons sont sur leur propre ligne. */
+.sidebar-user { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 10px; margin-top: 14px; padding: 12px 10px 0; border-top: 1px solid rgba(255, 255, 255, 0.1); }
+.sidebar-user-name { flex: 1 1 0; min-width: 0; overflow-wrap: anywhere; font-weight: 600; font-size: 14px; line-height: 1.25; color: #fff; }
+.sidebar-actions { flex: 1 1 100%; display: flex; gap: 6px; justify-content: flex-start; }
 .sidebar-user .logout, .sidebar-user .theme-toggle {
     display: grid; place-items: center; width: 34px; height: 34px; border-radius: 10px; padding: 0;
     border: 0; background: transparent; cursor: pointer; color: #cfd9ea;
