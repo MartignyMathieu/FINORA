@@ -44,8 +44,8 @@
                     <a href="{{ path('app_settings') }}" class="{{ settings_active ? 'active' }}">{{ icon('gear', 20) }}Paramètres</a>
                     {% if app.user %}
                         <div class="sidebar-user">
-                            <span class="avatar avatar-sm" aria-hidden="true">{{ app.user.displayName|first|upper }}</span>
-                            <span class="sidebar-user-name">{{ app.user.displayName }}</span>
+                            <a href="{{ path('app_profile') }}" class="avatar avatar-sm" aria-label="Mon profil" title="Mon profil">{{ app.user.displayName|first|upper }}</a>
+                            <a href="{{ path('app_profile') }}" class="sidebar-user-name" title="Mon profil">{{ app.user.displayName }}</a>
                             <a href="{{ path('app_logout') }}" class="logout" title="Se déconnecter" aria-label="Se déconnecter">{{ icon('logout', 18) }}</a>
                         </div>
                     {% endif %}

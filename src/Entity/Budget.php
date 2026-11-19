@@ -55,7 +55,7 @@ class Budget implements OwnedInterface
         return $this->amount;
     }
 
-    public function setAmount(string $amount): static
+    public function setAmount(?string $amount): static
     {
         $this->amount = $amount;
 
@@ -79,9 +79,9 @@ class Budget implements OwnedInterface
         return $this->month;
     }
 
-    public function setMonth(\DateTimeImmutable $month): static
+    public function setMonth(?\DateTimeImmutable $month): static
     {
-        $this->month = $month->modify('first day of this month')->setTime(0, 0);
+        $this->month = $month?->modify('first day of this month')->setTime(0, 0);
 
         return $this;
     }

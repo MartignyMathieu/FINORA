@@ -72,7 +72,7 @@ class Account implements OwnedInterface
         return $this->name;
     }
 
-    public function setName(string $name): static
+    public function setName(?string $name): static
     {
         $this->name = $name;
 
@@ -108,9 +108,10 @@ class Account implements OwnedInterface
         return $this->initialBalance;
     }
 
-    public function setInitialBalance(string $initialBalance): static
+    public function setInitialBalance(?string $initialBalance): static
     {
-        $this->initialBalance = $initialBalance;
+        // Champ vide : solde initial à zéro.
+        $this->initialBalance = $initialBalance ?? '0.00';
 
         return $this;
     }

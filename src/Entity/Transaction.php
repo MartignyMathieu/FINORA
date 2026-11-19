@@ -97,7 +97,7 @@ class Transaction implements OwnedInterface
         return $this->label;
     }
 
-    public function setLabel(string $label): static
+    public function setLabel(?string $label): static
     {
         $this->label = $label;
 
@@ -109,7 +109,7 @@ class Transaction implements OwnedInterface
         return $this->amount;
     }
 
-    public function setAmount(string $amount): static
+    public function setAmount(?string $amount): static
     {
         $this->amount = $amount;
 
@@ -121,7 +121,7 @@ class Transaction implements OwnedInterface
         return $this->type;
     }
 
-    public function setType(TransactionType $type): static
+    public function setType(?TransactionType $type): static
     {
         $this->type = $type;
 
@@ -133,7 +133,7 @@ class Transaction implements OwnedInterface
         return $this->date;
     }
 
-    public function setDate(\DateTimeImmutable $date): static
+    public function setDate(?\DateTimeImmutable $date): static
     {
         $this->date = $date;
 

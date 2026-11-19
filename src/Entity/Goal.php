@@ -69,7 +69,7 @@ class Goal implements OwnedInterface
         return $this->name;
     }
 
-    public function setName(string $name): static
+    public function setName(?string $name): static
     {
         $this->name = $name;
 
@@ -81,7 +81,7 @@ class Goal implements OwnedInterface
         return $this->targetAmount;
     }
 
-    public function setTargetAmount(string $targetAmount): static
+    public function setTargetAmount(?string $targetAmount): static
     {
         $this->targetAmount = $targetAmount;
 
@@ -93,9 +93,10 @@ class Goal implements OwnedInterface
         return $this->savedAmount;
     }
 
-    public function setSavedAmount(string $savedAmount): static
+    public function setSavedAmount(?string $savedAmount): static
     {
-        $this->savedAmount = $savedAmount;
+        // Champ vide : rien d'épargné pour l'instant.
+        $this->savedAmount = $savedAmount ?? '0.00';
 
         return $this;
     }

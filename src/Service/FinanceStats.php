@@ -4,6 +4,8 @@ namespace App\Service;
 
 use App\Entity\Account;
 use App\Entity\Budget;
+use App\Entity\Category;
+use App\Entity\Goal;
 use App\Entity\RecurringTransaction;
 use App\Entity\Transaction;
 use App\Entity\User;
@@ -341,6 +343,25 @@ final class FinanceStats
         }
 
         return $result;
+    }
+
+    /**
+     * Nombre d'éléments de chaque type appartenant à l'utilisateur (récapitulatif du profil).
+     *
+     * @return array{accounts: int, categories: int, transactions: int, recurring: int, budgets: int, goals: int}
+     */
+    public function counts(): array
+    {
+        $count = fn (string $dql): int => (int) $this->em->createQuery($dql)->setParameter('user', $this->user())->getSingleScalarResult();
+
+        return [
+            'accounts' => $count('SELECT COUNT(a.id) FROM '.Account::class.' a WHERE a.owner = :user'),
+            'categories' => $count('SELECT COUNT(c.id) FROM '.Category::class.' c WHERE c.owner = :user'),
+            'transactions' => $count('SELECT COUNT(t.id) FROM '.Transaction::class.' t JOIN t.account a WHERE a.owner = :user'),
+            'recurring' => $count('SELECT COUNT(r.id) FROM '.RecurringTransaction::class.' r JOIN r.account a WHERE a.owner = :user'),
+            'budgets' => $count('SELECT COUNT(b.id) FROM '.Budget::class.' b JOIN b.category c WHERE c.owner = :user'),
+            'goals' => $count('SELECT COUNT(g.id) FROM '.Goal::class.' g WHERE g.owner = :user'),
+        ];
     }
 
     /**

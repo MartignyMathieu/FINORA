@@ -88,7 +88,7 @@ class RecurringTransaction implements OwnedInterface
         return $this->label;
     }
 
-    public function setLabel(string $label): static
+    public function setLabel(?string $label): static
     {
         $this->label = $label;
 
@@ -100,7 +100,7 @@ class RecurringTransaction implements OwnedInterface
         return $this->amount;
     }
 
-    public function setAmount(string $amount): static
+    public function setAmount(?string $amount): static
     {
         $this->amount = $amount;
 
@@ -112,7 +112,7 @@ class RecurringTransaction implements OwnedInterface
         return $this->type;
     }
 
-    public function setType(TransactionType $type): static
+    public function setType(?TransactionType $type): static
     {
         $this->type = $type;
 
@@ -160,7 +160,7 @@ class RecurringTransaction implements OwnedInterface
         return $this->frequency;
     }
 
-    public function setFrequency(RecurrenceFrequency $frequency): static
+    public function setFrequency(?RecurrenceFrequency $frequency): static
     {
         $this->frequency = $frequency;
 
@@ -172,7 +172,7 @@ class RecurringTransaction implements OwnedInterface
         return $this->startDate;
     }
 
-    public function setStartDate(\DateTimeImmutable $startDate): static
+    public function setStartDate(?\DateTimeImmutable $startDate): static
     {
         $this->startDate = $startDate;
 

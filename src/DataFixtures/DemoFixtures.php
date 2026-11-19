@@ -14,6 +14,7 @@ use App\Enum\Icon;
 use App\Enum\RecurrenceFrequency;
 use App\Enum\TransactionType;
 use App\Service\RecurringTransactionGenerator;
+use App\Service\UserDataPurger;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\Bundle\FixturesBundle\FixtureGroupInterface;
@@ -73,7 +74,7 @@ final class DemoFixtures extends Fixture implements FixtureGroupInterface
         $this->today = new \DateTimeImmutable('today');
         $this->thisMonth = $this->today->modify('first day of this month');
 
-        $this->purger->purge($this->manager, self::EMAIL);
+        $this->purger->purgeByEmail(self::EMAIL);
 
         $user = (new User())->setEmail(self::EMAIL)->setDisplayName(self::DISPLAY_NAME);
         $user->setPassword($this->passwordHasher->hashPassword($user, self::PASSWORD));

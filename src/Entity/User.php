@@ -48,9 +48,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this->email;
     }
 
-    public function setEmail(string $email): static
+    public function setEmail(?string $email): static
     {
-        $this->email = mb_strtolower(trim($email));
+        $this->email = null === $email ? null : mb_strtolower(trim($email));
 
         return $this;
     }
@@ -60,7 +60,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this->displayName;
     }
 
-    public function setDisplayName(string $displayName): static
+    public function setDisplayName(?string $displayName): static
     {
         $this->displayName = $displayName;
 

@@ -20,6 +20,8 @@ et on automatise les opérations qui reviennent chaque mois. Chaque utilisateur 
   un clic sur un jour affiche son détail et permet d'y ajouter une transaction
 - **Statistiques** : répartition par catégorie en pourcentage et en montant, pour les dépenses ou les revenus
 - **Comptes utilisateurs** : inscription, connexion, réinitialisation du mot de passe par e-mail, données cloisonnées par utilisateur
+- **Profil** : modification du prénom, de l'adresse e-mail et du mot de passe (mot de passe actuel exigé), récapitulatif de ses
+  données et suppression définitive du compte
 - **Interface** adaptée au bureau (barre latérale) et au mobile (barre d'onglets), entièrement en français
 
 ## Technologies
@@ -84,19 +86,23 @@ En local, `symfony serve -d` le lance automatiquement (voir `.symfony.local.yaml
 être déclenchée à la main : `symfony console app:recurring:generate [--date=AAAA-MM-JJ]`. Elle est idempotente
 et rattrape les échéances manquées.
 
-## Données de démonstration et utilisateur de test (développement uniquement)
+## Données de démonstration et de test (développement uniquement)
 
 ```bash
-symfony console doctrine:fixtures:load --group=demo --append   # jeu de données complet pour présenter l'outil
-symfony console doctrine:fixtures:load --group=test --append   # utilisateur de test presque vierge
+symfony console doctrine:fixtures:load --group=demo --append   # jeu de présentation calé sur les maquettes
+symfony console doctrine:fixtures:load --group=test --append   # jeu pour les testeurs
 ```
 
 - **demo** : un utilisateur avec comptes, transactions sur 6 mois, récurrences, budgets et objectifs réalistes
-- **test** : un utilisateur avec un compte et quelques catégories, sans transaction, pour tester les créations de zéro
+- **test** : trois utilisateurs pour les testeurs. L'utilisateur complet a des données dans chaque page, cas limites
+  compris (budget dépassé, solde négatif, devise étrangère, récurrences de chaque fréquence et de chaque état,
+  textes longs ou contenant du HTML). Un deuxième utilisateur sert à vérifier le cloisonnement des données et un
+  troisième, sans aucune donnée, à vérifier les pages vides.
 
-Les identifiants sont dans `src/DataFixtures/DemoFixtures.php` et `src/DataFixtures/TestUserFixtures.php`.
+Le plan de vérification page par page est dans [docs/TESTING.md](docs/TESTING.md). Les identifiants sont dans
+`src/DataFixtures/DemoFixtures.php` et `src/DataFixtures/TestUserFixtures.php`.
 **Toujours utiliser `--append`** : sans cette option, Doctrine vide toutes les tables, utilisateurs compris.
-Recharger un groupe remplace uniquement les données de son utilisateur. Ne jamais charger ces fixtures en production.
+Recharger un groupe remplace uniquement les données de ses utilisateurs. Ne jamais charger ces fixtures en production.
 
 ## Tests
 
@@ -118,10 +124,11 @@ src/
 ├── Enum/            types de transaction, fréquences, types de compte, icônes
 ├── Form/            formulaires (listes de comptes et catégories limitées à l'utilisateur)
 ├── Security/        OwnerVoter : seul le propriétaire accède à ses données
-├── Service/         FinanceStats (agrégats), CalendarBuilder, RecurringTransactionGenerator
+├── Service/         FinanceStats (agrégats), CalendarBuilder, RecurringTransactionGenerator, UserDataPurger
 ├── Command/         app:recurring:generate
 ├── Twig/            icônes, montants et dates en français
-└── DataFixtures/    utilisateurs de démonstration et de test
+├── DataFixtures/    utilisateurs de démonstration et de test
+docs/TESTING.md      plan de vérification manuelle pour les testeurs
 ```
 
 ## Sécurité
