@@ -48,6 +48,7 @@ final class FixturesSmokeTest extends AbstractCrudTestCase
             '/recurring', '/recurring/new', '/budget', "/budget?month=$prev", "/budget?month=$next", '/budget/new',
             '/goal', '/goal/new', '/category', '/category/new', '/stats', '/stats?type=income', "/stats?month=$prev",
             '/calendar', "/calendar?day=$today", "/calendar?month=$prev", "/calendar?month=$next", '/settings', '/profile',
+            '/export/transactions', '/export/transactions?type=expense', '/export/transactions?format=intl',
         ];
 
         $owned = ['owner' => $user];

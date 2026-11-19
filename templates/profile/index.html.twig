@@ -24,6 +24,9 @@
             <li><a href="{{ path('app_goal_index') }}"><strong>{{ counts.goals }}</strong><span>{{ icon('target', 18) }}Objectifs</span></a></li>
             <li><a href="{{ path('app_category_index') }}"><strong>{{ counts.categories }}</strong><span>{{ icon('tag', 18) }}Catégories</span></a></li>
         </ul>
+        <p class="export-note">
+            <a href="{{ path('app_export_transactions') }}" data-turbo="false">{{ icon('download', 16) }}Exporter toutes mes transactions (CSV)</a>
+        </p>
     </section>
 
     <div class="profile-forms">

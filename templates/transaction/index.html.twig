@@ -11,6 +11,9 @@
                 {{ icon('search', 18) }}
                 <input type="search" name="q" value="{{ q }}" placeholder="Rechercher" aria-label="Rechercher une transaction">
             </form>
+            {# L'export reprend le filtre en cours (onglet et recherche) ; il n'est pas limité aux lignes affichées. #}
+            <a class="round-btn" href="{{ path('app_export_transactions', {type: type != 'all' ? type : null, q: q ?: null}) }}" data-turbo="false"
+               title="Exporter en CSV" aria-label="Exporter {{ type != 'all' or q ? 'les transactions filtrées' : 'toutes les transactions' }} en CSV">{{ icon('download', 22) }}</a>
             <a class="round-btn" href="{{ path('app_transaction_new') }}" aria-label="Nouvelle transaction">{{ icon('plus', 22) }}</a>
         </div>
     </header>

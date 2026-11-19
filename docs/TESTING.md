@@ -66,6 +66,23 @@ Pour chaque page, vérifier aussi : aucun message d'erreur, textes en français,
 - Créer, modifier, supprimer ; le formulaire propose uniquement les comptes et catégories de l'utilisateur ;
   montant négatif ou nul refusé.
 
+## Export CSV (`/export/transactions`)
+
+- **Bouton de téléchargement** en haut de la page Transactions (icône de flèche, à côté du « + ») : le fichier
+  `finora-transactions-AAAA-MM-JJ.csv` se télécharge. Avec un onglet (Revenus / Dépenses) ou une recherche actifs, **seules les
+  lignes filtrées** sont exportées ; sans filtre, tout. Le lien « Exporter toutes mes transactions (CSV) » du profil exporte tout.
+- **Plus de 300 transactions** : la liste s'arrête à 300 lignes, l'export contient tout.
+- **Ouvrir dans Excel ou LibreOffice** (français) : colonnes bien séparées, accents corrects, dépenses en négatif et colonne
+  « Montant » additionnable. Avec `?format=intl` (à saisir dans l'adresse), le séparateur est la virgule et le point décimal.
+- **Cas du jeu de test** : la transaction `Test <b>HTML</b> & "guillemets" 'apostrophes'` et sa note sur deux lignes arrivent intactes ;
+  les transactions de l'autre utilisateur n'apparaissent jamais.
+- **Injection de formules** : créer une transaction dont le libellé est `=1+1` (ou `@SUM(A1)`, `+33…`, `-2+3`) et l'exporter :
+  la cellule doit afficher le texte avec une apostrophe devant, **sans calculer** de formule. Ne jamais valider une ouverture
+  qui lancerait une formule ou un lien.
+- **Période** (dans l'adresse) : `?from=2026-11-01&to=2026-11-30` (bornes incluses) ; `?type=income` ; `?q=loyer`. Une valeur invalide
+  (`?type=virement`, `?from=31/12/2026`, fin avant début) renvoie une erreur 422.
+- Déconnecté, l'adresse redirige vers la connexion.
+
 ## Récurrences (`/recurring`)
 
 - 12 règles : une de chaque fréquence (quotidienne, hebdomadaire, mensuelle, annuelle) et de chaque état.

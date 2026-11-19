@@ -477,6 +477,9 @@ form ul { list-style: none; padding: 0; margin: 6px 0 0; color: var(--red); font
     .donut { margin: 0 auto; }
 }
 
+.export-note { margin-top: 14px; font-size: 14px; font-weight: 600; }
+.export-note a { display: inline-flex; align-items: center; gap: 6px; }
+
 /* ---------- Apparence (clair / sombre) ---------- */
 /* L'icône du bouton montre le thème vers lequel on bascule : lune en clair, soleil en sombre. */
 .theme-to-light { display: none; }

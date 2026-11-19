@@ -47,6 +47,7 @@ final class UiExtension
         'bell' => 'ph:bell-duotone',
         'logout' => 'ph:sign-out-duotone',
         'wave' => 'ph:hand-waving-duotone',
+        'download' => 'ph:download-simple-duotone',
         'sun' => 'ph:sun-duotone',
         'moon' => 'ph:moon-duotone',
         'auto' => 'ph:circle-half-duotone',

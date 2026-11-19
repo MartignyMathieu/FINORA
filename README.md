@@ -16,6 +16,8 @@ et on automatise les opérations qui reviennent chaque mois. Chaque utilisateur 
 - **Transactions récurrentes** : loyer, salaire, abonnements… Une règle (fréquence quotidienne, hebdomadaire, mensuelle ou
   annuelle) génère automatiquement les transactions à chaque échéance ; elle peut être mise en pause, reprise ou supprimée
 - **Tableau de bord** : solde total, revenus, dépenses et épargne du mois, évolution sur 6 mois, répartition des dépenses
+- **Export CSV** des transactions : bouton sur la page Transactions (il reprend l'onglet et la recherche en cours) et lien dans
+  le profil ; l'export n'est pas limité aux lignes affichées (voir « Export CSV » plus bas)
 - **Calendrier** : vue mensuelle avec les opérations de chaque jour, les récurrences à venir et les totaux du mois ;
   un clic sur un jour affiche son détail et permet d'y ajouter une transaction
 - **Statistiques** : répartition par catégorie en pourcentage et en montant, pour les dépenses ou les revenus
@@ -100,6 +102,25 @@ DATABASE_URL="postgresql://utilisateur:motdepasse@127.0.0.1:5432/finora?serverVe
 
 Les secrets réels vont dans `.env.local` ou dans le coffre de secrets Symfony (`symfony console secrets:set`), jamais dans `.env`.
 
+## Export CSV
+
+`GET /export/transactions` (connecté) télécharge les transactions de l'utilisateur, de la plus ancienne à la plus récente,
+sans limite de nombre. Paramètres facultatifs, tous combinables :
+
+| Paramètre | Valeurs | Effet |
+| --- | --- | --- |
+| `type` | `all` (défaut), `income`, `expense` | Revenus ou dépenses seulement |
+| `q` | texte (100 caractères max) | Libellé ou catégorie contenant le texte, sans tenir compte de la casse |
+| `from`, `to` | `AAAA-MM-JJ` | Période, bornes incluses |
+| `format` | `fr` (défaut), `intl` | `fr` : séparateur `;` et virgule décimale (Excel en français) ; `intl` : séparateur `,` et point décimal |
+
+Un paramètre invalide renvoie une erreur 422. Colonnes : `Date;Libellé;Type;Montant;Devise;Compte;Catégorie;Note;Origine`.
+Le montant est signé (les dépenses sont négatives, pour pouvoir additionner la colonne) et la devise est celle du compte ;
+l'origine est « Manuelle » ou « Récurrente ». Le fichier est en UTF-8 avec BOM, et n'est pas mis en cache.
+
+Les textes saisis par l'utilisateur qui commencent par `=`, `+`, `-` ou `@` sont préfixés d'une apostrophe : sans cela, Excel ou
+LibreOffice les exécuteraient comme des formules à l'ouverture du fichier (injection de formules).
+
 ## Tâches en arrière-plan
 
 Les e-mails (réinitialisation du mot de passe) et la génération nocturne des transactions récurrentes
@@ -155,7 +176,8 @@ src/
 ├── Enum/            types de transaction, fréquences, types de compte, icônes
 ├── Form/            formulaires (listes de comptes et catégories limitées à l'utilisateur)
 ├── Security/        OwnerVoter : seul le propriétaire accède à ses données
-├── Service/         FinanceStats (agrégats), CalendarBuilder, RecurringTransactionGenerator, UserDataPurger
+├── Dto/             paramètres validés des requêtes (export CSV)
+├── Service/         FinanceStats (agrégats), CalendarBuilder, RecurringTransactionGenerator, TransactionCsvExporter, UserDataPurger
 ├── Command/         app:recurring:generate
 ├── Twig/            icônes, montants et dates en français
 ├── DataFixtures/    utilisateurs de démonstration et de test
