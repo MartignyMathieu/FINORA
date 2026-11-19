@@ -54,6 +54,7 @@ final class DemoFixtures extends Fixture implements FixtureGroupInterface
     public function __construct(
         private readonly UserPasswordHasherInterface $passwordHasher,
         private readonly RecurringTransactionGenerator $generator,
+        private readonly UserDataPurger $purger,
     ) {
     }
 
@@ -72,7 +73,7 @@ final class DemoFixtures extends Fixture implements FixtureGroupInterface
         $this->today = new \DateTimeImmutable('today');
         $this->thisMonth = $this->today->modify('first day of this month');
 
-        $this->removePreviousDemoData();
+        $this->purger->purge($this->manager, self::EMAIL);
 
         $user = (new User())->setEmail(self::EMAIL)->setDisplayName(self::DISPLAY_NAME);
         $user->setPassword($this->passwordHasher->hashPassword($user, self::PASSWORD));
@@ -90,24 +91,6 @@ final class DemoFixtures extends Fixture implements FixtureGroupInterface
         $this->createBudgets($categories);
         $this->createGoals($user);
         $this->manager->flush();
-    }
-
-    private function removePreviousDemoData(): void
-    {
-        $em = $this->manager;
-        $user = $em->getRepository(User::class)->findOneBy(['email' => self::EMAIL]);
-        if (null === $user) {
-            return;
-        }
-
-        $em->createQuery('DELETE FROM '.Transaction::class.' t WHERE t.account IN (SELECT a FROM '.Account::class.' a WHERE a.owner = :user)')->setParameter('user', $user)->execute();
-        $em->createQuery('DELETE FROM '.RecurringTransaction::class.' r WHERE r.account IN (SELECT a FROM '.Account::class.' a WHERE a.owner = :user)')->setParameter('user', $user)->execute();
-        $em->createQuery('DELETE FROM '.Budget::class.' b WHERE b.category IN (SELECT c FROM '.Category::class.' c WHERE c.owner = :user)')->setParameter('user', $user)->execute();
-        foreach ([Goal::class, Category::class, Account::class] as $class) {
-            $em->createQuery(sprintf('DELETE FROM %s e WHERE e.owner = :user', $class))->setParameter('user', $user)->execute();
-        }
-        $em->createQuery('DELETE FROM '.User::class.' u WHERE u.id = :id')->setParameter('id', $user->getId())->execute();
-        $em->clear();
     }
 
     /** @return array<string, Account> */
