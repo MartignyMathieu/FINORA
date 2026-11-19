@@ -136,3 +136,22 @@ Pour chaque page, vérifier aussi : aucun message d'erreur, textes en français,
 ## Affichage
 
 - Tester en fenêtre large (barre latérale) et étroite (< 900 px : barre d'onglets en bas), sans défilement horizontal.
+
+## Thème clair / sombre
+
+À vérifier **sur toutes les pages** dans les deux thèmes (le test automatique ne voit pas le rendu) :
+
+- **Choix** : Paramètres → Apparence (Auto / Clair / Sombre), ou le bouton lune / soleil à côté du nom dans la barre latérale.
+  Le choix actif est mis en évidence ; « Auto » suit le réglage de l'appareil (le changer dans le système bascule l'application
+  sans recharger la page).
+- **Mémorisation** : recharger la page et ouvrir un nouvel onglet : le thème choisi est conservé, **sans éclair de thème clair**
+  au chargement. Un autre navigateur n'est pas affecté (le choix est enregistré dans le navigateur, pas sur le compte).
+- **Lisibilité** : aucun texte difficile à lire, y compris les textes secondaires (gris), les montants verts et rouges, les
+  badges (« En pause », « Prévue », « Terminée »), les messages d'erreur et de confirmation, les liens.
+- **Graphiques** : courbe de l'accueil (grille, textes, points) et donuts (anneau de fond) lisibles ; les couleurs des
+  catégories restent distinctes.
+- **Formulaires** : champs, listes déroulantes et sélecteurs de date sombres (pas de bloc blanc), focus visible.
+- **Calendrier** : cases du mois, jour sélectionné, jour courant et jours hors du mois distincts ; pastilles lisibles.
+- **Pages publiques** : connexion, inscription et mot de passe oublié suivent le thème (sans bouton : réglage de l'appareil ou
+  choix déjà enregistré).
+- **Navigateur mobile** : la barre d'état prend la couleur du fond du thème.

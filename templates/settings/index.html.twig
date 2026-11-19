@@ -19,6 +19,17 @@
             </a>
         </li>
         <li>
+            <section class="card appearance" aria-labelledby="appearance-title">
+                <h2 id="appearance-title"><span class="tile">{{ icon('moon', 24) }}</span>Apparence</h2>
+                <p class="muted">Clair, sombre, ou selon le réglage de votre appareil. Ce choix est enregistré dans ce navigateur.</p>
+                <div class="segmented theme-switch" data-controller="theme" role="group" aria-label="Thème de l'application">
+                    <button type="button" data-action="theme#set" data-theme-theme-param="auto" aria-pressed="true">{{ icon('auto', 18) }}Auto</button>
+                    <button type="button" data-action="theme#set" data-theme-theme-param="light" aria-pressed="false">{{ icon('sun', 18) }}Clair</button>
+                    <button type="button" data-action="theme#set" data-theme-theme-param="dark" aria-pressed="false">{{ icon('moon', 18) }}Sombre</button>
+                </div>
+            </section>
+        </li>
+        <li>
             <a class="list-card" href="{{ path('app_category_index') }}">
                 <span class="tile">{{ icon('tag', 24) }}</span>
                 <span class="grow"><span class="name">Catégories</span><span class="muted">Nom, icône et couleur de chaque catégorie</span></span>

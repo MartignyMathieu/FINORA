@@ -23,6 +23,8 @@ et on automatise les opérations qui reviennent chaque mois. Chaque utilisateur 
 - **Profil** : modification du prénom, de l'adresse e-mail et du mot de passe (mot de passe actuel exigé), récapitulatif de ses
   données et suppression définitive du compte
 - **Interface** adaptée au bureau (barre latérale) et au mobile (barre d'onglets), entièrement en français
+- **Thème clair ou sombre** : automatique selon l'appareil par défaut, au choix dans Paramètres → Apparence, ou en un clic
+  depuis la barre latérale ; le choix est mémorisé dans le navigateur et appliqué avant l'affichage (pas d'éclair clair)
 
 ## Technologies
 
@@ -111,6 +113,10 @@ symfony console doctrine:database:create --env=test --if-not-exists
 symfony console doctrine:migrations:migrate --env=test --no-interaction
 symfony php bin/phpunit
 ```
+
+Un test lit la feuille de style et vérifie les contrastes WCAG AA de chaque paire de couleurs dans les deux thèmes
+(`tests/Unit/ThemeContrastTest.php`) : en modifiant une couleur de `assets/styles/app.css`, garder les deux jeux de
+variables sombres identiques (`@media (prefers-color-scheme: dark)` et `[data-theme="dark"]`).
 
 Les tests utilisent une base dédiée (`<base>_test`) qu'ils vident avant chaque test : ne jamais la faire pointer vers
 des données à conserver. Utiliser `symfony php` (et non `php`) pour qu'ils trouvent la base lancée par Docker.
