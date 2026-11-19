@@ -6,23 +6,62 @@
     <header class="page-head">
         <div>
             <h1>Objectifs d'épargne</h1>
-            <p class="muted">Suivez l'avancement de vos projets.</p>
+            <p class="muted">Suivez l'avancement de vos projets. Retournez une carte pour voir le détail.</p>
         </div>
         <a class="btn btn-primary" href="{{ path('app_goal_new') }}">{{ icon('plus', 18) }}Nouvel objectif</a>
     </header>
 
     <div class="goals">
         {% for goal in goals %}
-            <a class="card goal" href="{{ path('app_goal_show', {id: goal.id}) }}">
-                <span class="goal-visual">{{ icon(goal.icon ?? 'target', 64) }}</span>
-                <h3>{{ goal.name }}</h3>
-                <span class="target">{{ goal.targetAmount|money(goal.currency) }}</span>
-                <span class="sub">{{ goal.savedAmount|money(goal.currency) }} ({{ goal.progress }}&nbsp;%)</span>
-                <span class="bar" role="progressbar" aria-valuenow="{{ goal.progress }}" aria-valuemin="0" aria-valuemax="100"><span style="width:{{ goal.progress }}%"></span></span>
-                {% if goal.targetDate %}
-                    <span class="deadline">{{ icon('calendar', 18) }}Échéance : {{ goal.targetDate|month_label }}</span>
-                {% endif %}
-            </a>
+            {% set months = goal.monthsLeft(today) %}
+            {% set monthly = goal.requiredMonthly(today) %}
+            {# Carte à deux faces (flip_controller) : devant, l'avancement ; derrière, le détail et les actions. #}
+            <article class="goal-flip" data-controller="flip">
+                <div class="goal-inner">
+                    <div class="card goal goal-face goal-front" data-flip-target="front">
+                        <a class="goal-visual" href="{{ path('app_goal_show', {id: goal.id}) }}" tabindex="-1" aria-hidden="true">{{ icon(goal.icon ?? 'target', 64) }}</a>
+                        <button type="button" class="goal-flip-btn" data-flip-target="button" data-action="flip#toggle" aria-expanded="false"
+                                title="Retourner la carte" aria-label="Voir le détail de l'objectif {{ goal.name }}">{{ icon('repeat', 18) }}</button>
+                        <h3><a href="{{ path('app_goal_show', {id: goal.id}) }}">{{ goal.name }}</a></h3>
+                        <span class="target">{{ goal.targetAmount|money(goal.currency) }}</span>
+                        <span class="sub">{{ goal.savedAmount|money(goal.currency) }} ({{ goal.progress }}&nbsp;%)</span>
+                        <span class="bar" role="progressbar" aria-label="Avancement de l'objectif {{ goal.name }}" aria-valuenow="{{ goal.progress }}" aria-valuemin="0" aria-valuemax="100"><span style="width:{{ goal.progress }}%"></span></span>
+                        {% if goal.targetDate %}
+                            <span class="deadline">{{ icon('calendar', 18) }}Échéance : {{ goal.targetDate|month_label }}</span>
+                        {% endif %}
+                    </div>
+
+                    <div class="card goal goal-face goal-back" data-flip-target="back" aria-hidden="true">
+                        <h3>{{ goal.name }}</h3>
+                        <ul class="goal-stats">
+                            <li><span>Épargné</span><strong>{{ goal.savedAmount|money(goal.currency) }} ({{ goal.progress }}&nbsp;%)</strong></li>
+                            {% if goal.reached %}
+                                <li><span>Statut</span><strong class="goal-reached">{{ icon('check', 18) }}Objectif atteint</strong></li>
+                            {% else %}
+                                <li><span>Reste à épargner</span><strong>{{ goal.remaining|money(goal.currency) }}</strong></li>
+                            {% endif %}
+                            <li>
+                                <span>Échéance</span>
+                                <strong>
+                                    {% if months is null %}Aucune
+                                    {% elseif months < 0 %}{{ goal.targetDate|month_label }}{% if not goal.reached %} · dépassée{% endif %}
+                                    {% elseif months == 0 %}Ce mois-ci
+                                    {% elseif months == 1 %}Dans 1 mois
+                                    {% else %}Dans {{ months }} mois{% endif %}
+                                </strong>
+                            </li>
+                            {% if monthly is not null %}
+                                <li><span>Effort nécessaire</span><strong>≈ {{ monthly|money(goal.currency) }} / mois</strong></li>
+                            {% endif %}
+                        </ul>
+                        <div class="goal-back-actions">
+                            <a class="btn btn-primary" href="{{ path('app_goal_show', {id: goal.id}) }}">Voir</a>
+                            <a class="btn" href="{{ path('app_goal_edit', {id: goal.id}) }}">Modifier</a>
+                            <button type="button" class="btn btn-ghost" data-action="flip#toggle">Retour</button>
+                        </div>
+                    </div>
+                </div>
+            </article>
         {% else %}
             <div class="card empty" style="grid-column:1/-1">Aucun objectif pour le moment. <a href="{{ path('app_goal_new') }}">Créer un objectif</a></div>
         {% endfor %}

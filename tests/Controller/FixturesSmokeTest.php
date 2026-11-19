@@ -147,7 +147,7 @@ final class FixturesSmokeTest extends AbstractCrudTestCase
         foreach (['100', '0', 'Objectif dépassé', 'Objectif en retard', 'Nouveau PC (sans échéance, 0 %)'] as $text) {
             self::assertSelectorTextContains('.goals', $text);
         }
-        self::assertCount(7, $this->client->getCrawler()->filter('.goals .goal'));
+        self::assertCount(7, $this->client->getCrawler()->filter('.goals .goal-flip'));
 
         // Calendrier : échéances à venir le mois suivant, jour courant sélectionné par défaut ce mois-ci.
         $this->client->request('GET', '/calendar?month='.$month->modify('+1 month')->format('Y-m'));

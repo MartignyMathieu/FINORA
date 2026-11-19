@@ -145,6 +145,54 @@ class Goal implements OwnedInterface
         return $target > 0 ? (int) min(100, round((float) $this->savedAmount / $target * 100)) : 0;
     }
 
+    /** Objectif atteint ou dépassé. */
+    public function isReached(): bool
+    {
+        return (float) $this->targetAmount > 0 && (float) $this->savedAmount >= (float) $this->targetAmount;
+    }
+
+    /** Montant qu'il reste à épargner (jamais négatif). */
+    public function getRemaining(): float
+    {
+        return max(0.0, (float) $this->targetAmount - (float) $this->savedAmount);
+    }
+
+    /**
+     * Mois entre le mois de $today et celui de l'échéance : 0 si c'est ce mois-ci, négatif si l'échéance est
+     * passée, null sans échéance.
+     */
+    public function getMonthsLeft(\DateTimeInterface $today): ?int
+    {
+        if (null === $this->targetDate) {
+            return null;
+        }
+
+        return ((int) $this->targetDate->format('Y') - (int) $today->format('Y')) * 12
+            + ((int) $this->targetDate->format('n') - (int) $today->format('n'));
+    }
+
+    /** Échéance dépassée sans que l'objectif soit atteint. */
+    public function isOverdue(\DateTimeInterface $today): bool
+    {
+        $months = $this->getMonthsLeft($today);
+
+        return null !== $months && $months < 0 && !$this->isReached();
+    }
+
+    /**
+     * Effort d'épargne mensuel pour atteindre l'objectif à son échéance (le reste à épargner réparti sur les mois
+     * restants, au moins un). Null si l'objectif est atteint, sans échéance ou si l'échéance est passée.
+     */
+    public function getRequiredMonthly(\DateTimeInterface $today): ?float
+    {
+        $months = $this->getMonthsLeft($today);
+        if (null === $months || $months < 0 || $this->isReached()) {
+            return null;
+        }
+
+        return $this->getRemaining() / max(1, $months);
+    }
+
     public function __toString(): string
     {
         return (string) $this->name;

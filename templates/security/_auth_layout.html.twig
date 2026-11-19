@@ -5,14 +5,14 @@
     <main class="auth">
         <div class="auth-card">
             <div class="auth-brand">
-                {{ include('_logo_mark.html.twig', {size: 84}) }}
+                {{ include('_coin.html.twig') }}
                 <div class="auth-word">FINORA</div>
                 <p class="auth-tagline">Maîtrisez votre argent.</p>
             </div>
 
             {% for label, messages in app.flashes %}
                 {% for message in messages %}
-                    <div class="flash flash-{{ label }}" role="alert">{{ message }}</div>
+                    <div class="flash flash-{{ label }}" role="alert" data-controller="flash">{{ message }}<button type="button" class="flash-close" data-action="flash#close" aria-label="Fermer le message">&times;</button></div>
                 {% endfor %}
             {% endfor %}
 

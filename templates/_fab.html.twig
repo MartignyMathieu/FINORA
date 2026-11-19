@@ -1,0 +1,19 @@
+{# Bouton d'ajout rapide (fab_controller). Sans JavaScript, le bouton principal est un lien vers « Nouvelle transaction ». #}
+{% set shortcuts = [
+    {label: 'Nouveau compte', icon: 'wallet', path: path('app_account_new')},
+    {label: 'Nouvel objectif', icon: 'target', path: path('app_goal_new')},
+    {label: 'Nouveau budget', icon: 'basket', path: path('app_budget_new')},
+    {label: 'Nouvelle récurrence', icon: 'repeat', path: path('app_recurring_new')},
+    {label: 'Nouvelle transaction', icon: 'card', path: path('app_transaction_new')},
+] %}
+<div class="fab" data-controller="fab">
+    <div class="fab-backdrop" data-action="click->fab#close" aria-hidden="true"></div>
+    <ul class="fab-menu" id="fab-menu" data-fab-target="menu" aria-label="Ajout rapide">
+        {% for shortcut in shortcuts %}
+            {# --i : le raccourci le plus proche du bouton apparaît le premier. #}
+            <li style="--i: {{ loop.revindex0 }}"><a href="{{ shortcut.path }}" data-action="click->fab#close"><span class="tile">{{ icon(shortcut.icon, 18) }}</span>{{ shortcut.label }}</a></li>
+        {% endfor %}
+    </ul>
+    <a class="fab-main" href="{{ path('app_transaction_new') }}" data-fab-target="button" data-action="fab#toggle"
+       aria-haspopup="true" aria-controls="fab-menu" aria-expanded="false" aria-label="Ajouter">{{ icon('plus', 26) }}</a>
+</div>

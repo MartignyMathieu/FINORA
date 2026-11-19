@@ -27,6 +27,14 @@
                     <button type="button" data-action="theme#set" data-theme-theme-param="light" aria-pressed="false">{{ icon('sun', 18) }}Clair</button>
                     <button type="button" data-action="theme#set" data-theme-theme-param="dark" aria-pressed="false">{{ icon('moon', 18) }}Sombre</button>
                 </div>
+
+                <h3 class="appearance-sub">Animations</h3>
+                <p class="muted">« Auto » suit le réglage « réduire les animations » de votre appareil.</p>
+                <div class="segmented motion-switch" data-controller="motion" role="group" aria-label="Animations de l'application">
+                    <button type="button" data-action="motion#set" data-motion-choice-param="auto" aria-pressed="true">{{ icon('auto', 18) }}Auto</button>
+                    <button type="button" data-action="motion#set" data-motion-choice-param="full" aria-pressed="false">{{ icon('play', 18) }}Complètes</button>
+                    <button type="button" data-action="motion#set" data-motion-choice-param="reduce" aria-pressed="false">{{ icon('pause', 18) }}Réduites</button>
+                </div>
             </section>
         </li>
         <li>

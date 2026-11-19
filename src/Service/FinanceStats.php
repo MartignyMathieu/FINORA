@@ -294,12 +294,24 @@ final class FinanceStats
             ];
         }
 
+        // Une zone sensible par mois (survol de la courbe) : de la mi-distance avec le mois précédent à la mi-distance
+        // avec le suivant, pour qu'aucune zone ne laisse de trou ni ne chevauche sa voisine.
         $labels = [];
         foreach ($history as $i => $h) {
-            $labels[] = ['x' => round($x($i), 1), 'month' => $h['month']];
+            $center = $x($i);
+            $start = $i > 0 ? ($x($i - 1) + $center) / 2 : $left;
+            $end = $i < $count - 1 ? ($center + $x($i + 1)) / 2 : $right;
+            $labels[] = [
+                'x' => round($center, 1),
+                'month' => $h['month'],
+                'income' => $h['income'],
+                'expense' => $h['expense'],
+                'hitX' => round($start, 1),
+                'hitWidth' => round($end - $start, 1),
+            ];
         }
 
-        return ['left' => $left, 'right' => $right, 'bottom' => $bottom, 'ticks' => $ticks, 'series' => $series, 'labels' => $labels];
+        return ['left' => $left, 'right' => $right, 'top' => $top, 'bottom' => $bottom, 'ticks' => $ticks, 'series' => $series, 'labels' => $labels];
     }
 
     /**

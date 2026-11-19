@@ -16,9 +16,9 @@
     </header>
 
     {# Mobile : carte de solde, accès rapides et aperçu #}
-    <section class="balance-card only-mobile" aria-label="Solde total">
+    <section class="balance-card only-mobile" aria-label="Solde total" data-controller="tilt">
         <div class="balance-top"><span>Solde total</span>{{ icon('eye', 22) }}</div>
-        <div class="balance-amount">{{ balance|money(currency) }}</div>
+        <div class="balance-amount" data-controller="countup" data-countup-value-value="{{ balance|number_format(2, '.', '') }}" data-countup-currency-value="{{ currency }}">{{ balance|money(currency) }}</div>
         {% if variation is not null %}
             <span class="chip {{ variation < 0 ? 'negative' }}">{{ icon('trend', 16) }}{{ variation|number_format(1, ',', ' ') }}&nbsp;% ce mois-ci</span>
         {% endif %}
@@ -40,10 +40,11 @@
 
     {# Bureau : indicateurs et graphiques #}
     <section class="kpis only-desktop" aria-label="Indicateurs du mois">
-        <div class="card kpi"><span class="tile">{{ icon('wallet', 24) }}</span><div><small>Solde total</small><strong>{{ balance|money(currency) }}</strong></div></div>
-        <div class="card kpi"><span class="tile tile-green">{{ icon('arrow-up', 24) }}</span><div><small>Revenus</small><strong>{{ totals.income|money(currency) }}</strong></div></div>
-        <div class="card kpi"><span class="tile tile-red">{{ icon('arrow-down', 24) }}</span><div><small>Dépenses</small><strong>{{ totals.expense|money(currency) }}</strong></div></div>
-        <div class="card kpi"><span class="tile">{{ icon('piggy', 24) }}</span><div><small>Épargne</small><strong>{{ totals.savings|money(currency) }}</strong></div></div>
+        {# Chaque carte s'incline en 3D vers le pointeur (tilt) ; les montants montent de 0 à leur valeur (countup). #}
+        <div class="card kpi" data-controller="tilt"><span class="tile">{{ icon('wallet', 24) }}</span><div><small>Solde total</small><strong data-controller="countup" data-countup-value-value="{{ balance|number_format(2, '.', '') }}" data-countup-currency-value="{{ currency }}">{{ balance|money(currency) }}</strong></div></div>
+        <div class="card kpi" data-controller="tilt"><span class="tile tile-green">{{ icon('arrow-up', 24) }}</span><div><small>Revenus</small><strong data-controller="countup" data-countup-value-value="{{ totals.income|number_format(2, '.', '') }}" data-countup-currency-value="{{ currency }}">{{ totals.income|money(currency) }}</strong></div></div>
+        <div class="card kpi" data-controller="tilt"><span class="tile tile-red">{{ icon('arrow-down', 24) }}</span><div><small>Dépenses</small><strong data-controller="countup" data-countup-value-value="{{ totals.expense|number_format(2, '.', '') }}" data-countup-currency-value="{{ currency }}">{{ totals.expense|money(currency) }}</strong></div></div>
+        <div class="card kpi" data-controller="tilt"><span class="tile">{{ icon('piggy', 24) }}</span><div><small>Épargne</small><strong data-controller="countup" data-countup-value-value="{{ totals.savings|number_format(2, '.', '') }}" data-countup-currency-value="{{ currency }}">{{ totals.savings|money(currency) }}</strong></div></div>
     </section>
 
     <section class="grid-2 only-desktop">
@@ -60,11 +61,12 @@
             {% if donut.items is empty %}
                 <p class="empty">Aucune dépense en {{ month|month_label }}.</p>
             {% else %}
-                <div class="donut-wrap">
+                <div class="donut-wrap" data-controller="donut">
                     {{ include('_donut.html.twig', {donut: donut, currency: currency, label: 'Dépenses'}) }}
                     <ul class="donut-legend">
                         {% for item in donut.items %}
-                            <li><span><span class="dot" style="background:{{ item.color }}"></span>{{ item.name }}</span><span class="pct">{{ item.percent }}&nbsp;%</span></li>
+                            <li tabindex="0" data-donut-target="item" data-index="{{ loop.index0 }}" data-label="{{ item.name }}" data-amount="{{ item.total|money(currency) }}"
+                                data-action="mouseenter->donut#enter mouseleave->donut#leave focus->donut#enter blur->donut#leave"><span><span class="dot" style="background:{{ item.color }}"></span>{{ item.name }}</span><span class="pct">{{ item.percent }}&nbsp;%</span></li>
                         {% endfor %}
                     </ul>
                 </div>

@@ -7,6 +7,7 @@ use App\Form\GoalType;
 use App\Repository\GoalRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\Clock\ClockInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
@@ -19,10 +20,12 @@ use Symfony\Component\Security\Http\Attribute\CurrentUser;
 final class GoalController extends AbstractController
 {
     #[Route(name: 'app_goal_index', methods: ['GET'])]
-    public function index(GoalRepository $goalRepository, #[CurrentUser] User $user): Response
+    public function index(GoalRepository $goalRepository, ClockInterface $clock, #[CurrentUser] User $user): Response
     {
         return $this->render('goal/index.html.twig', [
             'goals' => $goalRepository->findAllByDeadline($user),
+            // Date de référence des calculs du dos des cartes (mois restants, effort mensuel).
+            'today' => $clock->now(),
         ]);
     }
 

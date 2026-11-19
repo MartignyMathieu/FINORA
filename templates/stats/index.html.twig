@@ -20,11 +20,12 @@
         {% if donut.items is empty %}
             <p class="empty">Aucune transaction de ce type en {{ month|month_label }}.</p>
         {% else %}
-            <div class="donut-wrap" style="justify-content:center;flex-wrap:wrap">
+            <div class="donut-wrap" style="justify-content:center;flex-wrap:wrap" data-controller="donut">
                 <div style="width:260px">{{ include('_donut.html.twig', {donut: donut, currency: currency, label: type == 'expense' ? 'Dépenses' : 'Revenus'}) }}</div>
-                <ul class="donut-legend" style="min-width:280px">
+                <ul class="donut-legend" style="min-width:min(280px,100%)">
                     {% for item in donut.items %}
-                        <li>
+                        <li tabindex="0" data-donut-target="item" data-index="{{ loop.index0 }}" data-label="{{ item.name }}" data-amount="{{ item.total|money(currency) }}"
+                            data-action="mouseenter->donut#enter mouseleave->donut#leave focus->donut#enter blur->donut#leave">
                             <span><span class="dot" style="background:{{ item.color }}"></span>{{ item.name }}</span>
                             <span class="pct">{{ item.percent }}&nbsp;%</span>
                             <span class="amt">{{ item.total|money(currency) }}</span>

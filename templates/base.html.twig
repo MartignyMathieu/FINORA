@@ -4,8 +4,11 @@
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
         <meta name="theme-color" content="#f4f7fc">
-        {# Applique le thème choisi avant le premier affichage (évite un éclair de thème clair). Sans choix, c'est l'appareil qui décide (CSS). #}
-        <script>(function(){try{var d=document.documentElement,t=localStorage.getItem('finora-theme');if(t==='dark'||t==='light'){d.dataset.theme=t;}var dark=t?t==='dark':matchMedia('(prefers-color-scheme: dark)').matches;var m=document.querySelector('meta[name="theme-color"]');if(m){m.content=dark?'#081326':'#f4f7fc';}}catch(e){}})();</script>
+        {# Transition fondue entre les pages (Turbo, navigateurs qui la gèrent) ; coupée par le CSS si les animations sont réduites. #}
+        <meta name="view-transition" content="same-origin">
+        {# Avant le premier affichage : applique le thème choisi (pas d'éclair de thème clair ; sans choix, c'est l'appareil qui décide, via le CSS)
+           et décide des animations (data-fx) : « Complètes » force, « Réduites » coupe, sinon on suit la préférence du système. Même règle que assets/motion.js. #}
+        <script>(function(){var d=document.documentElement,t=null,f=null;try{t=localStorage.getItem('finora-theme');f=localStorage.getItem('finora-motion');}catch(e){}try{if(t==='dark'||t==='light'){d.dataset.theme=t;}var dark=t==='dark'||t!=='light'&&matchMedia('(prefers-color-scheme: dark)').matches;var m=document.querySelector('meta[name="theme-color"]');if(m){m.content=dark?'#081326':'#f4f7fc';}d.dataset.fx=(f==='full'||(f!=='reduce'&&!matchMedia('(prefers-reduced-motion: reduce)').matches))?'on':'off';}catch(e){}})();</script>
         <title>{% block title %}Accueil{% endblock %} · FINORA</title>
         <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 640 620'%3E%3Cpath fill='%231f6fef' d='M190 308C198 150 300 62 470 60L606 58C596 135 560 196 478 199L330 201C262 206 218 256 190 308Z'/%3E%3Cpath fill='%2319aaff' d='M148 514C176 400 206 252 342 246L518 243C536 244 522 300 490 336C466 360 440 366 396 366L342 368C316 372 308 400 300 432C284 486 232 520 148 514Z'/%3E%3C/svg%3E">
         <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -59,10 +62,10 @@
         </aside>
 
         <div class="main">
-            <main class="content">
+            <main class="content" data-controller="reveal">
                 {% for label, messages in app.flashes %}
                     {% for message in messages %}
-                        <div class="flash flash-{{ label }}" role="alert">{{ message }}</div>
+                        <div class="flash flash-{{ label }}" role="alert" data-controller="flash">{{ message }}<button type="button" class="flash-close" data-action="flash#close" aria-label="Fermer le message">&times;</button></div>
                     {% endfor %}
                 {% endfor %}
                 {% block body %}{% endblock %}
@@ -76,6 +79,11 @@
             <a href="{{ path('app_stats') }}" class="{{ route == 'app_stats' ? 'active' }}">{{ icon('chart', 22) }}Stats</a>
             <a href="{{ path('app_settings') }}" class="{{ settings_active ? 'active' }}">{{ icon('gear', 22) }}Plus</a>
         </nav>
+
+        {# Ajout rapide : pas sur les pages de formulaire, de profil ni de paramètres, où il gênerait. #}
+        {% if app.user and not (route ends with '_new' or route ends with '_edit' or route == 'app_profile' or route == 'app_settings') %}
+            {{ include('_fab.html.twig') }}
+        {% endif %}
         {% endblock %}
     </body>
 </html>

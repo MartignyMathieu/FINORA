@@ -34,6 +34,7 @@
     --purple: #7c5cf0;
     --radius: 18px;
     --shadow: 0 4px 22px rgba(15, 40, 90, 0.07);
+    --shadow-lift: 0 12px 32px rgba(15, 40, 90, 0.16);
     --sidebar: 248px;
 }
 
@@ -63,6 +64,7 @@
         --amber: #fbbf24;
         --purple: #a78bfa;
         --shadow: 0 4px 22px rgba(0, 0, 0, 0.4);
+        --shadow-lift: 0 12px 32px rgba(0, 0, 0, 0.55);
     }
 }
 
@@ -91,6 +93,7 @@
     --amber: #fbbf24;
     --purple: #a78bfa;
     --shadow: 0 4px 22px rgba(0, 0, 0, 0.4);
+    --shadow-lift: 0 12px 32px rgba(0, 0, 0, 0.55);
 }
 
 *, *::before, *::after { box-sizing: border-box; }
@@ -265,8 +268,8 @@ h2 { font-size: 1.05rem; font-weight: 700; }
 .donut { position: relative; flex: none; width: 190px; }
 .donut svg { width: 100%; display: block; }
 .donut-center { position: absolute; inset: 0; display: grid; place-content: center; text-align: center; }
-.donut-center strong { font-size: 1.2rem; letter-spacing: -0.01em; }
-.donut-center small { color: var(--muted); font-weight: 600; }
+.donut-center strong { font-size: 1rem; letter-spacing: -0.02em; white-space: nowrap; }
+.donut-center small { color: var(--muted); font-weight: 600; max-width: 96px; margin: 0 auto; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .donut-legend { list-style: none; margin: 0; padding: 0; flex: 1; display: grid; gap: 12px; }
 .donut-legend li { display: grid; grid-template-columns: 1fr auto auto; gap: 14px; align-items: center; font-weight: 600; }
 .donut-legend .pct { color: var(--ink); min-width: 42px; text-align: right; }
@@ -408,9 +411,12 @@ a.cal-day:hover { text-decoration: none; border-color: var(--pastel); background
     display: grid; place-items: center; height: 150px; border-radius: 14px; color: #fff;
     background: linear-gradient(135deg, #1558c9, #5cd9ff);
 }
-.goal:nth-child(3n+2) .goal-visual { background: linear-gradient(135deg, #0ea5a4, #7ee0c5); }
-.goal:nth-child(3n+3) .goal-visual { background: linear-gradient(135deg, #5b4bdb, #a78bfa); }
+.goal-flip:nth-child(3n+2) .goal-visual { background: linear-gradient(135deg, #0ea5a4, #7ee0c5); }
+.goal-flip:nth-child(3n+3) .goal-visual { background: linear-gradient(135deg, #5b4bdb, #a78bfa); }
 .goal h3 { font-size: 1.05rem; font-weight: 800; margin-top: 6px; }
+.goal h3 a { color: var(--ink); }
+.goal h3 a:hover { text-decoration: none; color: var(--primary-ink); }
+.goal-visual:hover { text-decoration: none; }
 .goal .target { font-size: 1.25rem; font-weight: 800; }
 .goal .bar { grid-column: auto; }
 .goal .deadline { display: flex; align-items: center; gap: 8px; color: var(--muted); font-size: 13.5px; font-weight: 500; margin-top: 4px; }
@@ -495,7 +501,24 @@ form ul { list-style: none; padding: 0; margin: 6px 0 0; color: var(--red); font
 .appearance .segmented { margin: 0; }
 .segmented button {
     flex: 1; display: inline-flex; align-items: center; justify-content: center; gap: 8px;
-    padding: 10px 14px; border: 0; border-radius: 12px; cursor: pointer; background: transparent;
+    min-width: 0; padding: 10px 8px; border: 0; border-radius: 12px; cursor: pointer; background: transparent;
     color: var(--ink); font: inherit; font-weight: 700; font-size: 14px;
 }
+.list > li { min-width: 0; }
+/* Sur les écrans étroits, les trois boutons d'un sélecteur ne tiennent pas avec leur icône. */
+@media (max-width: 430px) { .segmented button .icon { display: none; } }
+/* Tableau plus large que l'écran : il défile dans sa carte au lieu de faire défiler toute la page. */
+.table-wrap { overflow-x: auto; }
 .segmented button[aria-pressed="true"] { background: var(--primary); color: #fff; box-shadow: 0 6px 14px rgba(31, 111, 239, 0.28); }
+
+/* ---------- Très petits écrans (≤ 400 px) : rien ne doit dépasser ---------- */
+.cal-kpis > *, .counts li { min-width: 0; }
+.donut-legend { min-width: 0; }
+@media (max-width: 400px) {
+    .cal-kpis .kpi .tile { display: none; }
+    .cal-kpis .kpi strong { overflow-wrap: anywhere; }
+    .counts { grid-template-columns: repeat(2, 1fr); }
+    .counts span .icon { display: none; }
+    .donut-legend li { gap: 8px; }
+    .donut-legend .amt { min-width: 0; }
+}

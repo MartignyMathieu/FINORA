@@ -27,6 +27,43 @@ et on automatise les opérations qui reviennent chaque mois. Chaque utilisateur 
 - **Interface** adaptée au bureau (barre latérale) et au mobile (barre d'onglets), entièrement en français
 - **Thème clair ou sombre** : automatique selon l'appareil par défaut, au choix dans Paramètres → Apparence, ou en un clic
   depuis la barre latérale ; le choix est mémorisé dans le navigateur et appliqué avant l'affichage (pas d'éclair clair)
+- **Animations, interactions et éléments en 3D** (voir « Animations et interactions »), désactivables dans
+  Paramètres → Apparence → Animations
+
+## Animations et interactions
+
+Tout est fait en CSS et en petits contrôleurs [Stimulus](https://stimulus.hotwired.dev/) (aucune bibliothèque d'animation
+ni de 3D) :
+
+| Élément | Où | Ce qu'il fait |
+| --- | --- | --- |
+| Apparition progressive | toutes les pages | les cartes et les lignes de liste glissent et apparaissent à tour de rôle en défilant |
+| Compteurs animés | accueil | les montants montent de 0 à leur valeur ; le texte exact du serveur est remis à la fin |
+| Carte inclinable en 3D | accueil (cartes de totaux, carte de solde) | s'incline vers le pointeur, avec un reflet qui suit la souris et du relief (souris uniquement) |
+| Courbe interactive | accueil | tracé progressif ; survol ou clavier sur un mois : trait de repère et info-bulle (revenus, dépenses) |
+| Donut interactif | accueil, statistiques | tracé progressif ; survol d'une part ou d'une ligne de légende : la catégorie ressort, son montant s'affiche au centre |
+| Barres de progression | budgets, objectifs | se remplissent en s'affichant |
+| Carte d'objectif à deux faces (3D) | objectifs | un bouton la retourne : reste à épargner, mois restants, effort mensuel, actions (Échap pour revenir) |
+| Pièce 3D | connexion, inscription | le « F » FINORA sur une pièce qui tourne |
+| Ajout rapide | bouton en bas à droite | déploie 5 raccourcis (transaction, récurrence, budget, objectif, compte) ; absent des pages de formulaire, de profil et de paramètres |
+| Messages | toutes les pages | glissent, se ferment d'un clic ; les confirmations disparaissent seules (pas les erreurs) |
+| Transitions | thème, navigation | fondu entre les thèmes clair et sombre ; transition fondue entre les pages (Turbo) |
+| Survol et appui | listes, boutons | la ligne se soulève, le bouton s'enfonce |
+
+**Réduire ou couper les animations.** Paramètres → Apparence → Animations : *Auto* (défaut) suit le réglage « réduire les
+animations » du système, *Réduites* coupe tout, *Complètes* force les animations même si le système demande de les réduire.
+Le choix est mémorisé dans le navigateur. Les interactions (info-bulle, retournement des cartes, menu d'ajout) fonctionnent
+dans tous les cas ; seul le mouvement disparaît.
+
+**Comment c'est construit.**
+
+- `assets/styles/motion.css` contient toutes les animations et les poses 3D ; **toute animation ou transition y est sous
+  `[data-fx="on"]`** (attribut posé sur `<html>` avant l'affichage, voir `assets/motion.js`). Ne jamais écrire d'`animation` ou de
+  `transition` hors de cette condition : un test échoue sinon.
+- Les contrôleurs sont dans `assets/controllers/` (`reveal`, `countup`, `tilt`, `chart`, `donut`, `flip`, `fab`, `flash`, `motion`, `theme`).
+- Amélioration progressive : sans JavaScript, ou animations coupées, rien n'est masqué ni déplacé et chaque élément garde son état final ;
+  le bouton d'ajout rapide devient un lien vers « Nouvelle transaction ».
+- On anime `translate`, `scale` et `rotate` plutôt que `transform`, pour se combiner avec l'inclinaison 3D.
 
 ## Mise en page : bureau et mobile
 
@@ -160,6 +197,15 @@ symfony console doctrine:migrations:migrate --env=test --no-interaction
 symfony php bin/phpunit
 ```
 
+**Contrôleurs JavaScript.** Leurs tests (`tests/js`) tournent avec Node.js 22 ou plus, sans dépendance ni navigateur, sur un faux
+DOM : `node --test "tests/js/*.test.mjs"`. Ils sont aussi lancés par PHPUnit (ignorés si Node n'est pas installé).
+
+**Vérification dans un vrai navigateur.** `node tools/browser/check.mjs [adresse]` pilote Chrome, Edge ou Chromium en mode headless
+(variable `CHROME_PATH` pour choisir le navigateur) sur le serveur de développement, avec l'utilisateur de test complet : toutes
+les pages sans erreur JavaScript en clair et en sombre, aucun défilement horizontal en 390, 360 et 320 px, et les interactions
+(inclinaison 3D, info-bulle, donut, carte retournée, ajout rapide, compteurs, animations réduites). Les captures d'écran sont écrites
+dans `var/screenshots/`. Le serveur doit tourner (`symfony serve -d`) et le jeu de données de test doit être chargé.
+
 Un test lit la feuille de style et vérifie les contrastes WCAG AA de chaque paire de couleurs dans les deux thèmes
 (`tests/Unit/ThemeContrastTest.php`) : en modifiant une couleur de `assets/styles/app.css`, garder les deux jeux de
 variables sombres identiques (`@media (prefers-color-scheme: dark)` et `[data-theme="dark"]`).
@@ -181,6 +227,12 @@ src/
 ├── Command/         app:recurring:generate
 ├── Twig/            icônes, montants et dates en français
 ├── DataFixtures/    utilisateurs de démonstration et de test
+assets/
+├── controllers/     contrôleurs Stimulus (interactions, animations, thème)
+├── styles/          app.css (mise en page, thèmes) et motion.css (animations, 3D)
+└── motion.js        règle commune des animations (data-fx)
+tests/js/            tests des contrôleurs JavaScript (faux DOM, `node --test`)
+tools/browser/       vérification dans un vrai navigateur (CDP, sans dépendance)
 docs/TESTING.md      plan de vérification manuelle pour les testeurs
 ```
 

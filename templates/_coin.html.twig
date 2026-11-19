@@ -1,0 +1,9 @@
+{# Pièce 3D décorative (CSS 3D, motion.css) : le « F » FINORA sur les deux faces, une tranche faite de fines couches empilées. #}
+<div class="coin-scene" aria-hidden="true">
+    <div class="coin">
+        <div class="coin-face coin-front">{{ include('_logo_mark.html.twig', {size: 50}) }}</div>
+        {% for i in 0..11 %}<span class="coin-edge" style="--i: {{ i }}"></span>{% endfor %}
+        <div class="coin-face coin-back">{{ include('_logo_mark.html.twig', {size: 50}) }}</div>
+    </div>
+    <div class="coin-shadow"></div>
+</div>

@@ -154,6 +154,48 @@ Pour chaque page, vérifier aussi : aucun message d'erreur, textes en français,
 
 - Tester en fenêtre large (barre latérale) et étroite (< 900 px : barre d'onglets en bas), sans défilement horizontal.
 
+## Animations, interactions et éléments 3D
+
+**Vérification automatique d'abord** : `node tools/browser/check.mjs` (serveur lancé, jeu de test chargé) contrôle dans un vrai
+navigateur les pages, les débordements mobiles et les interactions décrites ci-dessous, et écrit des captures dans
+`var/screenshots/`. Ce qui suit sert à **regarder** le résultat, ce qu'un script ne juge pas (fluidité, goût).
+
+À vérifier avec l'utilisateur complet, animations en mode *Auto* (ou *Complètes*) :
+
+- **Apparition** : en ouvrant une page ou en défilant, les cartes et les lignes de liste apparaissent à tour de rôle, sans saccade.
+- **Accueil** (bureau) : les montants des quatre cartes montent de 0 à leur valeur et s'arrêtent exactement dessus ; la courbe se trace de
+  gauche à droite, le donut se dessine part par part. Survoler une carte : elle s'incline vers le pointeur avec un reflet ; la quitter la
+  remet à plat.
+- **Courbe** : survoler un mois affiche un trait pointillé et une info-bulle (mois, revenus, dépenses) qui ne sort jamais du graphique ; au
+  clavier (Tab), chaque mois reçoit le focus et affiche la même info-bulle.
+- **Donut** (accueil et statistiques) : survoler une part ou une ligne de légende fait ressortir la catégorie, estompe les autres et affiche
+  son nom et son montant au centre ; quitter rétablit le total. Même chose au clavier sur la légende.
+- **Budgets et objectifs** : les barres se remplissent en arrivant à l'écran.
+- **Objectifs** : le bouton rond (flèches) d'une carte la retourne en 3D. Au dos : montant épargné, reste à épargner, échéance (« Dans N
+  mois », « Ce mois-ci », « dépassée »), effort mensuel nécessaire (≈ reste ÷ mois restants), et les boutons Voir / Modifier / Retour. Échap
+  ou Retour ramène à l'avant. Cas du jeu de test : objectif atteint (« Objectif atteint », pas d'effort), en retard (« dépassée », pas
+  d'effort), sans échéance (« Aucune »). Au clavier, seule la face visible est atteignable.
+- **Connexion / inscription** : la pièce 3D tourne et flotte ; elle ne gêne pas la saisie.
+- **Ajout rapide** (bouton « + » en bas à droite, sur les pages de liste et d'accueil, pas sur les formulaires, le profil ni les
+  paramètres) : il déploie 5 raccourcis, le « + » devient une croix et la page s'assombrit derrière ; Échap, un clic ailleurs ou un
+  raccourci le referment ; chaque raccourci mène à la bonne page de création. Sur mobile il reste au-dessus de la barre d'onglets.
+- **Messages** : en modifiant le prénom du profil, la confirmation glisse, peut être fermée par la croix, et disparaît seule après 6 s ; un
+  message d'erreur ne disparaît pas tout seul.
+- **Navigation** : passer d'une page à l'autre se fait en fondu, sans rechargement complet, et sans éclair de thème clair en mode sombre.
+- **Changement de thème** : le passage clair ↔ sombre se fait en fondu doux (pas de bascule brutale).
+- **Mobile** : pas d'inclinaison au toucher (réservée à la souris) ; la carte de solde et les listes apparaissent normalement ; aucun défilement
+  horizontal (essayer aussi à 320 px de large).
+
+**Animations réduites** (Paramètres → Apparence → Animations) :
+
+- *Réduites* : plus aucun mouvement (pas de fondu, de tracé, de compteur, d'inclinaison, de pièce qui tourne) mais **rien ne disparaît** :
+  tous les textes, graphiques et cartes sont là, dans leur état final. Les interactions restent possibles (info-bulle, retournement, menu).
+  Le choix survit au rechargement.
+- *Auto* avec le réglage du système « réduire les animations » activé (Windows : Paramètres → Accessibilité → Effets visuels → Effets
+  d'animation) : même résultat. *Complètes* : les animations reviennent malgré ce réglage.
+- Sans JavaScript (le désactiver dans le navigateur) : les pages restent complètes et lisibles ; le bouton « + » mène à « Nouvelle
+  transaction ».
+
 ## Thème clair / sombre
 
 À vérifier **sur toutes les pages** dans les deux thèmes (le test automatique ne voit pas le rendu) :

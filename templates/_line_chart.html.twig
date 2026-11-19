@@ -1,5 +1,6 @@
-{# Courbes revenus / dépenses. Paramètre : chart (voir FinanceStats::lineChart). #}
-<div class="chart">
+{# Courbes revenus / dépenses. Paramètres : chart (voir FinanceStats::lineChart), currency.
+   Interactif (chart_controller) : chaque mois a une zone sensible qui affiche ses valeurs. #}
+<div class="chart" data-controller="chart" data-action="pointerleave->chart#hide">
     <svg viewBox="0 0 560 250" role="img" aria-label="Évolution des revenus et des dépenses sur 6 mois">
         <defs>
             <linearGradient id="area-income" x1="0" y1="0" x2="0" y2="1">
@@ -12,12 +13,19 @@
             <text x="{{ chart.left - 8 }}" y="{{ tick.y + 4 }}" text-anchor="end">{{ tick.label }}&nbsp;€</text>
         {% endfor %}
         <polygon points="{{ chart.series.income.area }}" fill="url(#area-income)"/>
-        <polyline points="{{ chart.series.expense.line }}" fill="none" stroke="#7dbcff" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>
-        <polyline points="{{ chart.series.income.line }}" fill="none" stroke="#1f6fef" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>
-        {% for p in chart.series.expense.points %}<circle cx="{{ p.x }}" cy="{{ p.y }}" r="4" fill="#7dbcff" class="ring" stroke-width="1.5"/>{% endfor %}
-        {% for p in chart.series.income.points %}<circle cx="{{ p.x }}" cy="{{ p.y }}" r="4" fill="#1f6fef" class="ring" stroke-width="1.5"/>{% endfor %}
+        <polyline points="{{ chart.series.expense.line }}" pathLength="1" fill="none" stroke="#7dbcff" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>
+        <polyline points="{{ chart.series.income.line }}" pathLength="1" fill="none" stroke="#1f6fef" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>
+        {% for p in chart.series.expense.points %}<circle cx="{{ p.x }}" cy="{{ p.y }}" r="4" fill="#7dbcff" class="ring" style="--i: {{ loop.index0 }}" stroke-width="1.5"/>{% endfor %}
+        {% for p in chart.series.income.points %}<circle cx="{{ p.x }}" cy="{{ p.y }}" r="4" fill="#1f6fef" class="ring" style="--i: {{ loop.index0 }}" stroke-width="1.5"/>{% endfor %}
+        <line class="chart-cursor" data-chart-target="cursor" x1="0" x2="0" y1="{{ chart.top }}" y2="{{ chart.bottom }}"/>
         {% for l in chart.labels %}
             <text x="{{ l.x }}" y="{{ chart.bottom + 22 }}" text-anchor="middle">{{ l.month|short_date|split(' ')|last|capitalize }}</text>
+            <rect class="chart-hit" data-chart-target="hit" data-cx="{{ l.x }}"
+                  data-month="{{ l.month|month_label }}" data-income="{{ l.income|money(currency) }}" data-expense="{{ l.expense|money(currency) }}"
+                  data-action="pointerenter->chart#show focus->chart#show blur->chart#hide"
+                  x="{{ l.hitX }}" y="{{ chart.top }}" width="{{ l.hitWidth }}" height="{{ chart.bottom - chart.top }}"
+                  tabindex="0" role="img" aria-label="{{ l.month|month_label }} : revenus {{ l.income|money(currency) }}, dépenses {{ l.expense|money(currency) }}"/>
         {% endfor %}
     </svg>
+    <div class="chart-tip" data-chart-target="tip" hidden></div>
 </div>

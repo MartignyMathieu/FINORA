@@ -43,6 +43,10 @@ export default class extends Controller {
 
     apply(theme) {
         const root = document.documentElement;
+        // Fondu doux entre les deux thèmes (uniquement si les animations sont autorisées : voir motion.css).
+        root.classList.add('theme-switching');
+        clearTimeout(this.switching);
+        this.switching = setTimeout(() => root.classList.remove('theme-switching'), 450);
         try {
             if (theme === 'light' || theme === 'dark') {
                 root.dataset.theme = theme;
