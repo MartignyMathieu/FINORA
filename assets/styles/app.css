@@ -152,7 +152,7 @@ h2 { font-size: 1.05rem; font-weight: 700; }
 .logo:hover { text-decoration: none; }
 .logo-word { font-family: Montserrat, Inter, sans-serif; font-weight: 800; font-size: 22px; letter-spacing: 0.01em; }
 .nav { display: flex; flex-direction: column; gap: 4px; flex: 1; }
-.nav a, .nav span {
+.nav a {
     display: flex; align-items: center; gap: 14px;
     padding: 12px 16px; border-radius: 12px;
     color: #cfd9ea; font-weight: 600; font-size: 14.5px; text-decoration: none;
@@ -347,8 +347,6 @@ li:last-child > .tx { border-bottom: 0; }
 
 /* ---------- Profil ---------- */
 .profile-head { display: flex; align-items: center; gap: 16px; }
-.avatar-link { display: inline-flex; flex: none; border-radius: 50%; }
-.avatar-link:hover { text-decoration: none; }
 .avatar .icon { display: block; }
 .avatar-picker { border: 0; margin: 0 0 16px; padding: 0; min-width: 0; }
 .avatar-picker legend { padding: 0; font-weight: 700; margin-bottom: 8px; }
@@ -478,15 +476,22 @@ form ul { list-style: none; padding: 0; margin: 6px 0 0; color: var(--red); font
 .btn-block { width: 100%; padding: 14px 20px; }
 .btn-soft { background: var(--light); color: var(--ink); }
 
-/* Le prénom s'affiche en entier (il passe à la ligne si besoin) ; les boutons sont sur leur propre ligne. */
-.sidebar-user { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 10px; margin-top: 14px; padding: 12px 10px 0; border-top: 1px solid rgba(255, 255, 255, 0.1); }
-.sidebar-user-name { flex: 1 1 0; min-width: 0; overflow-wrap: anywhere; font-weight: 600; font-size: 14px; line-height: 1.25; color: #fff; }
-.sidebar-actions { flex: 1 1 100%; display: flex; gap: 6px; justify-content: flex-start; }
-.sidebar-user .logout, .sidebar-user .theme-toggle {
-    display: grid; place-items: center; width: 34px; height: 34px; border-radius: 10px; padding: 0;
-    border: 0; background: transparent; cursor: pointer; color: #cfd9ea;
+/* Utilisateur en bas de la barre latérale : pastille et prénom (en entier, à la ligne si besoin), puis deux boutons. */
+.sidebar-user { display: grid; grid-template-columns: auto 1fr; align-items: center; gap: 12px; margin-top: 14px; padding: 14px 6px 0; border-top: 1px solid rgba(255, 255, 255, 0.1); }
+.sidebar-user .avatar-link { display: inline-flex; flex: none; padding: 0; gap: 0; border-radius: 50%; background: none; box-shadow: none; }
+.sidebar-user .avatar-link:hover { background: none; text-decoration: none; }
+.sidebar-user .avatar { display: grid; place-items: center; padding: 0; }
+.sidebar-user .sidebar-user-name { display: block; padding: 0; background: none; min-width: 0; overflow-wrap: anywhere; font-weight: 700; font-size: 15px; line-height: 1.25; color: #fff; }
+.sidebar-user .sidebar-user-name:hover { background: none; text-decoration: underline; }
+.sidebar-actions { grid-column: 1 / -1; display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.sidebar-actions .logout, .sidebar-actions .theme-toggle {
+    display: flex; align-items: center; justify-content: center; gap: 6px; height: 38px; padding: 0 8px; border: 0; border-radius: 11px;
+    background: rgba(255, 255, 255, 0.07); color: #cfd9ea; font: inherit; font-size: 13px; font-weight: 600; white-space: nowrap; cursor: pointer;
 }
-.sidebar-user .logout:hover, .sidebar-user .theme-toggle:hover { background: rgba(255, 255, 255, 0.1); text-decoration: none; }
+.sidebar-actions .logout:hover, .sidebar-actions .theme-toggle:hover { background: rgba(255, 255, 255, 0.14); color: #fff; text-decoration: none; }
+.sidebar-actions .logout:focus-visible, .sidebar-actions .theme-toggle:focus-visible { outline: 2px solid #5cd9ff; outline-offset: 2px; }
+.sidebar-actions .icon { flex: none; }
+.theme-toggle > span { display: inline-flex; }
 .avatar-sm { width: 34px; height: 34px; font-size: 14px; }
 
 @media (max-width: 899px) {
@@ -507,13 +512,13 @@ form ul { list-style: none; padding: 0; margin: 6px 0 0; color: var(--red); font
 
 /* ---------- Apparence (clair / sombre) ---------- */
 /* L'icône du bouton montre le thème vers lequel on bascule : lune en clair, soleil en sombre. */
-.theme-to-light { display: none; }
+.theme-toggle > .theme-to-light { display: none; }
 @media (prefers-color-scheme: dark) {
-    :root:not([data-theme="light"]) .theme-to-dark { display: none; }
-    :root:not([data-theme="light"]) .theme-to-light { display: block; }
+    :root:not([data-theme="light"]) .theme-toggle > .theme-to-dark { display: none; }
+    :root:not([data-theme="light"]) .theme-toggle > .theme-to-light { display: inline-flex; }
 }
-:root[data-theme="dark"] .theme-to-dark { display: none; }
-:root[data-theme="dark"] .theme-to-light { display: block; }
+:root[data-theme="dark"] .theme-toggle > .theme-to-dark { display: none; }
+:root[data-theme="dark"] .theme-toggle > .theme-to-light { display: inline-flex; }
 
 .appearance { display: grid; gap: 12px; }
 .appearance h2 { margin: 0; display: flex; align-items: center; gap: 10px; }
@@ -542,8 +547,3 @@ form ul { list-style: none; padding: 0; margin: 6px 0 0; color: var(--red); font
     .donut-legend .amt { min-width: 0; }
 }
 
-/* La pastille de profil de la barre latérale ne reprend pas le style des liens du menu. */
-.nav .avatar-link, .nav .avatar-link:hover { padding: 0; background: none; box-shadow: none; }
-.nav .avatar-link .avatar { display: grid; place-items: center; padding: 0; gap: 0; border-radius: 50%; color: #fff; }
-.nav .theme-toggle span { padding: 0; gap: 0; }
-.nav .sidebar-actions a, .nav .sidebar-actions button { padding: 0; gap: 0; }

@@ -53,9 +53,9 @@
                             <a href="{{ path('app_profile') }}" class="sidebar-user-name" title="Mon profil">{{ app.user.displayName }}</a>
                             <div class="sidebar-actions">
                                 <button type="button" class="theme-toggle" data-controller="theme" data-action="theme#toggle" title="Changer de thème" aria-label="Basculer entre le thème clair et le thème sombre">
-                                    <span class="theme-to-dark">{{ icon('moon', 18) }}</span><span class="theme-to-light">{{ icon('sun', 18) }}</span>
+                                    <span class="theme-to-dark">{{ icon('moon', 18) }}</span><span class="theme-to-light">{{ icon('sun', 18) }}</span><span>Thème</span>
                                 </button>
-                                <a href="{{ path('app_logout') }}" class="logout" title="Se déconnecter" aria-label="Se déconnecter">{{ icon('logout', 18) }}</a>
+                                <a href="{{ path('app_logout') }}" class="logout" title="Se déconnecter" aria-label="Se déconnecter">{{ icon('logout', 18) }}Déconnexion</a>
                             </div>
                         </div>
                     {% endif %}
