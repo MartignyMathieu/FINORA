@@ -81,6 +81,19 @@ Pour chaque page, vérifier aussi : aucun message d'erreur, textes en français,
   - un libellé très long : la ligne ne doit pas déborder, même sur mobile ;
   - une catégorie au nom très long, une catégorie sans icône ni couleur ;
   - les transactions générées par une récurrence portent la mention « mensuelle », « quotidienne »…
+- **Filtres avancés** (bouton « Filtres », ouvert dès qu'un critère est actif ; un badge indique le nombre de filtres) :
+  - **Période** : champs « Du » / « Au » (bornes incluses) ou boutons rapides « Ce mois-ci », « Mois dernier », « 30 derniers jours », « Cette année ».
+  - **Montants** : « Montant min. » / « Montant max. » sur la valeur absolue (une dépense de 85,40 € et un revenu de 85,40 € sont égaux) ;
+    les montants ne sont pas convertis (le compte en dollars compte en dollars).
+  - **Compte** et **Catégorie** : listes de l'utilisateur uniquement.
+  - Tout se combine avec les onglets Toutes / Revenus / Dépenses et la recherche (qui gardent les filtres avancés).
+  - Les **pastilles** sous le panneau (« Du 01/11/2026 au 30/11/2026 », « Compte : … ») retirent chacune leur filtre d'un clic ;
+    « Réinitialiser » les retire tous.
+  - La ligne de **totaux** (« 8 transactions +2 500,00 € −1 168,19 € ») porte sur **toutes** les transactions trouvées, pas seulement
+    celles affichées ; les montants ne comptent que les comptes en euros. Au-delà de 300 résultats, une note le signale.
+  - Sans résultat : message « ne correspond à ces filtres » avec un lien pour réinitialiser.
+  - Valeurs invalides dans l'adresse (`?min=abc`, `?from=31/12/2026`, minimum supérieur au maximum…) : erreur 422.
+  - Le bouton d'export CSV reprend **tous** les filtres (période, montants, compte, catégorie, type, recherche).
 - Créer, modifier, supprimer ; le formulaire propose uniquement les comptes et catégories de l'utilisateur ;
   montant négatif ou nul refusé.
 

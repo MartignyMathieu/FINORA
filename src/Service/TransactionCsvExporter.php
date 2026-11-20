@@ -39,7 +39,7 @@ final class TransactionCsvExporter
         fputcsv($out, self::HEADER, $delimiter, '"', '', $eol);
 
         $count = 0;
-        foreach ($this->transactions->iterateForExport($user, $query->transactionType(), trim($query->q), $query->fromDate(), $query->toDate()) as $transaction) {
+        foreach ($this->transactions->iterateForExport($user, $query) as $transaction) {
             fputcsv($out, $this->row($transaction, $decimalSeparator), $delimiter, '"', '', $eol);
             ++$count;
         }

@@ -7,23 +7,81 @@
         <h1>Transactions</h1>
         <div class="toolbar">
             <form class="search" method="get" role="search">
-                {% if type != 'all' %}<input type="hidden" name="type" value="{{ type }}">{% endif %}
+                {# La recherche garde le type et les critères avancés. #}
+                {% for name, value in filter.without(['q']) %}<input type="hidden" name="{{ name }}" value="{{ value }}">{% endfor %}
                 {{ icon('search', 18) }}
                 <input type="search" name="q" value="{{ q }}" placeholder="Rechercher" aria-label="Rechercher une transaction">
             </form>
-            {# L'export reprend le filtre en cours (onglet et recherche) ; il n'est pas limité aux lignes affichées. #}
-            <a class="round-btn" href="{{ path('app_export_transactions', {type: type != 'all' ? type : null, q: q ?: null}) }}" data-turbo="false"
-               title="Exporter en CSV" aria-label="Exporter {{ type != 'all' or q ? 'les transactions filtrées' : 'toutes les transactions' }} en CSV">{{ icon('download', 22) }}</a>
+            {# L'export reprend tous les filtres en cours ; il n'est pas limité aux lignes affichées. #}
+            <a class="round-btn" href="{{ path('app_export_transactions', filter.toQuery()) }}" data-turbo="false"
+               title="Exporter en CSV" aria-label="Exporter {{ filter.isEmpty ? 'toutes les transactions' : 'les transactions filtrées' }} en CSV">{{ icon('download', 22) }}</a>
             <a class="round-btn" href="{{ path('app_transaction_new') }}" aria-label="Nouvelle transaction">{{ icon('plus', 22) }}</a>
         </div>
     </header>
 
-    {% set base_query = q ? {q: q} : {} %}
+    {% set base_query = filter.without(['type']) %}
     <nav class="segmented" aria-label="Type de transactions">
         <a href="{{ path('app_transaction_index', base_query) }}" class="{{ type == 'all' ? 'active' }}">Toutes</a>
         <a href="{{ path('app_transaction_index', base_query|merge({type: 'income'})) }}" class="{{ type == 'income' ? 'active' }}">Revenus</a>
         <a href="{{ path('app_transaction_index', base_query|merge({type: 'expense'})) }}" class="{{ type == 'expense' ? 'active' }}">Dépenses</a>
     </nav>
+
+    {# Filtres avancés : période, montants, compte, catégorie. Ouverts dès qu'un critère est actif. #}
+    <details class="filters card" {{ filter.advancedCount > 0 ? 'open' }}>
+        <summary>{{ icon('filter', 20) }}Filtres{% if filter.advancedCount > 0 %}<span class="filters-count" aria-label="{{ filter.advancedCount }} filtre{{ filter.advancedCount > 1 ? 's' }} actif{{ filter.advancedCount > 1 ? 's' }}">{{ filter.advancedCount }}</span>{% endif %}</summary>
+
+        <div class="filter-presets" role="group" aria-label="Périodes rapides">
+            {% for preset in presets %}
+                <a class="chip-link {{ filter.from == preset.from and filter.to == preset.to ? 'active' }}"
+                   href="{{ path('app_transaction_index', filter.without(['from', 'to'])|merge({from: preset.from, to: preset.to})) }}">{{ preset.label }}</a>
+            {% endfor %}
+        </div>
+
+        <form class="filter-form" method="get" action="{{ path('app_transaction_index') }}">
+            {% for name, value in filter.without(['from', 'to', 'min', 'max', 'account', 'category']) %}<input type="hidden" name="{{ name }}" value="{{ value }}">{% endfor %}
+            <label>Du<input type="date" name="from" value="{{ filter.from }}"></label>
+            <label>Au<input type="date" name="to" value="{{ filter.to }}"></label>
+            <label>Montant min.<input type="number" name="min" value="{{ filter.minAmount }}" min="0" step="0.01" inputmode="decimal" placeholder="0,00"></label>
+            <label>Montant max.<input type="number" name="max" value="{{ filter.maxAmount }}" min="0" step="0.01" inputmode="decimal" placeholder="Sans limite"></label>
+            <label>Compte
+                <select name="account">
+                    <option value="">Tous les comptes</option>
+                    {% for account in accounts %}<option value="{{ account.id }}" {{ filter.accountId == account.id ? 'selected' }}>{{ account.name }} ({{ account.currency }})</option>{% endfor %}
+                </select>
+            </label>
+            <label>Catégorie
+                <select name="category">
+                    <option value="">Toutes les catégories</option>
+                    {% for category in categories %}<option value="{{ category.id }}" {{ filter.categoryId == category.id ? 'selected' }}>{{ category.name }}</option>{% endfor %}
+                </select>
+            </label>
+            <div class="filter-actions">
+                <button class="btn btn-primary" type="submit">Appliquer</button>
+                <a class="btn btn-ghost" href="{{ path('app_transaction_index', filter.without(['from', 'to', 'min', 'max', 'account', 'category'])) }}">Réinitialiser</a>
+            </div>
+        </form>
+    </details>
+
+    {% if chips is not empty %}
+        <ul class="filter-chips" aria-label="Filtres actifs">
+            {% for chip in chips %}
+                <li><a href="{{ path('app_transaction_index', chip.query) }}" title="Retirer ce filtre" aria-label="Retirer le filtre : {{ chip.label }}">{{ chip.label }}<span aria-hidden="true">&times;</span></a></li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+
+    {# Totaux de toutes les transactions trouvées (pas seulement les lignes affichées). #}
+    {% if totals.count > 0 %}
+        <p class="filter-summary">
+            <strong>{{ totals.count }} transaction{{ totals.count > 1 ? 's' }}</strong>
+            <span class="amount-in">{{ totals.income|money(currency, true) }}</span>
+            <span class="amount-out">{{ (-totals.expense)|money(currency) }}</span>
+            <span class="muted">Comptes en {{ currency }} uniquement pour les montants.</span>
+        </p>
+        {% if totals.count > limit %}
+            <p class="muted">Les {{ limit }} plus récentes sont affichées ; l'export CSV contient tout.</p>
+        {% endif %}
+    {% endif %}
 
     {% set current = null %}
     {% for transaction in transactions %}
@@ -48,8 +106,11 @@
         {% if loop.last %}</ul>{% endif %}
     {% else %}
         <div class="card empty">
-            {% if q or type != 'all' %}Aucune transaction ne correspond à ce filtre.{% else %}Aucune transaction pour le moment.{% endif %}
-            <a href="{{ path('app_transaction_new') }}">Ajouter une transaction</a>
+            {% if not filter.isEmpty %}
+                Aucune transaction ne correspond à ces filtres. <a href="{{ path('app_transaction_index') }}">Réinitialiser les filtres</a>
+            {% else %}
+                Aucune transaction pour le moment. <a href="{{ path('app_transaction_new') }}">Ajouter une transaction</a>
+            {% endif %}
         </div>
     {% endfor %}
 {% endblock %}

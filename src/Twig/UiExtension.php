@@ -27,6 +27,7 @@ final class UiExtension
         'calendar' => 'ph:calendar-blank-duotone',
         'gear' => 'ph:gear-six-duotone',
         'search' => 'ph:magnifying-glass-duotone',
+        'filter' => 'ph:funnel-duotone',
         'cart' => 'ph:shopping-cart-duotone',
         'car' => 'ph:car-duotone',
         'wifi' => 'ph:wifi-high-duotone',

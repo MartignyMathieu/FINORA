@@ -3,7 +3,14 @@
 namespace App\Controller;
 
 use App\Entity\Transaction;
-use App\Enum\TransactionType as Kind;
+use App\Dto\TransactionFilter;
+use App\Entity\Account;
+use App\Entity\Category;
+use App\Repository\AccountRepository;
+use App\Repository\CategoryRepository;
+use Symfony\Component\Clock\ClockInterface;
+use Symfony\Component\DependencyInjection\Attribute\Autowire;
+use Symfony\Component\HttpKernel\Attribute\MapQueryString;
 use App\Form\TransactionType;
 use App\Repository\TransactionRepository;
 use Doctrine\ORM\EntityManagerInterface;
@@ -23,17 +30,30 @@ final class TransactionController extends AbstractController
     #[Route(name: 'app_transaction_index', methods: ['GET'])]
     public function index(
         TransactionRepository $transactionRepository,
+        AccountRepository $accountRepository,
+        CategoryRepository $categoryRepository,
+        ClockInterface $clock,
         #[CurrentUser] User $user,
-        #[MapQueryParameter] string $type = 'all',
-        #[MapQueryParameter] string $q = '',
+        #[Autowire(param: 'app.default_currency')] string $currency,
+        #[MapQueryString(validationFailedStatusCode: Response::HTTP_UNPROCESSABLE_ENTITY)] ?TransactionFilter $filter = null,
     ): Response {
-        $kind = Kind::tryFrom($type);
-        $search = trim($q);
+        $filter ??= new TransactionFilter();
+        $accounts = $accountRepository->findBy(['owner' => $user], ['name' => 'ASC']);
+        $categories = $categoryRepository->findBy(['owner' => $user], ['name' => 'ASC']);
 
         return $this->render('transaction/index.html.twig', [
-            'transactions' => $transactionRepository->search($user, $kind, $search),
-            'type' => $kind?->value ?? 'all',
-            'q' => $search,
+            'transactions' => $transactionRepository->search($user, $filter),
+            'totals' => $transactionRepository->totals($user, $filter, $currency),
+            'limit' => $transactionRepository->limit(),
+            'currency' => $currency,
+            'filter' => $filter,
+            // Onglets et recherche gardent les autres critères.
+            'type' => $filter->transactionType()?->value ?? 'all',
+            'q' => $filter->searchText(),
+            'accounts' => $accounts,
+            'categories' => $categories,
+            'chips' => $this->chips($filter, $accounts, $categories),
+            'presets' => $this->presets($clock->now()),
         ]);
     }
 
@@ -97,5 +117,77 @@ final class TransactionController extends AbstractController
         }
 
         return $this->redirectToRoute('app_transaction_index', [], Response::HTTP_SEE_OTHER);
+    }
+
+    /**
+     * Critères avancés actifs, chacun avec le lien qui le retire.
+     *
+     * @param list<Account>  $accounts
+     * @param list<Category> $categories
+     *
+     * @return list<array{label: string, query: array<string, string>}>
+     */
+    private function chips(TransactionFilter $filter, array $accounts, array $categories): array
+    {
+        $chips = [];
+        $from = $filter->fromDate();
+        $to = $filter->toDate();
+        if (null !== $from || null !== $to) {
+            $chips[] = [
+                'label' => match (true) {
+                    null !== $from && null !== $to => sprintf('Du %s au %s', $from->format('d/m/Y'), $to->format('d/m/Y')),
+                    null !== $from => 'Depuis le '.$from->format('d/m/Y'),
+                    default => 'Jusqu\'au '.$to->format('d/m/Y'),
+                },
+                'query' => $filter->without(['from', 'to']),
+            ];
+        }
+        $min = $filter->minAmount();
+        $max = $filter->maxAmount();
+        if (null !== $min || null !== $max) {
+            $chips[] = [
+                'label' => match (true) {
+                    null !== $min && null !== $max => sprintf('Montant de %s à %s', $this->amount($min), $this->amount($max)),
+                    null !== $min => 'Montant d\'au moins '.$this->amount($min),
+                    default => 'Montant d\'au plus '.$this->amount($max),
+                },
+                'query' => $filter->without(['min', 'max']),
+            ];
+        }
+        foreach ($accounts as $account) {
+            if ($account->getId() === $filter->accountId()) {
+                $chips[] = ['label' => 'Compte : '.$account->getName(), 'query' => $filter->without(['account'])];
+            }
+        }
+        foreach ($categories as $category) {
+            if ($category->getId() === $filter->categoryId()) {
+                $chips[] = ['label' => 'Catégorie : '.$category->getName(), 'query' => $filter->without(['category'])];
+            }
+        }
+
+        return $chips;
+    }
+
+    private function amount(string $amount): string
+    {
+        return str_replace('.', ',', $amount);
+    }
+
+    /**
+     * Périodes prêtes à l'emploi.
+     *
+     * @return list<array{label: string, from: string, to: string}>
+     */
+    private function presets(\DateTimeInterface $now): array
+    {
+        $today = \DateTimeImmutable::createFromInterface($now)->setTime(0, 0);
+        $month = $today->modify('first day of this month');
+
+        return [
+            ['label' => 'Ce mois-ci', 'from' => $month->format('Y-m-d'), 'to' => $month->modify('last day of this month')->format('Y-m-d')],
+            ['label' => 'Mois dernier', 'from' => $month->modify('-1 month')->format('Y-m-d'), 'to' => $month->modify('-1 day')->format('Y-m-d')],
+            ['label' => '30 derniers jours', 'from' => $today->modify('-29 days')->format('Y-m-d'), 'to' => $today->format('Y-m-d')],
+            ['label' => 'Cette année', 'from' => $today->format('Y').'-01-01', 'to' => $today->format('Y').'-12-31'],
+        ];
     }
 }
