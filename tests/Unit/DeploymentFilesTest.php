@@ -66,6 +66,12 @@ final class DeploymentFilesTest extends TestCase
         self::assertStringContainsString('PORT', $entrypoint);
     }
 
+    public function testTheServerBinaryDoesNotNeedAnySystemCapability(): void
+    {
+        // Render retire les capacités du conteneur : un binaire qui en réclame une ne démarre plus (« Operation not permitted »).
+        self::assertStringContainsString('setcap -r /usr/local/bin/frankenphp', (string) file_get_contents(self::ROOT.'/Dockerfile'));
+    }
+
     public function testDevelopmentFilesStayOutOfTheImage(): void
     {
         $ignored = (string) file_get_contents(self::ROOT.'/.dockerignore');

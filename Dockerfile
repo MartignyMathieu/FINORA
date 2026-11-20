@@ -10,6 +10,10 @@ ENV APP_ENV=prod \
 RUN install-php-extensions pdo_pgsql intl opcache zip \
     && cp "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini"
 
+# Le binaire porte la capacité « écouter sur un port < 1024 » : un hébergeur qui retire les capacités du conteneur (Render)
+# refuse alors de l'exécuter (« Operation not permitted »). Nous écoutons sur $PORT (> 1024) : on la retire.
+RUN setcap -r /usr/local/bin/frankenphp
+
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
 WORKDIR /app
