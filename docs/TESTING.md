@@ -44,6 +44,12 @@ Pour chaque page, vérifier aussi : aucun message d'erreur, textes en français,
 - Courbe sur 6 mois et répartition des dépenses (4 catégories principales + « Autres »).
 - Le solde total ne compte **pas** le compte en dollars (aucune conversion entre devises).
 - Mobile : carte de solde, accès rapides, aperçu du mois.
+- **Prévision de fin de mois** (mois en cours seulement : elle disparaît en changeant de mois avec les flèches) : « Solde prévu » à la fin du
+  mois = solde d'aujourd'hui + opérations à venir. Vérifier le calcul : solde prévu = solde aujourd'hui + revenus à venir − dépenses à venir.
+  Le jeu de test a des opérations à venir (« Paiement programmé (futur) », récurrences dont l'échéance tombe d'ici la fin du mois) :
+  « N opérations à venir » se déplie en liste (récurrences marquées « récurrence prévue »). Les comptes en dollars ne comptent pas.
+  - Un solde qui risque de passer sous zéro affiche un avertissement rouge avec le montant le plus bas et sa date ; sinon un message vert.
+  - Les soldes de la carte suivent l'œil « Masquer le solde total » ; les revenus et dépenses à venir restent visibles.
 - **Masquer le solde total** : l'œil de la carte de solde (mobile) ou de la carte « Solde total » (bureau) remplace le montant par « •••••• » ; l'œil devient barré et le bouton annonce « Afficher le solde total ». Le choix est mémorisé (il tient après rechargement et sur les autres pages) et s'applique aux deux cartes. Revenus, dépenses et épargne du mois restent visibles.
 
 ## Comptes (`/account`)

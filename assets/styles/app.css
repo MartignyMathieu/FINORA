@@ -619,3 +619,21 @@ body { padding-top: env(safe-area-inset-top); }
 .icon-btn { display: inline-grid; place-items: center; width: 36px; height: 36px; padding: 0; border: 0; border-radius: 50%; background: transparent; color: var(--muted); cursor: pointer; }
 .icon-btn:hover { background: var(--light); color: var(--red); }
 .icon-btn:focus-visible { outline: 2px solid var(--primary); outline-offset: 2px; }
+
+/* ---------- Prévision de fin de mois ---------- */
+.forecast { margin-bottom: 20px; }
+.forecast .card-head { margin-bottom: 14px; }
+.forecast-main { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr); gap: 18px; align-items: center; }
+.forecast-projected small { display: block; color: var(--muted); font-weight: 600; font-size: 13px; }
+.forecast-projected strong { font-size: 1.9rem; letter-spacing: -0.02em; }
+.forecast-projected.is-negative strong { color: var(--red); }
+.forecast-parts { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+.forecast-parts li { display: flex; justify-content: space-between; gap: 12px; padding: 9px 12px; border-radius: 12px; background: var(--light); font-weight: 600; }
+.forecast-parts li span { color: var(--muted); }
+.forecast-note { margin: 14px 0 0; padding: 10px 14px; border-radius: 12px; background: var(--green-soft); color: var(--green); font-weight: 600; }
+.forecast-note.is-warning { background: var(--red-soft); color: var(--red); }
+.forecast-events { margin-top: 12px; }
+.forecast-events summary { cursor: pointer; font-weight: 700; color: var(--primary-ink, var(--primary)); padding: 6px 0; }
+.forecast-events .mini-list li { display: flex; align-items: center; gap: 12px; padding: 9px 0; }
+.forecast-events .mini-list li + li { border-top: 1px solid var(--line); }
+@media (max-width: 899px) { .forecast-main { grid-template-columns: 1fr; } }

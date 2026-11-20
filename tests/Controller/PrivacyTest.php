@@ -35,7 +35,11 @@ final class PrivacyTest extends AbstractCrudTestCase
     {
         $crawler = $this->client->request('GET', '/');
 
-        self::assertCount(2, $crawler->filter('.amt-mask'), 'Solde total : carte mobile et carte bureau seulement');
+        // Les soldes (carte mobile, carte bureau, prévision) sont masqués ; revenus, dépenses et épargne du mois ne le sont pas.
+        self::assertCount(1, $crawler->filter('.balance-amount .amt-mask'));
+        self::assertCount(1, $crawler->filter('.kpi:first-child .amt-mask'));
+        self::assertCount(0, $crawler->filter('.kpi:nth-child(n+2) .amt-mask'));
+        self::assertCount(0, $crawler->filter('.overview .amt-mask'));
     }
 
     public function testThePreferenceIsAppliedBeforeThePageIsShown(): void

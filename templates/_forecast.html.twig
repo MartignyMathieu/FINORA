@@ -1,0 +1,49 @@
+{# Prévision de fin de mois (ForecastBuilder). Paramètre : forecast. Les soldes suivent le masquage du solde total. #}
+{% set c = forecast.currency %}
+<section class="card forecast" aria-labelledby="forecast-title">
+    <div class="card-head">
+        <h2 id="forecast-title">Prévision de fin de mois</h2>
+        <span class="muted">au {{ forecast.endOfMonth|short_date }}</span>
+    </div>
+
+    <div class="forecast-main">
+        <div class="forecast-projected {{ forecast.projected < 0 ? 'is-negative' }}">
+            <small>Solde prévu</small>
+            <strong><span class="amt-real">{{ forecast.projected|money(c) }}</span>{{ include('_amount_mask.html.twig') }}</strong>
+        </div>
+        <ul class="forecast-parts">
+            <li><span>Solde aujourd'hui</span><strong><span class="amt-real">{{ forecast.balanceNow|money(c) }}</span>{{ include('_amount_mask.html.twig') }}</strong></li>
+            <li><span>Revenus à venir</span><strong class="amount-in">{{ forecast.upcomingIncome|money(c, true) }}</strong></li>
+            <li><span>Dépenses à venir</span><strong class="amount-out">{{ (-forecast.upcomingExpense)|money(c) }}</strong></li>
+        </ul>
+    </div>
+
+    {% if forecast.negative %}
+        <p class="forecast-note is-warning" role="status">
+            Attention : votre solde pourrait descendre à <strong><span class="amt-real">{{ forecast.lowest|money(c) }}</span>{{ include('_amount_mask.html.twig') }}</strong>
+            le {{ forecast.lowestDate|short_date }}.
+        </p>
+    {% elseif forecast.events is empty %}
+        <p class="forecast-note">Aucune opération à venir ce mois-ci : le solde prévu est celui d'aujourd'hui.</p>
+    {% else %}
+        <p class="forecast-note">Votre solde reste positif d'ici la fin du mois.</p>
+    {% endif %}
+
+    {% if forecast.events is not empty %}
+        <details class="forecast-events">
+            <summary>{{ forecast.events|length }} opération{{ forecast.events|length > 1 ? 's' }} à venir</summary>
+            <ul class="mini-list">
+                {% for event in forecast.events|slice(0, 8) %}
+                    <li>
+                        <span class="grow">
+                            <span class="name">{{ event.label }}</span>
+                            <span class="sub">{{ event.date|short_date }}{% if event.planned %} &bull; récurrence prévue{% endif %}</span>
+                        </span>
+                        <span class="{{ event.amount < 0 ? 'amount-out' : 'amount-in' }}">{{ event.amount|money(c, true) }}</span>
+                    </li>
+                {% endfor %}
+            </ul>
+            {% if forecast.events|length > 8 %}<p class="muted">… et {{ forecast.events|length - 8 }} autre{{ forecast.events|length - 8 > 1 ? 's' }}.</p>{% endif %}
+        </details>
+    {% endif %}
+</section>

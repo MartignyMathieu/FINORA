@@ -254,7 +254,9 @@ final class MotionTest extends AbstractCrudTestCase
             self::assertSame('false', $button->attr('aria-expanded'));
             self::assertStringContainsString('Voir le détail', (string) $button->attr('aria-label'));
             self::assertCount(1, $one->filter('.goal-back button[data-action="flip#toggle"]'), 'Bouton « Retour »');
-            self::assertCount(1, $one->filter('.goal-back a[href^="/goal/"]:not([href$="/edit"])'));
+            // « Verser » (formulaire de versement) et « Voir » (page de l'objectif).
+            self::assertCount(1, $one->filter('.goal-back a[href$="/contribution/new"]'));
+            self::assertCount(1, $one->filter('.goal-back a[href^="/goal/"]:not([href$="/edit"]):not([href$="/contribution/new"])'));
             self::assertCount(1, $one->filter('.goal-back a[href$="/edit"]'));
         }
 

@@ -47,6 +47,10 @@
         <div class="card kpi" data-controller="tilt"><span class="tile">{{ icon('piggy', 24) }}</span><div><small>Épargne</small><strong data-controller="countup" data-countup-value-value="{{ totals.savings|number_format(2, '.', '') }}" data-countup-currency-value="{{ currency }}">{{ totals.savings|money(currency) }}</strong></div></div>
     </section>
 
+    {% if forecast %}
+        {{ include('_forecast.html.twig') }}
+    {% endif %}
+
     <section class="grid-2 only-desktop">
         <div class="card">
             <h2>Évolution de vos finances</h2>
