@@ -66,6 +66,24 @@ final class DeploymentFilesTest extends TestCase
         self::assertStringContainsString('PORT', $entrypoint);
     }
 
+    public function testTheDemoAccountIsLoadedOnlyOnRequestAndWithoutTouchingOtherAccounts(): void
+    {
+        $entrypoint = (string) file_get_contents(self::ROOT.'/docker/entrypoint.sh');
+
+        self::assertStringContainsString('LOAD_DEMO_DATA', $entrypoint);
+        self::assertStringContainsString('doctrine:fixtures:load --group=demo --append', $entrypoint);
+        // Désactivée par défaut : la variable n'est jamais posée par le blueprint.
+        self::assertNotContains('LOAD_DEMO_DATA', array_column($this->blueprint()['services'][0]['envVars'], 'key'));
+    }
+
+    public function testTheFixturesBundleIsInstalledInProduction(): void
+    {
+        $composer = json_decode((string) file_get_contents(self::ROOT.'/composer.json'), true, flags: \JSON_THROW_ON_ERROR);
+
+        self::assertArrayHasKey('doctrine/doctrine-fixtures-bundle', $composer['require']);
+        self::assertArrayNotHasKey('doctrine/doctrine-fixtures-bundle', $composer['require-dev']);
+    }
+
     public function testTheServerBinaryDoesNotNeedAnySystemCapability(): void
     {
         // Render retire les capacités du conteneur : un binaire qui en réclame une ne démarre plus (« Operation not permitted »).

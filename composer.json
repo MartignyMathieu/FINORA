@@ -8,6 +8,7 @@
         "ext-ctype": "*",
         "ext-iconv": "*",
         "doctrine/doctrine-bundle": "^3.4",
+        "doctrine/doctrine-fixtures-bundle": "^4.3",
         "doctrine/doctrine-migrations-bundle": "^4.0",
         "doctrine/orm": "^3.8",
         "dragonmantank/cron-expression": "^3.6",
@@ -51,7 +52,6 @@
         "twig/twig": "^2.12|^3.0"
     },
     "require-dev": {
-        "doctrine/doctrine-fixtures-bundle": "^4.3",
         "phpunit/phpunit": "^13.4",
         "symfony/browser-kit": "8.1.*",
         "symfony/css-selector": "8.1.*",

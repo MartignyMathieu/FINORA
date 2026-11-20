@@ -25,12 +25,25 @@ Render fournit le **HTTPS** : l'application devient alors installable sur Androi
 - **Sessions** : stockées en base (table `sessions`), elles survivent aux redéploiements.
 - **Journaux** : sur la sortie d'erreur, au format JSON (onglet Logs de Render).
 
+## Compte de démonstration en ligne
+
+Pour présenter l'application avec des données réalistes, sans ouvrir la base :
+
+1. Dans Render, service **finora** → **Environment** → **Add Environment Variable** : clé `LOAD_DEMO_DATA`, valeur `1`. Enregistrer :
+   Render redéploie.
+2. Au démarrage, le conteneur crée (ou remplace) le compte `demo@finora.test` et ses données (mot de passe : constante `PASSWORD` de
+   `src/DataFixtures/DemoFixtures.php`), avec `--append` : les autres comptes ne sont pas touchés.
+3. Une fois le compte créé, **supprimer la variable** (nouveau redéploiement) : sinon les données de démonstration sont régénérées à chaque
+   démarrage.
+
+Le mot de passe est celui du dépôt : le changer après la première connexion (Profil → Mot de passe) si le dépôt est public.
+
 ## Points d'attention
 
 - L'offre gratuite met le service en veille après un moment sans visite (premier chargement lent) et limite la durée de la base :
   vérifier les conditions actuelles sur la page de tarifs de Render avant de choisir.
-- **Ne jamais charger les fixtures en production** : elles contiennent des identifiants de démonstration connus. Elles ne sont d'ailleurs
-  pas installées dans l'image (dépendances de développement exclues).
+- **Ne jamais charger les fixtures en production** : elles contiennent des identifiants de démonstration connus. Le paquet des fixtures est
+  installé dans l'image, mais rien n'est chargé sans la variable `LOAD_DEMO_DATA`.
 - L'inscription est ouverte à tous.
 - Les mots de passe de la base fournis par Render sont alphanumériques ; un `%` dans `DATABASE_URL` serait pris pour un paramètre Symfony.
 
