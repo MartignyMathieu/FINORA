@@ -8,6 +8,7 @@ use App\Entity\Account;
 use App\Entity\Category;
 use App\Repository\AccountRepository;
 use App\Repository\CategoryRepository;
+use App\Service\UndoDeletion;
 use Symfony\Component\Clock\ClockInterface;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\HttpKernel\Attribute\MapQueryString;
@@ -109,11 +110,16 @@ final class TransactionController extends AbstractController
 
     #[IsGranted(OwnerVoter::MANAGE, 'transaction')]
     #[Route('/{id}', name: 'app_transaction_delete', methods: ['POST'])]
-    public function delete(Request $request, Transaction $transaction, EntityManagerInterface $entityManager): Response
+    public function delete(Request $request, Transaction $transaction, EntityManagerInterface $entityManager, UndoDeletion $undo, #[CurrentUser] User $user): Response
     {
         if ($this->isCsrfTokenValid('delete'.$transaction->getId(), $request->getPayload()->getString('_token'))) {
+            // Copie gardée avant la suppression : le message de confirmation propose de l'annuler.
+            $token = $undo->rememberTransactions($user, [$transaction]);
             $entityManager->remove($transaction);
             $entityManager->flush();
+            if (null !== $token) {
+                $this->addFlash('success', ['message' => 'La transaction a été supprimée.', 'undo' => $token]);
+            }
         }
 
         return $this->redirectToRoute('app_transaction_index', [], Response::HTTP_SEE_OTHER);

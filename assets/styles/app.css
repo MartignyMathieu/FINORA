@@ -698,3 +698,10 @@ body { padding-top: env(safe-area-inset-top); }
 .import-preview tr.is-dup td { color: var(--muted); }
 .import-form div:has(> input[type="checkbox"]) { display: flex; flex-direction: row-reverse; justify-content: flex-end; align-items: center; gap: 10px; }
 .import-form div:has(> input[type="checkbox"]) label { margin: 0; font-weight: 600; }
+
+/* ---------- Message avec bouton « Annuler » ---------- */
+.flash-undo { display: flex; align-items: center; flex-wrap: wrap; gap: 6px 14px; }
+.flash-undo form { margin: 0; }
+.flash-action { padding: 6px 14px; border: 2px solid currentColor; border-radius: 999px; background: transparent; color: inherit; font: inherit; font-weight: 800; font-size: 14px; cursor: pointer; }
+.flash-action:hover { background: rgba(0, 0, 0, 0.08); }
+.flash-action:focus-visible { outline: 3px solid currentColor; outline-offset: 2px; }

@@ -97,6 +97,18 @@ Pour chaque page, vérifier aussi : aucun message d'erreur, textes en français,
 - Créer, modifier, supprimer ; le formulaire propose uniquement les comptes et catégories de l'utilisateur ;
   montant négatif ou nul refusé.
 
+## Annulation d'une suppression
+
+- Supprimer une **transaction** (page de modification → « Supprimer ») : le message vert « La transaction a été supprimée. » affiche un bouton
+  **« Annuler »** et reste 15 secondes (ou jusqu'à la croix). Le total « N transactions » de la liste baisse de 1.
+- Cliquer sur « Annuler » : « 1 transaction restaurée. », le total remonte, la transaction est de retour **avec le même contenu** (libellé, montant,
+  date, note, compte, catégorie, lien avec sa récurrence) ; seul son identifiant change.
+- Même chose pour un **virement** (« 1 virement restauré. ») : les deux soldes retrouvent leurs valeurs.
+- Le jeton d'annulation est **à usage unique** (recliquer ou rejouer le lien : « Le délai pour annuler cette suppression est dépassé. »), valable
+  **dix minutes**, propre à votre session (un autre utilisateur ne peut pas l'utiliser) ; on garde les cinq dernières suppressions.
+- Si le compte ou la catégorie de la ligne a été supprimé entre-temps, elle n'est pas restaurée et le message l'explique.
+- Les autres messages de confirmation (enregistrement, modification…) n'ont pas de bouton « Annuler » et disparaissent après 6 secondes.
+
 ## Import CSV (`/import/transactions`)
 
 - Accès : icône de téléversement en haut de la page Transactions, ou « Importer des transactions (CSV) » dans le profil.

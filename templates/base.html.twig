@@ -74,7 +74,19 @@
             <main class="content" data-controller="reveal">
                 {% for label, messages in app.flashes %}
                     {% for message in messages %}
-                        <div class="flash flash-{{ label }}" role="alert" data-controller="flash">{{ message }}<button type="button" class="flash-close" data-action="flash#close" aria-label="Fermer le message">&times;</button></div>
+                        {% if message is iterable %}
+                            {# Message avec bouton « Annuler » (suppression annulable, voir UndoDeletion). #}
+                            <div class="flash flash-{{ label }} flash-undo" role="alert" data-controller="flash" data-flash-delay-value="15000">
+                                <span>{{ message.message }}</span>
+                                <form method="post" action="{{ path('app_undo', {token: message.undo}) }}">
+                                    <input type="hidden" name="_token" value="{{ csrf_token('undo' ~ message.undo) }}">
+                                    <button class="flash-action" type="submit">Annuler</button>
+                                </form>
+                                <button type="button" class="flash-close" data-action="flash#close" aria-label="Fermer le message">&times;</button>
+                            </div>
+                        {% else %}
+                            <div class="flash flash-{{ label }}" role="alert" data-controller="flash">{{ message }}<button type="button" class="flash-close" data-action="flash#close" aria-label="Fermer le message">&times;</button></div>
+                        {% endif %}
                     {% endfor %}
                 {% endfor %}
                 {% block body %}{% endblock %}

@@ -7,6 +7,7 @@ use App\Entity\User;
 use App\Form\TransferType;
 use App\Repository\TransferRepository;
 use App\Security\OwnerVoter;
+use App\Service\UndoDeletion;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Clock\ClockInterface;
@@ -63,12 +64,14 @@ final class TransferController extends AbstractController
 
     #[IsGranted(OwnerVoter::MANAGE, 'transfer')]
     #[Route('/{id}', name: 'app_transfer_delete', methods: ['POST'])]
-    public function delete(Request $request, Transfer $transfer, EntityManagerInterface $entityManager): Response
+    public function delete(Request $request, Transfer $transfer, EntityManagerInterface $entityManager, UndoDeletion $undo, #[CurrentUser] User $user): Response
     {
         if ($this->isCsrfTokenValid('delete'.$transfer->getId(), $request->getPayload()->getString('_token'))) {
+            $token = $undo->rememberTransfer($user, $transfer);
             $entityManager->remove($transfer);
             $entityManager->flush();
-            $this->addFlash('success', 'Le virement a été supprimé : les soldes des deux comptes sont rétablis.');
+            $message = 'Le virement a été supprimé : les soldes des deux comptes sont rétablis.';
+            $this->addFlash('success', null === $token ? $message : ['message' => $message, 'undo' => $token]);
         }
 
         return $this->redirectToRoute('app_transfer_index', [], Response::HTTP_SEE_OTHER);
