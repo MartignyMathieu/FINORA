@@ -774,3 +774,10 @@ body.has-selection .fab { display: none; }
 .shared-balance strong { font-size: 1.4rem; }
 .tx-row > .tx { display: flex; }
 .leave-form { margin-top: 26px; }
+
+/* ---------- Mobile : bannière d'alertes compacte, espace sous le bouton « + » ---------- */
+@media (max-width: 899px) {
+    .budget-alerts { padding: 12px 14px; font-size: 14px; }
+    .budget-alerts li:nth-child(n+3) { display: none; }
+    .content { padding-bottom: 150px; }
+}

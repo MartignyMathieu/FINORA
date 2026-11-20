@@ -177,6 +177,9 @@
 
 /* ---------------------------------------------------------------- Bouton d'ajout rapide (fab_controller) */
 .fab { position: fixed; right: 20px; bottom: calc(86px + env(safe-area-inset-bottom)); z-index: 30; display: grid; justify-items: end; gap: 12px; }
+/* Le conteneur (et le menu, même fermé) couvre une grande zone : sans cela il intercepte les clics sur les boutons d'accès rapide. */
+.fab, .fab-menu { pointer-events: none; }
+.fab-main, .fab.is-open .fab-menu a { pointer-events: auto; }
 .fab-backdrop { position: fixed; inset: 0; z-index: 29; background: rgba(8, 19, 38, 0.4); opacity: 0; pointer-events: none; }
 .fab.is-open .fab-backdrop { opacity: 1; pointer-events: auto; }
 .fab-main {
