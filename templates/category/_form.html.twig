@@ -1,5 +1,30 @@
 {{ form_start(form) }}
-    {{ form_widget(form) }}
+    {{ form_row(form.name) }}
+    {{ form_row(form.icon) }}
+
+    {# Couleur : des palettes à choisir d'un clic (le code hexadécimal reste invisible). #}
+    <fieldset class="color-picker">
+        <legend>{{ form_label(form.color) }}</legend>
+        {{ form_errors(form.color) }}
+        {% set palette = null %}
+        {% for choice in form.color %}
+            {% set group = choice.vars.attr['data-palette']|default('') %}
+            {% if group != palette %}
+                {% if palette is not null %}</div></div>{% endif %}
+                <div class="color-palette"><p class="color-palette-name">{{ group ?: 'Sans couleur' }}</p><div class="color-grid">
+                {% set palette = group %}
+            {% endif %}
+            {% set hex = choice.vars.value %}
+            <label class="color-choice" title="{{ choice.vars.label }}">
+                {{ form_widget(choice) }}
+                <span class="color-dot{{ hex ? '' : ' color-auto' }}" {% if hex %}style="background: {{ hex }}"{% endif %}></span>
+                <span class="color-name">{{ choice.vars.label }}</span>
+            </label>
+        {% endfor %}
+        {% if palette is not null %}</div></div>{% endif %}
+    </fieldset>
+
+    {{ form_rest(form) }}
     <div class="actions">
         <button class="btn btn-primary">{{ button_label|default('Enregistrer') }}</button>
     </div>

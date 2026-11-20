@@ -125,7 +125,7 @@ Pour chaque page, vérifier aussi : aucun message d'erreur, textes en français,
 
 ## Catégories et paramètres
 
-- `/category` : 14 catégories (icône et couleur facultatives). Un nom déjà utilisé est refusé ; supprimer une catégorie
+- `/category` : 14 catégories (icône et couleur facultatives). Sur « Nouvelle catégorie » et « Modifier », la couleur se choisit dans 3 palettes (Vives, Douces, Profondes : 8 couleurs chacune) ou « Automatique » ; il n'y a plus de code hexadécimal à saisir. Une catégorie ancienne dont la couleur est hors palette (ex. Shopping, rose) affiche « Couleur actuelle », conservée tant qu'on n'en choisit pas une autre. Un nom déjà utilisé est refusé ; supprimer une catégorie
   qui contient des transactions est refusé.
 - `/settings` (« Plus » sur mobile) : liens vers toutes les sections, profil, déconnexion.
 
