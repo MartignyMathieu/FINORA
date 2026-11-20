@@ -3,6 +3,7 @@
 namespace App\Repository;
 
 use App\Dto\TransactionFilter;
+use App\Entity\Account;
 use App\Entity\Transaction;
 use App\Entity\User;
 use App\Enum\TransactionType;
@@ -84,6 +85,26 @@ class TransactionRepository extends ServiceEntityRepository
             ->setParameter('ids', $ids)
             ->orderBy('t.date', 'DESC')
             ->addOrderBy('t.id', 'DESC')
+            ->getQuery()
+            ->getResult();
+    }
+
+    /**
+     * Dernières transactions d'un compte (les plus récentes d'abord), avec leur catégorie et la personne qui les a saisies.
+     *
+     * @return list<Transaction>
+     */
+    public function findLatestForAccount(Account $account, int $limit = 300): array
+    {
+        return $this->createQueryBuilder('t')
+            ->addSelect('c', 'u')
+            ->join('t.category', 'c')
+            ->leftJoin('t.createdBy', 'u')
+            ->where('t.account = :account')
+            ->setParameter('account', $account)
+            ->orderBy('t.date', 'DESC')
+            ->addOrderBy('t.id', 'DESC')
+            ->setMaxResults($limit)
             ->getQuery()
             ->getResult();
     }

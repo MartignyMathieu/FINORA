@@ -1,0 +1,58 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Comptes partagés{% endblock %}
+
+{% block body %}
+    <header class="page-head">
+        <h1>Comptes partagés avec moi</h1>
+        <a class="btn btn-ghost" href="{{ path('app_account_index') }}">{{ icon('chevron-left', 16) }}Mes comptes</a>
+    </header>
+    <p class="muted">Les comptes que d'autres personnes ont partagés avec vous. Ils n'entrent pas dans vos totaux : l'argent reste celui de leur propriétaire.</p>
+
+    {% if pending is not empty %}
+        <section class="card invitations" aria-labelledby="invitations-title">
+            <h2 id="invitations-title">{{ icon('users', 22) }}Invitations en attente ({{ pending|length }})</h2>
+            <ul class="share-list">
+                {% for share in pending %}
+                    <li class="share-row">
+                        <span class="avatar avatar-sm" aria-hidden="true">{{ share.account.owner.displayName|first|upper }}</span>
+                        <span class="grow">
+                            <span class="name">{{ share.account.name }}</span>
+                            <span class="sub">de {{ share.account.owner.displayName }} &bull; {{ share.role.label }}</span>
+                        </span>
+                        <form method="post" action="{{ path('app_shared_accept', {id: share.id}) }}">
+                            <input type="hidden" name="_token" value="{{ csrf_token('share-accept' ~ share.id) }}">
+                            <button class="btn btn-primary" type="submit">Accepter</button>
+                        </form>
+                        <form method="post" action="{{ path('app_shared_decline', {id: share.id}) }}">
+                            <input type="hidden" name="_token" value="{{ csrf_token('share-decline' ~ share.id) }}">
+                            <button class="btn" type="submit">Refuser</button>
+                        </form>
+                    </li>
+                {% endfor %}
+            </ul>
+        </section>
+    {% endif %}
+
+    <ul class="list">
+        {% for row in accepted %}
+            {% set share = row.share %}
+            {% set account = share.account %}
+            <li>
+                <a class="list-card" href="{{ path('app_shared_account', {id: account.id}) }}">
+                    <span class="tile">{{ icon(account.type, 26) }}</span>
+                    <span class="grow">
+                        <span class="name">{{ account.name }}</span>
+                        <span class="sub">de {{ account.owner.displayName }} &bull; {{ share.role.label }}</span>
+                        <strong class="amount">{{ row.balance|money(account.currency) }}</strong>
+                    </span>
+                    <span class="chev">{{ icon('chevron-right') }}</span>
+                </a>
+            </li>
+        {% else %}
+            {% if pending is empty %}
+                <li class="card empty">Aucun compte n'est partagé avec vous pour le moment. Quand quelqu'un vous invite, l'invitation apparaît ici.</li>
+            {% endif %}
+        {% endfor %}
+    </ul>
+{% endblock %}

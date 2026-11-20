@@ -3,6 +3,7 @@
 namespace App\Tests\Controller;
 
 use App\Entity\Account;
+use App\Entity\AccountShare;
 use App\Entity\Budget;
 use App\Entity\Category;
 use App\Entity\Goal;
@@ -35,7 +36,7 @@ abstract class AbstractCrudTestCase extends WebTestCase
         $this->manager = static::getContainer()->get('doctrine')->getManager();
 
         // Ordre imposé par les clés étrangères.
-        foreach ([Transfer::class, Transaction::class, RecurringTransaction::class, Budget::class, Goal::class, Category::class, Account::class, User::class] as $class) {
+        foreach ([AccountShare::class, Transfer::class, Transaction::class, RecurringTransaction::class, Budget::class, Goal::class, Category::class, Account::class, User::class] as $class) {
             $this->manager->createQuery(sprintf('DELETE FROM %s e', $class))->execute();
         }
 

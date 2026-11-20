@@ -1,0 +1,61 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ account.name }} · partagé{% endblock %}
+
+{% block body %}
+    <header class="page-head">
+        <div>
+            <h1>{{ account.name }}</h1>
+            <p class="muted">Compte de {{ account.owner.displayName }}{% if share %} &bull; {{ share.role.label }}{% endif %}</p>
+        </div>
+        <div class="toolbar">
+            {% if canEdit %}
+                <a class="round-btn" href="{{ path('app_shared_transaction_new', {id: account.id}) }}" aria-label="Nouvelle transaction sur ce compte">{{ icon('plus', 22) }}</a>
+            {% endif %}
+            <a class="btn btn-ghost" href="{{ path('app_shared_index') }}">{{ icon('chevron-left', 16) }}Retour</a>
+        </div>
+    </header>
+
+    <section class="card kpi shared-balance">
+        <span class="tile">{{ icon(account.type, 24) }}</span>
+        <div class="grow"><small>Solde du compte</small><strong>{{ balance|money(account.currency) }}</strong></div>
+    </section>
+    {% if not canEdit and share %}
+        <p class="muted">Vous avez un accès en lecture seule : vous pouvez consulter les transactions, pas les modifier.</p>
+    {% endif %}
+
+    {% set current = null %}
+    {% for transaction in transactions %}
+        {% set key = transaction.date|date('Y-m') %}
+        {% if key != current %}
+            {% if current is not null %}</ul>{% endif %}
+            <h2 class="month-heading">{{ transaction.date|month_label }}</h2>
+            <ul class="tx-list">
+            {% set current = key %}
+        {% endif %}
+        {% set income = transaction.type.value == 'income' %}
+        <li class="tx-row">
+            <div class="tx">
+                <span class="tile {{ income ? 'tile-green' }}">{{ icon(transaction.category.icon ?? (income ? 'arrow-up' : 'tag'), 24) }}</span>
+                <span class="grow">
+                    <span class="name">{{ transaction.label }}</span>
+                    <span class="sub">{{ transaction.category }} &bull; {{ transaction.date|short_date }}{% if transaction.createdBy %} &bull; par {{ transaction.createdBy.displayName }}{% endif %}</span>
+                </span>
+                <span class="{{ income ? 'amount-in' : 'amount-out' }}">{{ (income ? transaction.amount : '-' ~ transaction.amount)|money(account.currency, true) }}</span>
+                {% if canEdit %}
+                    <a class="icon-btn" href="{{ path('app_shared_transaction_edit', {id: transaction.id}) }}" title="Modifier" aria-label="Modifier « {{ transaction.label }} »">{{ icon('edit', 18) }}</a>
+                {% endif %}
+            </div>
+        </li>
+        {% if loop.last %}</ul>{% endif %}
+    {% else %}
+        <div class="card empty">Aucune transaction sur ce compte pour le moment.{% if canEdit %} <a href="{{ path('app_shared_transaction_new', {id: account.id}) }}">Ajouter une transaction</a>{% endif %}</div>
+    {% endfor %}
+
+    {% if share %}
+        <form class="leave-form" method="post" action="{{ path('app_shared_decline', {id: share.id}) }}" onsubmit="return confirm('Vous n\'aurez plus accès à ce compte. Continuer ?');">
+            <input type="hidden" name="_token" value="{{ csrf_token('share-decline' ~ share.id) }}">
+            <button class="btn btn-ghost" type="submit">Quitter ce compte partagé</button>
+        </form>
+    {% endif %}
+{% endblock %}

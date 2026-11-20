@@ -57,6 +57,11 @@ class Transaction implements OwnedInterface
     #[ORM\JoinColumn(nullable: true, onDelete: 'SET NULL')]
     private ?RecurringTransaction $recurringTransaction = null;
 
+    /** Personne qui a saisi la transaction quand ce n'est pas le propriétaire (compte partagé) ; null sinon. */
+    #[ORM\ManyToOne]
+    #[ORM\JoinColumn(nullable: true, onDelete: 'SET NULL')]
+    private ?User $createdBy = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -83,6 +88,18 @@ class Transaction implements OwnedInterface
     public function getRecurringTransaction(): ?RecurringTransaction
     {
         return $this->recurringTransaction;
+    }
+
+    public function getCreatedBy(): ?User
+    {
+        return $this->createdBy;
+    }
+
+    public function setCreatedBy(?User $createdBy): static
+    {
+        $this->createdBy = $createdBy;
+
+        return $this;
     }
 
     public function setRecurringTransaction(?RecurringTransaction $recurringTransaction): static

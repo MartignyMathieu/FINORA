@@ -1,0 +1,7 @@
+framework:
+    rate_limiter:
+        # Invitations de partage de compte : 10 par heure et par utilisateur (empêche de deviner quelles adresses ont un compte).
+        share_invitation:
+            policy: 'sliding_window'
+            limit: 10
+            interval: '1 hour'

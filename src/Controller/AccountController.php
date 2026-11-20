@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Entity\Account;
 use App\Form\AccountType;
+use App\Repository\AccountShareRepository;
 use App\Repository\TransferRepository;
 use App\Service\FinanceStats;
 use Doctrine\ORM\EntityManagerInterface;
@@ -20,10 +21,14 @@ use Symfony\Component\Security\Http\Attribute\CurrentUser;
 final class AccountController extends AbstractController
 {
     #[Route(name: 'app_account_index', methods: ['GET'])]
-    public function index(FinanceStats $stats): Response
+    public function index(FinanceStats $stats, AccountShareRepository $shares): Response
     {
+        $rows = $stats->accountBalances();
+
         return $this->render('account/index.html.twig', [
-            'rows' => $stats->accountBalances(),
+            'rows' => $rows,
+            // Nombre de personnes invitées sur chaque compte (étiquette « Partagé »).
+            'shareCounts' => $shares->countByAccount(array_map(static fn (array $row): Account => $row['account'], $rows)),
         ]);
     }
 

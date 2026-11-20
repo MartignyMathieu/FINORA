@@ -1,0 +1,62 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Partager « {{ account.name }} »{% endblock %}
+
+{% block body %}
+    <header class="page-head">
+        <h1>Partager « {{ account.name }} »</h1>
+        <a class="btn btn-ghost" href="{{ path('app_account_show', {id: account.id}) }}">{{ icon('chevron-left', 16) }}Retour</a>
+    </header>
+
+    <div class="card form-card share-card">
+        <p class="muted">
+            Donnez accès à ce compte à une personne de confiance (conjoint, famille…). Elle le retrouve dans <strong>Comptes → Comptes partagés</strong>, avec ses
+            transactions, <strong>sans qu'il compte dans ses propres totaux</strong> : le compte reste le vôtre. Vous pouvez changer ses droits ou retirer son accès à
+            tout moment.
+        </p>
+
+        <h2>Personnes ayant accès</h2>
+        {% if shares is empty %}
+            <p class="empty">Ce compte n'est partagé avec personne.</p>
+        {% else %}
+            <ul class="share-list">
+                {% for share in shares %}
+                    <li class="share-row">
+                        <span class="avatar avatar-sm" aria-hidden="true">{{ share.invitee.displayName|first|upper }}</span>
+                        <span class="grow">
+                            <span class="name">{{ share.invitee.displayName }}</span>
+                            <span class="sub">{{ share.invitee.userIdentifier }} &bull; <span class="share-status share-status-{{ share.status.value }}">{{ share.status.label }}</span></span>
+                        </span>
+                        <form class="share-role" method="post" action="{{ path('app_account_share_role', {id: share.id}) }}">
+                            <input type="hidden" name="_token" value="{{ csrf_token('share-role' ~ share.id) }}">
+                            <select name="role" aria-label="Droits de {{ share.invitee.displayName }}" onchange="this.form.requestSubmit()">
+                                {% for role in enum('App\\Enum\\ShareRole').cases %}
+                                    <option value="{{ role.value }}" {{ share.role == role ? 'selected' }}>{{ role.label }}</option>
+                                {% endfor %}
+                            </select>
+                            <noscript><button class="btn" type="submit">OK</button></noscript>
+                        </form>
+                        <form method="post" action="{{ path('app_account_share_remove', {id: share.id}) }}" onsubmit="return confirm('Retirer l\'accès de {{ share.invitee.displayName|e('js') }} à ce compte ?');">
+                            <input type="hidden" name="_token" value="{{ csrf_token('share-remove' ~ share.id) }}">
+                            <button class="icon-btn" type="submit" title="Retirer l'accès" aria-label="Retirer l'accès de {{ share.invitee.displayName }}">{{ icon('trash', 18) }}</button>
+                        </form>
+                    </li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+
+        <h2>Inviter quelqu'un</h2>
+        {{ form_start(form) }}
+            {{ form_row(form.email) }}
+            <fieldset class="share-roles">
+                <legend>{{ form_label(form.role) }}</legend>
+                {{ form_errors(form.role) }}
+                {% for choice in form.role %}
+                    <label class="share-role-choice">{{ form_widget(choice) }}<span>{{ choice.vars.label }}</span></label>
+                {% endfor %}
+            </fieldset>
+            {{ form_rest(form) }}
+            <div class="actions"><button class="btn btn-primary" type="submit">{{ icon('users', 18) }}Envoyer l'invitation</button></div>
+        {{ form_end(form) }}
+    </div>
+{% endblock %}

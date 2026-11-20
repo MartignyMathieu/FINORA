@@ -1,0 +1,27 @@
+{% extends 'base.html.twig' %}
+
+{% set editing = transaction is not null %}
+{% block title %}{{ editing ? 'Modifier la transaction' : 'Nouvelle transaction' }} · {{ account.name }}{% endblock %}
+
+{% block body %}
+    <header class="page-head">
+        <h1>{{ editing ? 'Modifier la transaction' : 'Nouvelle transaction' }}</h1>
+        <a class="btn btn-ghost" href="{{ path('app_shared_account', {id: account.id}) }}">{{ icon('chevron-left', 16) }}Retour</a>
+    </header>
+
+    <div class="card form-card">
+        <p class="muted">Compte « {{ account.name }} » de {{ account.owner.displayName }} ({{ account.currency }}).</p>
+        {{ form_start(form) }}
+            {{ form_widget(form) }}
+            <div class="actions"><button class="btn btn-primary" type="submit">{{ editing ? 'Mettre à jour' : 'Enregistrer' }}</button></div>
+        {{ form_end(form) }}
+        {% if editing %}
+            <div class="actions">
+                <form method="post" action="{{ path('app_shared_transaction_delete', {id: transaction.id}) }}" onsubmit="return confirm('Supprimer définitivement cette transaction ?');">
+                    <input type="hidden" name="_token" value="{{ csrf_token('shared-delete' ~ transaction.id) }}">
+                    <button class="btn btn-danger" type="submit">Supprimer</button>
+                </form>
+            </div>
+        {% endif %}
+    </div>
+{% endblock %}

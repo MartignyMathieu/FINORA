@@ -67,6 +67,7 @@ final class UiExtension
         'repeat' => 'ph:arrows-clockwise-duotone',
         'transfer' => 'ph:arrows-left-right-duotone',
         'offline' => 'ph:cloud-slash-duotone',
+        'users' => 'ph:users-three-duotone',
         'trash' => 'ph:trash-duotone',
         'pause' => 'ph:pause-duotone',
         'play' => 'ph:play-duotone',

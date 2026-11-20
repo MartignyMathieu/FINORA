@@ -6,10 +6,17 @@
     <header class="page-head">
         <h1>Comptes</h1>
         <div class="toolbar">
+            <a class="round-btn" href="{{ path('app_shared_index') }}" title="Comptes partagés avec moi" aria-label="Comptes partagés avec moi">{{ icon('users', 22) }}</a>
             <a class="round-btn" href="{{ path('app_transfer_index') }}" title="Virements" aria-label="Virements entre comptes">{{ icon('transfer', 22) }}</a>
             <a class="round-btn" href="{{ path('app_account_new') }}" aria-label="Nouveau compte">{{ icon('plus', 22) }}</a>
         </div>
     </header>
+
+    {% if pending_invitation_count() > 0 %}
+        <a class="invitation-banner" href="{{ path('app_shared_index') }}" role="status">
+            {{ icon('users', 22) }}<span>{{ pending_invitation_count() == 1 ? 'Vous avez une invitation à partager un compte.' : 'Vous avez ' ~ pending_invitation_count() ~ ' invitations à partager un compte.' }}</span><strong>Voir</strong>
+        </a>
+    {% endif %}
 
     <ul class="list">
         {% for row in rows %}
@@ -18,7 +25,7 @@
                 <a class="list-card" href="{{ path('app_account_show', {id: account.id}) }}">
                     <span class="tile">{{ icon(account.type, 26) }}</span>
                     <span class="grow">
-                        <span class="name">{{ account.name }}</span>
+                        <span class="name">{{ account.name }}{% if shareCounts[account.id] is defined %} <span class="share-tag" title="Partagé avec {{ shareCounts[account.id] }} personne{{ shareCounts[account.id] > 1 ? 's' }}">{{ icon('users', 14) }}{{ shareCounts[account.id] }}</span>{% endif %}</span>
                         <strong class="amount">{{ row.balance|money(account.currency) }}</strong>
                     </span>
                     <span class="chev">{{ icon('chevron-right') }}</span>

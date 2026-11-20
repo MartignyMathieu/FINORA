@@ -150,6 +150,17 @@ n'existe pas : le réglage affiche « Le mode hors ligne n'est pas disponible su
 - Les **filtres, l'onglet et la recherche** sont conservés après l'action. Seules les transactions de l'utilisateur sont touchées (les identifiants
   d'un autre utilisateur sont ignorés) ; 300 lignes au plus par action.
 
+## Partage d'un compte
+
+Prérequis : deux comptes FINORA (A propriétaire, B invité).
+
+- A : Comptes → ouvrir un compte → « Partager » → saisir l'adresse de B, choisir « Lecture seule » → l'invitation apparaît « En attente ». Adresse inconnue, sa propre adresse ou doublon : message d'erreur.
+- B : pastille rouge sur « Comptes » et bandeau « invitation » → « Comptes partagés avec moi » → Accepter. Le compte s'affiche avec son solde et ses transactions, sans bouton d'ajout ni de modification.
+- A : passer B en « Lecture et saisie » → B peut ajouter, modifier, supprimer (catégories de A uniquement). A voit « par B » sur ces transactions.
+- Le compte partagé n'apparaît ni dans le solde total, ni dans les statistiques, l'export ou la sauvegarde de B.
+- A retire l'accès (ou B quitte le compte) : l'accès par l'URL directe renvoie 403.
+- Le partage ne fait pas partie des sauvegardes JSON ; supprimer un utilisateur supprime ses partages.
+
 ## Annulation d'une suppression
 
 - Supprimer une **transaction** (page de modification → « Supprimer ») : le message vert « La transaction a été supprimée. » affiche un bouton
