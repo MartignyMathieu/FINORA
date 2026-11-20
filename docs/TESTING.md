@@ -97,6 +97,22 @@ Pour chaque page, vérifier aussi : aucun message d'erreur, textes en français,
 - Créer, modifier, supprimer ; le formulaire propose uniquement les comptes et catégories de l'utilisateur ;
   montant négatif ou nul refusé.
 
+## Modification en lot (page Transactions)
+
+- Chaque ligne a une **case à cocher** ; « Tout sélectionner » (au-dessus de la liste) coche toutes les lignes affichées (état « partiel » quand
+  seules certaines le sont). La ligne cochée change de fond.
+- Dès qu'une ligne est cochée, une **barre d'actions** noire apparaît en bas (sur mobile, au-dessus des onglets) avec le compteur
+  (« 2 sélectionnées ») ; le bouton « + » d'ajout rapide disparaît tant qu'il y a une sélection. « Désélectionner » vide la sélection.
+- **Déplacer vers une catégorie** : choisir une catégorie dans la liste (le bouton « Déplacer » est grisé tant qu'aucune n'est choisie). Message
+  « N transactions déplacées vers « X » » ; les lignes déjà dans cette catégorie ne sont pas comptées (« Rien à modifier » si toutes y sont).
+- **Déplacer vers un compte** : même principe. Une transaction d'un compte en **autre devise** (ex. le compte en dollars) reste en place et le
+  message l'indique ; si toute la sélection est dans une autre devise : erreur « Aucune transaction déplacée ».
+- **Supprimer** : supprime toutes les lignes cochées, sans demande de confirmation (c'est annulable).
+- Dans les trois cas, le message vert propose **« Annuler »** : la suppression est restaurée, ou les anciennes catégories / anciens comptes sont
+  rétablis (« Modification annulée : N transactions rétablies »).
+- Les **filtres, l'onglet et la recherche** sont conservés après l'action. Seules les transactions de l'utilisateur sont touchées (les identifiants
+  d'un autre utilisateur sont ignorés) ; 300 lignes au plus par action.
+
 ## Annulation d'une suppression
 
 - Supprimer une **transaction** (page de modification → « Supprimer ») : le message vert « La transaction a été supprimée. » affiche un bouton

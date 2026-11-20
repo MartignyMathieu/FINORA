@@ -26,6 +26,8 @@ final class UndoDeletion
 {
     public const KIND_TRANSACTIONS = 'transactions';
     public const KIND_TRANSFER = 'transfer';
+    /** Modification en lot (catégorie ou compte) : on rétablit l'ancienne valeur de chaque ligne. */
+    public const KIND_UPDATE = 'update';
 
     private const SESSION_KEY = 'undo.deletions';
     private const TTL = 600;
@@ -57,6 +59,23 @@ final class UndoDeletion
         ], $transactions);
 
         return $this->store($user, self::KIND_TRANSACTIONS, $items);
+    }
+
+    /**
+     * À appeler avant une modification en lot : garde l'ancienne catégorie ou l'ancien compte de chaque transaction.
+     *
+     * @param 'category'|'account' $field
+     * @param list<Transaction>    $transactions
+     */
+    public function rememberUpdate(User $user, string $field, array $transactions): ?string
+    {
+        $items = array_map(static fn (Transaction $t): array => [
+            'transaction' => $t->getId(),
+            'field' => $field,
+            'previous' => 'category' === $field ? $t->getCategory()?->getId() : $t->getAccount()?->getId(),
+        ], $transactions);
+
+        return $this->store($user, self::KIND_UPDATE, $items);
     }
 
     public function rememberTransfer(User $user, Transfer $transfer): ?string
@@ -91,7 +110,11 @@ final class UndoDeletion
         unset($all[$token]);
         $session->set(self::SESSION_KEY, $all);
 
-        $result = self::KIND_TRANSFER === $entry['kind'] ? $this->restoreTransfers($user, $entry['items']) : $this->restoreTransactions($user, $entry['items']);
+        $result = match ($entry['kind']) {
+            self::KIND_TRANSFER => $this->restoreTransfers($user, $entry['items']),
+            self::KIND_UPDATE => $this->revertUpdate($user, $entry['items']),
+            default => $this->restoreTransactions($user, $entry['items']),
+        };
 
         return ['kind' => $entry['kind']] + $result;
     }
@@ -162,6 +185,41 @@ final class UndoDeletion
                 $this->em->flush();
             }
         });
+
+        return ['restored' => $restored, 'skipped' => $skipped];
+    }
+
+    /**
+     * Remet l'ancienne catégorie ou l'ancien compte. Une ligne supprimée depuis, ou dont l'ancienne valeur n'existe plus, est ignorée.
+     *
+     * @param list<array<string, mixed>> $items
+     *
+     * @return array{restored: int, skipped: int}
+     */
+    private function revertUpdate(User $user, array $items): array
+    {
+        $transactions = $this->indexById($this->em->getRepository(Transaction::class)->findBy(['id' => array_column($items, 'transaction')]));
+        $accounts = $this->indexById($this->em->getRepository(Account::class)->findBy(['owner' => $user]));
+        $categories = $this->indexById($this->em->getRepository(Category::class)->findBy(['owner' => $user]));
+
+        $restored = $skipped = 0;
+        foreach ($items as $item) {
+            $transaction = $transactions[$item['transaction']] ?? null;
+            if (null === $transaction || $transaction->getOwner()?->getId() !== $user->getId()) {
+                ++$skipped;
+                continue;
+            }
+            if ('category' === $item['field'] && isset($categories[$item['previous']])) {
+                $transaction->setCategory($categories[$item['previous']]);
+            } elseif ('account' === $item['field'] && isset($accounts[$item['previous']])) {
+                $transaction->setAccount($accounts[$item['previous']]);
+            } else {
+                ++$skipped;
+                continue;
+            }
+            ++$restored;
+        }
+        $this->em->flush();
 
         return ['restored' => $restored, 'skipped' => $skipped];
     }

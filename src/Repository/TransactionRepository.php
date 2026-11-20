@@ -61,6 +61,33 @@ class TransactionRepository extends ServiceEntityRepository
             ->getResult();
     }
 
+    /**
+     * Transactions du propriétaire parmi les identifiants donnés (les autres sont ignorées en silence : jamais celles d'un autre utilisateur).
+     *
+     * @param list<int> $ids
+     *
+     * @return list<Transaction>
+     */
+    public function findOwnedByIds(User $owner, array $ids): array
+    {
+        if ([] === $ids) {
+            return [];
+        }
+
+        return $this->createQueryBuilder('t')
+            ->addSelect('c', 'a')
+            ->join('t.category', 'c')
+            ->join('t.account', 'a')
+            ->where('a.owner = :owner')
+            ->andWhere('t.id IN (:ids)')
+            ->setParameter('owner', $owner)
+            ->setParameter('ids', $ids)
+            ->orderBy('t.date', 'DESC')
+            ->addOrderBy('t.id', 'DESC')
+            ->getQuery()
+            ->getResult();
+    }
+
     /** Nombre maximal de lignes de la liste (au-delà, l'export CSV contient tout). */
     public function limit(): int
     {

@@ -91,6 +91,14 @@ export class FakeElement {
         return false;
     }
     descendants() { return this.children.flatMap((c) => [c, ...c.descendants()]); }
+    /** Premier ancêtre (ou l'élément lui-même) correspondant au sélecteur simple (balise, .classe, [attr]). */
+    closest(selector) {
+        for (let node = this; node; node = node.parent) {
+            if (matches(node, selector)) { return node; }
+        }
+
+        return null;
+    }
 
     querySelectorAll(selector) { return query(this, selector); }
     querySelector(selector) { return query(this, selector)[0] ?? null; }

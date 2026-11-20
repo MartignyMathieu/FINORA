@@ -705,3 +705,26 @@ body { padding-top: env(safe-area-inset-top); }
 .flash-action { padding: 6px 14px; border: 2px solid currentColor; border-radius: 999px; background: transparent; color: inherit; font: inherit; font-weight: 800; font-size: 14px; cursor: pointer; }
 .flash-action:hover { background: rgba(0, 0, 0, 0.08); }
 .flash-action:focus-visible { outline: 3px solid currentColor; outline-offset: 2px; }
+
+/* ---------- Sélection et actions en lot (bulk_controller) ---------- */
+.bulk-all { display: inline-flex; align-items: center; gap: 8px; margin: 6px 0 4px; font-weight: 600; font-size: 14px; color: var(--muted); cursor: pointer; }
+.bulk-all input, .tx-check input { width: 18px; height: 18px; margin: 0; cursor: pointer; accent-color: var(--primary); }
+.tx-row { display: flex; align-items: stretch; }
+.tx-row .tx { flex: 1; min-width: 0; }
+.tx-check { display: grid; place-items: center; padding: 0 4px 0 16px; border-bottom: 1px solid var(--line); cursor: pointer; }
+li:last-child > .tx-check { border-bottom: 0; }
+.tx-row.is-selected { background: color-mix(in srgb, var(--primary) 9%, var(--white)); }
+.tx-row:first-child.is-selected { border-radius: var(--radius) var(--radius) 0 0; }
+.tx-row:last-child.is-selected { border-radius: 0 0 var(--radius) var(--radius); }
+.bulk-bar { position: sticky; bottom: 16px; z-index: 20; display: flex; flex-wrap: wrap; align-items: center; gap: 10px 16px; margin: 18px 0 0; padding: 12px 16px; border-radius: var(--radius); background: var(--night); color: #fff; box-shadow: var(--shadow-lift); }
+.bulk-bar[hidden] { display: none; }
+.bulk-count { white-space: nowrap; }
+.bulk-bar > .btn-ghost { margin-right: auto; padding: 8px 12px; }
+.bulk-bar .btn { padding: 9px 14px; }
+.bulk-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 10px; }
+.bulk-group { display: inline-flex; gap: 6px; }
+.bulk-group select { min-width: 0; max-width: 160px; }
+.bulk-bar .btn:disabled { opacity: 0.45; cursor: not-allowed; }
+.bulk-bar .btn-ghost { color: #cfd9ea; }
+body.has-selection .fab { display: none; }
+@media (max-width: 899px) { .bulk-bar { position: fixed; left: 12px; right: 12px; bottom: calc(76px + env(safe-area-inset-bottom)); margin: 0; } body.has-selection .content { padding-bottom: 190px; } }

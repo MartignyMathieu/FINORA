@@ -84,6 +84,10 @@
         {% endif %}
     {% endif %}
 
+    <div data-controller="bulk" class="bulk-scope">
+    {% if transactions is not empty %}
+        <label class="bulk-all"><input type="checkbox" data-bulk-target="all" data-action="bulk#toggleAll" aria-label="Sélectionner toutes les transactions affichées"><span>Tout sélectionner</span></label>
+    {% endif %}
     {% set current = null %}
     {% for transaction in transactions %}
         {% set key = transaction.date|date('Y-m') %}
@@ -94,7 +98,11 @@
             {% set current = key %}
         {% endif %}
         {% set income = transaction.type.value == 'income' %}
-        <li>
+        <li class="tx-row">
+            <label class="tx-check" title="Sélectionner">
+                <input type="checkbox" name="ids[]" value="{{ transaction.id }}" form="bulk-form" data-bulk-target="item" data-action="bulk#update"
+                       aria-label="Sélectionner la transaction « {{ transaction.label }} »">
+            </label>
             <a class="tx" href="{{ path('app_transaction_show', {id: transaction.id}) }}">
                 <span class="tile {{ income ? 'tile-green' }}">{{ icon(transaction.category.icon ?? (income ? 'arrow-up' : 'tag'), 24) }}</span>
                 <span class="grow">
@@ -114,4 +122,32 @@
             {% endif %}
         </div>
     {% endfor %}
+
+    {% if transactions is not empty %}
+        {# Barre d'actions en lot : visible dès qu'une ligne est cochée (bulk_controller). #}
+        <form id="bulk-form" class="bulk-bar" method="post" action="{{ path('app_transaction_bulk') }}" data-bulk-target="bar" role="region" aria-label="Actions sur la sélection">
+            <input type="hidden" name="_token" value="{{ csrf_token('bulk-transactions') }}">
+            <input type="hidden" name="return" value="{{ filter.toQuery|url_encode }}">
+            <strong class="bulk-count" data-bulk-target="count" aria-live="polite">0 sélectionnée</strong>
+            <button class="btn btn-ghost" type="button" data-action="bulk#clear">Désélectionner</button>
+            <div class="bulk-actions">
+                <div class="bulk-group">
+                    <select name="category" aria-label="Catégorie de destination" data-bulk-target="choice" data-bulk-for="category" data-action="change->bulk#refreshButtons">
+                        <option value="">Catégorie…</option>
+                        {% for category in categories %}<option value="{{ category.id }}">{{ category.name }}</option>{% endfor %}
+                    </select>
+                    <button class="btn" type="submit" name="action" value="category" data-bulk-target="apply" disabled>Déplacer</button>
+                </div>
+                <div class="bulk-group">
+                    <select name="account" aria-label="Compte de destination" data-bulk-target="choice" data-bulk-for="account" data-action="change->bulk#refreshButtons">
+                        <option value="">Compte…</option>
+                        {% for account in accounts %}<option value="{{ account.id }}">{{ account.name }} ({{ account.currency }})</option>{% endfor %}
+                    </select>
+                    <button class="btn" type="submit" name="action" value="account" data-bulk-target="apply" disabled>Déplacer</button>
+                </div>
+                <button class="btn btn-danger" type="submit" name="action" value="delete" data-bulk-target="apply">{{ icon('trash', 18) }}Supprimer</button>
+            </div>
+        </form>
+    {% endif %}
+    </div>
 {% endblock %}

@@ -29,6 +29,14 @@ final class UndoController extends AbstractController
             return $this->redirectToRoute('app_transaction_index', [], Response::HTTP_SEE_OTHER);
         }
 
+        if (UndoDeletion::KIND_UPDATE === $result['kind']) {
+            $this->addFlash(0 === $result['restored'] ? 'error' : 'success', 0 === $result['restored']
+                ? "Rien n'a pu être rétabli : les transactions ou leur ancienne valeur n'existent plus."
+                : sprintf('Modification annulée : %d transaction%s rétablie%s.', $result['restored'], $result['restored'] > 1 ? 's' : '', $result['restored'] > 1 ? 's' : ''));
+
+            return $this->redirectToRoute('app_transaction_index', [], Response::HTTP_SEE_OTHER);
+        }
+
         // Accord : « transaction restaurée », « virement restauré ».
         [$noun, $agreement] = UndoDeletion::KIND_TRANSFER === $result['kind'] ? ['virement', 'é'] : ['transaction', 'ée'];
         $message = 0 === $result['restored']

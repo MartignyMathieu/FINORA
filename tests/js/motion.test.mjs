@@ -187,3 +187,68 @@ test('alert_dismiss_controller : se ferme, mémorise l\'empreinte et ne revient 
     const changed = mount(AlertDismiss, 'alert-dismiss', el('section', { 'data-alert-dismiss-signature-value': '1:over' }));
     assert.ok(!changed.element.hidden, 'Empreinte différente : la bannière revient');
 });
+
+test('bulk_controller : la barre apparaît avec la sélection, le compteur et « tout sélectionner » suivent, les boutons dépendent de leur liste', async () => {
+    const browser = installBrowser({ fx: 'on' });
+    const { default: Bulk } = await loadController('controllers/bulk_controller.js');
+
+    const rows = [1, 2, 3].map(() => el('li'));
+    const items = rows.map((row) => {
+        const box = el('input', { 'data-bulk-target': 'item' });
+        row.append(box);
+
+        return box;
+    });
+    const all = el('input', { 'data-bulk-target': 'all' });
+    const count = el('strong', { 'data-bulk-target': 'count' });
+    const bar = el('form', { 'data-bulk-target': 'bar' });
+    const category = el('select', { 'data-bulk-target': 'choice', 'data-bulk-for': 'category' });
+    category.value = '';
+    const moveCategory = el('button', { 'data-bulk-target': 'apply', value: 'category' });
+    moveCategory.value = 'category';
+    const remove = el('button', { 'data-bulk-target': 'apply' });
+    remove.value = 'delete';
+    const root = el('div', {}, [...rows, all, count, bar, category, moveCategory, remove]);
+    const controller = mount(Bulk, 'bulk', root);
+
+    // Rien de coché : barre cachée, boutons dépendants désactivés, suppression laissée active (elle ne dépend d'aucune liste).
+    assert.equal(bar.hidden, true);
+    assert.equal(count.textContent, '0 sélectionnée');
+    assert.equal(browser.document.body.classList.contains('has-selection'), false);
+    assert.equal(moveCategory.disabled, true);
+    assert.equal(remove.disabled, false);
+
+    // Une ligne cochée.
+    items[0].checked = true;
+    controller.update();
+    assert.equal(bar.hidden, false);
+    assert.equal(count.textContent, '1 sélectionnée');
+    assert.ok(rows[0].classList.contains('is-selected'));
+    assert.equal(rows[1].classList.contains('is-selected'), false);
+    assert.equal(all.indeterminate, true, 'Sélection partielle');
+    assert.equal(all.checked, false);
+    assert.ok(browser.document.body.classList.contains('has-selection'), 'Le bouton d\'ajout rapide est masqué par le CSS');
+
+    // Choisir une catégorie active « Déplacer ».
+    category.value = '12';
+    controller.refreshButtons();
+    assert.equal(moveCategory.disabled, false);
+
+    // Tout sélectionner, puis tout désélectionner.
+    all.checked = true;
+    controller.toggleAll();
+    assert.ok(items.every((box) => box.checked));
+    assert.equal(count.textContent, '3 sélectionnées');
+    assert.equal(all.indeterminate, false);
+
+    controller.clear();
+    assert.ok(items.every((box) => !box.checked));
+    assert.equal(bar.hidden, true);
+    assert.equal(count.textContent, '0 sélectionnée');
+
+    // Quitter la page retire la classe globale.
+    items[1].checked = true;
+    controller.update();
+    controller.disconnect();
+    assert.equal(browser.document.body.classList.contains('has-selection'), false);
+});
