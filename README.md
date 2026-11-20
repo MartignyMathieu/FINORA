@@ -10,6 +10,7 @@ et on automatise les opérations qui reviennent chaque mois. Chaque utilisateur 
 
 - **Comptes** : plusieurs comptes (courant, épargne, espèces, voyage…), chacun avec sa devise et son solde initial
 - **Solde masquable** : l'œil de la carte de solde masque ou affiche le solde total (choix mémorisé sur l'appareil)
+- **Import CSV** : d'un export FINORA ou d'un relevé de banque, en trois étapes (fichier, correspondance des colonnes avec aperçu, import) ; séparateur, encodage, dates et montants reconnus automatiquement, doublons ignorés, lignes invalides signalées
 - **Filtres de transactions** : période (avec périodes rapides), montants min. et max., compte et catégorie, en plus du type et de la recherche ; pastilles des filtres actifs, totaux de toutes les transactions trouvées, et même filtre pour l'export CSV
 - **Alertes de budget** : bannière sur l'accueil et les budgets, et pastille rouge sur « Budgets », dès qu'un budget du mois atteint 80 % de son plafond, l'atteint ou le dépasse
 - **Prévision de fin de mois** : solde prévu à la fin du mois (transactions déjà saisies à venir et récurrences pas encore générées), avec un avertissement si le solde risque de passer sous zéro

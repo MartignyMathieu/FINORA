@@ -1,0 +1,27 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Importer des transactions{% endblock %}
+
+{% block body %}
+    <header class="page-head">
+        <h1>Importer des transactions</h1>
+        <a class="btn btn-ghost" href="{{ path('app_transaction_index') }}">{{ icon('chevron-left', 16) }}Retour</a>
+    </header>
+
+    <ol class="import-steps" aria-label="Étapes de l'import">
+        <li class="is-current"><span>1</span>Fichier</li>
+        <li><span>2</span>Colonnes et aperçu</li>
+        <li><span>3</span>Import</li>
+    </ol>
+
+    <div class="card form-card">
+        <p class="muted">
+            Envoyez un fichier CSV : un export de FINORA ou un relevé de banque. À l'étape suivante, vous indiquerez à quoi correspond chaque colonne,
+            et vous verrez un aperçu avant que quoi que ce soit soit enregistré.
+        </p>
+        {{ form_start(form, {attr: {enctype: 'multipart/form-data'}}) }}
+            {{ form_widget(form) }}
+            <div class="actions"><button class="btn btn-primary" type="submit">{{ icon('upload', 18) }}Envoyer le fichier</button></div>
+        {{ form_end(form) }}
+    </div>
+{% endblock %}

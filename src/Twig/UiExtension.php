@@ -60,6 +60,7 @@ final class UiExtension
         'logout' => 'ph:sign-out-duotone',
         'check' => 'ph:check-circle-duotone',
         'download' => 'ph:download-simple-duotone',
+        'upload' => 'ph:upload-simple-duotone',
         'sun' => 'ph:sun-duotone',
         'moon' => 'ph:moon-duotone',
         'auto' => 'ph:circle-half-duotone',

@@ -1,0 +1,121 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Importer des transactions · colonnes{% endblock %}
+
+{% block body %}
+    <header class="page-head">
+        <h1>Importer des transactions</h1>
+        <form method="post" action="{{ path('app_import_cancel') }}">
+            <input type="hidden" name="_token" value="{{ csrf_token('import-cancel') }}">
+            <button class="btn btn-ghost" type="submit">{{ icon('chevron-left', 16) }}Annuler</button>
+        </form>
+    </header>
+
+    <ol class="import-steps" aria-label="Étapes de l'import">
+        <li class="is-done"><span>1</span>Fichier</li>
+        <li class="is-current"><span>2</span>Colonnes et aperçu</li>
+        <li><span>3</span>Import</li>
+    </ol>
+
+    <div class="card form-card import-sample">
+        <h2>Votre fichier</h2>
+        <p class="muted">{{ file.rows|length }} ligne{{ file.rows|length > 1 ? 's' }} de données, {{ file.header|length }} colonnes. Début du fichier :</p>
+        <div class="table-wrap">
+            <table class="table">
+                <thead><tr>{% for name in file.header %}<th>{{ name ?: '(sans nom)' }}</th>{% endfor %}</tr></thead>
+                <tbody>
+                    {% for row in file.rows|slice(0, 3) %}
+                        <tr>{% for cell in row|slice(0, file.header|length) %}<td>{{ cell }}</td>{% endfor %}</tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="card form-card import-form">
+        {# L'aperçu répond 200 à un envoi de formulaire, ce que Turbo ignore : on laisse le navigateur charger la page normalement. #}
+        {{ form_start(form, {attr: {'data-turbo': 'false'}}) }}
+            <h2>À quoi correspond chaque colonne ?</h2>
+            <div class="import-grid">
+                {{ form_row(form.date) }}
+                {{ form_row(form.label) }}
+                {{ form_row(form.amount) }}
+                {{ form_row(form.type) }}
+                {{ form_row(form.account) }}
+                {{ form_row(form.category) }}
+                {{ form_row(form.note) }}
+            </div>
+
+            <h2>Destination</h2>
+            <div class="import-grid">
+                {{ form_row(form.defaultAccount) }}
+                {{ form_row(form.fallbackCategory) }}
+            </div>
+            {{ form_row(form.createCategories) }}
+            {{ form_row(form.skipDuplicates) }}
+            {{ form_errors(form) }}
+
+            {% if analysis %}
+                <section class="import-result" aria-labelledby="import-result-title">
+                    <h2 id="import-result-title">Aperçu</h2>
+                    <ul class="import-stats">
+                        <li class="is-ok"><strong>{{ analysis.valid }}</strong> à importer</li>
+                        <li class="is-dup"><strong>{{ analysis.duplicates }}</strong> déjà présente{{ analysis.duplicates > 1 ? 's' }}</li>
+                        <li class="is-error"><strong>{{ analysis.invalid }}</strong> invalide{{ analysis.invalid > 1 ? 's' }}</li>
+                    </ul>
+                    {% if analysis.newCategories is not empty %}
+                        <p class="muted">Catégories qui seront créées : {{ analysis.newCategories|join(', ') }}.</p>
+                    {% endif %}
+
+                    {% set problems = analysis.rows|filter(r => r.errors is not empty) %}
+                    {% if problems is not empty %}
+                        <div class="import-problems" role="status">
+                            <strong>Lignes à corriger dans le fichier (ignorées à l'import) :</strong>
+                            <ul>
+                                {% for row in problems|slice(0, 10) %}
+                                    <li>Ligne {{ row.line }} : {{ row.errors|join(' ') }}</li>
+                                {% endfor %}
+                            </ul>
+                            {% if problems|length > 10 %}<p class="muted">… et {{ problems|length - 10 }} autre{{ problems|length - 10 > 1 ? 's' }}.</p>{% endif %}
+                        </div>
+                    {% endif %}
+
+                    <div class="table-wrap">
+                        <table class="table import-preview">
+                            <thead><tr><th>Ligne</th><th>Date</th><th>Libellé</th><th>Montant</th><th>Compte</th><th>Catégorie</th><th>État</th></tr></thead>
+                            <tbody>
+                                {% for row in analysis.rows|slice(0, previewLimit) %}
+                                    <tr class="{{ row.errors ? 'is-error' : (row.duplicate ? 'is-dup') }}">
+                                        <td>{{ row.line }}</td>
+                                        <td>{{ row.date ? row.date|short_date : '—' }}</td>
+                                        <td>{{ row.label ?: '—' }}</td>
+                                        <td class="{{ row.type and row.type.value == 'income' ? 'amount-in' : 'amount-out' }}">
+                                            {% if row.amount is not null and row.type %}{{ (row.type.value == 'income' ? row.amount : '-' ~ row.amount)|money(row.account ? row.account.currency : 'EUR', true) }}{% else %}—{% endif %}
+                                        </td>
+                                        <td>{{ row.account ? row.account.name : '—' }}</td>
+                                        <td>{{ row.category ? row.category.name : (row.categoryName ? row.categoryName ~ ' (nouvelle)' : '—') }}</td>
+                                        <td>{% if row.errors %}Erreur{% elseif row.duplicate %}Déjà présente{% else %}OK{% endif %}</td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% if analysis.rows|length > previewLimit %}
+                        <p class="muted">Les {{ previewLimit }} premières lignes sur {{ analysis.rows|length }} sont affichées ; toutes seront importées.</p>
+                    {% endif %}
+                </section>
+            {% endif %}
+
+            {% set canImport = analysis and (analysis.valid > 0 or (analysis.duplicates > 0 and not form.skipDuplicates.vars.checked)) %}
+            <div class="actions">
+                <button class="btn {{ analysis ? '' : 'btn-primary' }}" type="submit" name="{{ field_name(form.preview) }}" value="">{{ analysis ? "Actualiser l'aperçu" : "Voir l'aperçu" }}</button>
+                {% if canImport %}
+                    <button class="btn btn-primary" type="submit" name="{{ field_name(form.import) }}" value="">{{ icon('upload', 18) }}Importer {{ analysis.valid }} transaction{{ analysis.valid > 1 ? 's' }}</button>
+                {% endif %}
+            </div>
+            {# Le bouton « Importer » n'apparaît qu'une fois l'aperçu affiché, et seulement s'il y a quelque chose à importer. #}
+            {% if not canImport %}{% do form.import.setRendered %}{% endif %}
+            {{ form_rest(form) }}
+        {{ form_end(form, {render_rest: false}) }}
+    </div>
+{% endblock %}

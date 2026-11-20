@@ -12,6 +12,7 @@
                 {{ icon('search', 18) }}
                 <input type="search" name="q" value="{{ q }}" placeholder="Rechercher" aria-label="Rechercher une transaction">
             </form>
+            <a class="round-btn" href="{{ path('app_import_upload') }}" title="Importer un fichier CSV" aria-label="Importer des transactions depuis un fichier CSV">{{ icon('upload', 22) }}</a>
             {# L'export reprend tous les filtres en cours ; il n'est pas limité aux lignes affichées. #}
             <a class="round-btn" href="{{ path('app_export_transactions', filter.toQuery()) }}" data-turbo="false"
                title="Exporter en CSV" aria-label="Exporter {{ filter.isEmpty ? 'toutes les transactions' : 'les transactions filtrées' }} en CSV">{{ icon('download', 22) }}</a>

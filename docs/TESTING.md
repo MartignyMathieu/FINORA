@@ -97,6 +97,30 @@ Pour chaque page, vérifier aussi : aucun message d'erreur, textes en français,
 - Créer, modifier, supprimer ; le formulaire propose uniquement les comptes et catégories de l'utilisateur ;
   montant négatif ou nul refusé.
 
+## Import CSV (`/import/transactions`)
+
+- Accès : icône de téléversement en haut de la page Transactions, ou « Importer des transactions (CSV) » dans le profil.
+  Fichier d'essai : `docs/exemple-import.csv` (6 lignes : 5 valides, dont un revenu, et 1 ligne à la date « bientôt », invalide).
+- **Étape 1 – Fichier** : .csv ou .txt, 2 Mo et 2 000 lignes au plus. Refusés avec un message : fichier vide, seulement l'en-tête, une seule colonne,
+  mauvaise extension (.exe…), fichier qui ressemble à du HTML, plus de 2 000 lignes. Séparateur (`;` `,` tabulation `|`) et encodage (UTF-8,
+  Windows-1252) sont détectés ; les accents restent corrects.
+- **Étape 2 – Colonnes et aperçu** : les colonnes sont devinées d'après leurs noms (Date, Libellé, Montant, Catégorie…). Choisir le compte de
+  destination et la catégorie par défaut, puis « Voir l'aperçu » : **rien n'est enregistré** tant qu'on n'a pas cliqué sur « Importer ».
+  - Compteurs : à importer / déjà présentes / invalides ; liste des lignes à corriger avec leur numéro de ligne dans le fichier ;
+    catégories qui seront créées ; tableau des 30 premières lignes.
+  - Montant négatif = dépense, positif = revenu ; avec une colonne « Type » (Revenu, Dépense, Crédit, Débit…), le montant est pris sans signe.
+  - Une colonne « Compte » range chaque ligne dans le bon compte (nom reconnu sans tenir compte des majuscules) ; un nom inconnu, ou le compte
+    d'un autre utilisateur, rend la ligne invalide.
+  - Dates : `2026-11-20`, `20/11/2026`, `20-11-2026`, `20.11.2026`, avec ou sans heure. Montants : `1 234,56`, `1,234.56`, `1.234,56`, `-42,50`, `42,50 €`, `(42,50)`.
+  - Les catégories qui n'existent pas sont créées (case décochable ; sinon la catégorie par défaut est utilisée). Une catégorie existante est reconnue
+    sans tenir compte des majuscules.
+- **Étape 3 – Import** : message « N transactions importées, … » sur la page Transactions. Tout ou rien : une erreur ne laisse rien d'enregistré.
+- **Doublons** : réimporter le même fichier n'ajoute rien (« déjà présentes ») ; décocher « Ignorer les transactions déjà présentes » les ajoute quand même.
+  Deux achats identiques le même jour dans un même fichier sont tous les deux importés.
+- **Aller-retour** : exporter ses transactions en CSV puis les réimporter (dans un autre compte, par exemple) : les colonnes FINORA sont reconnues.
+- Sécurité : un libellé comme `=1+1` ou contenant `<` `>` est conservé comme du texte et affiché échappé ; les données importées n'appartiennent
+  qu'à l'utilisateur connecté.
+
 ## Export CSV (`/export/transactions`)
 
 - **Bouton de téléchargement** en haut de la page Transactions (icône de flèche, à côté du « + ») : le fichier
