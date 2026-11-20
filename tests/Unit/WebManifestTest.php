@@ -17,12 +17,13 @@ final class WebManifestTest extends TestCase
         return json_decode((string) $json, true, flags: \JSON_THROW_ON_ERROR);
     }
 
-    public function testTheManifestDescribesAStandaloneApp(): void
+    public function testTheManifestDescribesAFullscreenApp(): void
     {
         $manifest = $this->manifest();
 
         self::assertSame('FINORA', $manifest['short_name']);
-        self::assertSame('standalone', $manifest['display']);
+        self::assertSame('fullscreen', $manifest['display']);
+        self::assertSame(['fullscreen', 'standalone', 'minimal-ui'], $manifest['display_override'], 'Repli : plein écran, puis sans barre d’adresse, puis barre minimale');
         self::assertSame('/', $manifest['start_url']);
         self::assertMatchesRegularExpression('/^#[0-9a-f]{6}$/i', $manifest['theme_color']);
         self::assertMatchesRegularExpression('/^#[0-9a-f]{6}$/i', $manifest['background_color']);

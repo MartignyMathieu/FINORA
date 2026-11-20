@@ -565,3 +565,6 @@ form ul { list-style: none; padding: 0; margin: 6px 0 0; color: var(--red); font
 .mini-list .tile { width: 38px; height: 38px; border-radius: 12px; flex: none; }
 .mini-budget { flex-wrap: wrap; }
 .mini-budget .bar { flex: 1 1 100%; margin-left: 50px; }
+
+/* Application en plein écran : le contenu ne passe pas sous l'encoche ou la caméra (0 dans un navigateur ordinaire). */
+body { padding-top: env(safe-area-inset-top); }
