@@ -50,9 +50,7 @@ final class BackupRestorer
      */
     public function parse(string $json): array
     {
-        if (\strlen($json) > self::MAX_BYTES) {
-            throw new \InvalidArgumentException('Le fichier dépasse 20 Mo.');
-        }
+        self::checkSize(\strlen($json));
         if (str_starts_with($json, "\xEF\xBB\xBF")) {
             $json = substr($json, 3);
         }
@@ -87,6 +85,14 @@ final class BackupRestorer
         }
 
         return $data;
+    }
+
+    /** Refuse un fichier trop volumineux (testable sans fabriquer un fichier de 20 Mo). */
+    public static function checkSize(int $bytes): void
+    {
+        if ($bytes > self::MAX_BYTES) {
+            throw new \InvalidArgumentException('Le fichier dépasse 20 Mo.');
+        }
     }
 
     /**

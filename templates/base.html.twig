@@ -29,6 +29,11 @@
         {% endblock %}
     </head>
     <body>
+        {# Bandeau « hors ligne » / « copie du … » (offline_status_controller) : caché tant que tout va bien. #}
+        <div class="offline-bar" data-controller="offline-status" role="status" aria-live="polite" hidden>
+            <span data-offline-status-target="message"></span>
+            <button type="button" data-offline-status-target="reload" data-action="offline-status#reload" hidden>Actualiser</button>
+        </div>
         {% block layout %}
         {% set route = app.current_route|default('') %}
         {% set nav = [

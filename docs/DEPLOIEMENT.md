@@ -38,6 +38,13 @@ Pour présenter l'application avec des données réalistes, sans ouvrir la base 
 
 Le mot de passe est celui du dépôt : le changer après la première connexion (Profil → Mot de passe) si le dépôt est public.
 
+## Mode hors ligne (service worker)
+
+`public/sw.js` est servi à la racine (portée `/`) ; il met en cache les ressources statiques et, si l'utilisateur l'a activé, des copies de pages de consultation
+(effacées à la déconnexion). Il ne fonctionne qu'en HTTPS (Render le fournit) ou sur `localhost`. Pour publier une nouvelle version du worker (nouvelle logique de
+cache), changer la constante `VERSION` de `public/sw.js` : à l'activation, les caches des anciennes versions sont supprimés. Après un déploiement, le navigateur
+récupère `sw.js` de lui-même (au plus 24 h ; à la prochaine ouverture de l'application, le plus souvent).
+
 ## Sauvegardes
 
 Deux niveaux, à combiner :

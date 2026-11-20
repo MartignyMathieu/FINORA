@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <meta name="robots" content="noindex">
+    <meta name="theme-color" content="#081326">
+    <title>Hors ligne · FINORA</title>
+    <!-- Page de secours affichée par le service worker (public/sw.js) quand le réseau est indisponible.
+         Autonome : aucune ressource externe, car elle doit s'afficher sans connexion. -->
+    <style>
+        :root { --bg: #f4f7fc; --card: #ffffff; --ink: #0b1f3c; --muted: #4a5b78; --primary: #1f6fef; }
+        @media (prefers-color-scheme: dark) { :root { --bg: #081326; --card: #0f1d36; --ink: #e8f0ff; --muted: #a9b8d4; --primary: #5c9bff; } }
+        * { box-sizing: border-box; }
+        body { margin: 0; min-height: 100vh; display: grid; place-items: center; padding: 24px; background: var(--bg); color: var(--ink);
+               font: 16px/1.5 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
+        main { width: min(440px, 100%); padding: 32px 26px; border-radius: 22px; background: var(--card); text-align: center;
+               box-shadow: 0 14px 40px rgba(8, 19, 38, 0.14); }
+        svg { width: 72px; height: 72px; }
+        h1 { margin: 14px 0 6px; font-size: 1.5rem; letter-spacing: -0.02em; }
+        p { margin: 0 0 14px; color: var(--muted); }
+        .actions { display: grid; gap: 10px; margin-top: 22px; }
+        button, a.button { display: block; padding: 13px 18px; border: 0; border-radius: 14px; font: inherit; font-weight: 700; cursor: pointer; text-decoration: none; text-align: center; }
+        button { background: var(--primary); color: #fff; }
+        a.button { background: transparent; color: var(--primary); border: 2px solid var(--primary); }
+        button:focus-visible, a.button:focus-visible { outline: 3px solid var(--primary); outline-offset: 3px; }
+        small { display: block; margin-top: 18px; color: var(--muted); }
+    </style>
+</head>
+<body>
+    <main>
+        <svg viewBox="120 40 520 500" role="img" aria-label="FINORA" focusable="false">
+            <defs>
+                <linearGradient id="a" x1="0.1" y1="1" x2="0.95" y2="0"><stop offset="0" stop-color="#1f6fef"/><stop offset="1" stop-color="#5cd9ff"/></linearGradient>
+                <linearGradient id="b" x1="0.1" y1="1" x2="0.9" y2="0.1"><stop offset="0" stop-color="#0a45ff"/><stop offset="1" stop-color="#19aaff"/></linearGradient>
+            </defs>
+            <path fill="url(#a)" d="M190 308C198 150 300 62 470 60L606 58C596 135 560 196 478 199L330 201C262 206 218 256 190 308Z"/>
+            <path fill="url(#b)" d="M148 514C176 400 206 252 342 246L518 243C536 244 522 300 490 336C466 360 440 366 396 366L342 368C316 372 308 400 300 432C284 486 232 520 148 514Z"/>
+        </svg>
+        <h1>Vous êtes hors ligne</h1>
+        <p>FINORA ne peut pas joindre le serveur pour le moment. Vos données ne sont pas perdues : elles se trouvent sur le serveur.</p>
+        <p>Vérifiez votre connexion puis réessayez. Les modifications (ajouter, modifier ou supprimer) demandent une connexion.</p>
+        <div class="actions">
+            <button type="button" onclick="location.reload()">Réessayer</button>
+            <a class="button" href="/">Retour à l'accueil</a>
+        </div>
+        <small>Astuce : dans Paramètres → Mode hors ligne, vous pouvez garder une copie de vos dernières pages pour les consulter sans connexion.</small>
+    </main>
+</body>
+</html>

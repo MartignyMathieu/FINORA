@@ -252,3 +252,53 @@ test('bulk_controller : la barre apparaît avec la sélection, le compteur et «
     controller.disconnect();
     assert.equal(browser.document.body.classList.contains('has-selection'), false);
 });
+
+test('offline_status_controller : le bandeau apparaît hors ligne ou sur une copie de page, avec la date, et se cache sinon', async () => {
+    const browser = installBrowser({ fx: 'on' });
+    const original = Object.getOwnPropertyDescriptor(globalThis, 'navigator');
+    const network = { onLine: true };
+    Object.defineProperty(globalThis, 'navigator', { value: network, configurable: true });
+    try {
+        const { default: OfflineStatus } = await loadController('controllers/offline_status_controller.js');
+        const message = el('span', { 'data-offline-status-target': 'message' });
+        const reload = el('button', { 'data-offline-status-target': 'reload' });
+        const bar = el('div', {}, [message, reload]);
+        const controller = mount(OfflineStatus, 'offline-status', bar);
+
+        // En ligne, page normale : rien.
+        assert.equal(bar.hidden, true);
+
+        // Copie de page gardée par le service worker : date indiquée, lien « Actualiser » proposé (on est en ligne).
+        const meta = el('meta', { name: 'finora-cached-at', content: '2026-11-20T12:34:00.000Z' });
+        browser.document.append(meta);
+        controller.update();
+        assert.equal(bar.hidden, false);
+        assert.match(message.textContent, /^Copie : page enregistrée le .*novembre/);
+        assert.match(message.textContent, /Les modifications ne sont pas possibles\.$/);
+        assert.equal(reload.hidden, false);
+
+        // Hors ligne sur une copie : pas de lien d'actualisation (il ne servirait à rien).
+        network.onLine = false;
+        controller.update();
+        assert.match(message.textContent, /^Hors ligne : page enregistrée/);
+        assert.equal(reload.hidden, true);
+
+        // Hors ligne sans copie (page déjà affichée) : message simple.
+        meta.remove();
+        controller.update();
+        assert.equal(message.textContent, 'Vous êtes hors ligne : les modifications ne sont pas possibles.');
+        assert.equal(bar.hidden, false);
+
+        // Retour en ligne : le bandeau disparaît.
+        network.onLine = true;
+        controller.update();
+        assert.equal(bar.hidden, true);
+
+        // Date illisible : formulation de secours.
+        browser.document.append(el('meta', { name: 'finora-cached-at', content: 'n\'importe quoi' }));
+        controller.update();
+        assert.match(message.textContent, /une consultation précédente/);
+    } finally {
+        if (original) { Object.defineProperty(globalThis, 'navigator', original); } else { delete globalThis.navigator; }
+    }
+});

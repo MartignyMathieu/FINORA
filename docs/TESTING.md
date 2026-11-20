@@ -97,6 +97,27 @@ Pour chaque page, vérifier aussi : aucun message d'erreur, textes en français,
 - Créer, modifier, supprimer ; le formulaire propose uniquement les comptes et catégories de l'utilisateur ;
   montant négatif ou nul refusé.
 
+## Mode hors ligne
+
+Il demande une adresse **sécurisée** : HTTPS (le site en ligne) ou `localhost` / `127.0.0.1`. Sur `http://<adresse-IP>:8000` (réseau local), le service worker
+n'existe pas : le réglage affiche « Le mode hors ligne n'est pas disponible sur cette connexion » et tout le reste fonctionne normalement.
+
+- **Page de secours** (toujours active) : couper la connexion (mode avion, ou arrêter le serveur) puis ouvrir ou recharger une page : « Vous êtes hors
+  ligne » avec « Réessayer » et « Retour à l'accueil », au lieu de l'erreur du navigateur. Idem en cliquant dans le menu (visites Turbo). Une action qui
+  modifie des données (supprimer, enregistrer…) hors ligne affiche la même page (code 503) : **rien n'est enregistré ni mis en attente**.
+- **Copie pour la consultation** (Paramètres → « Mode hors ligne », désactivée par défaut) : cocher l'interrupteur ; le message passe à « Activé : N pages
+  disponibles hors ligne ». Sans réseau, les pages Accueil, Comptes, Transactions, Budgets, Objectifs, Statistiques, Calendrier, Récurrences, Virements,
+  Catégories et Paramètres s'ouvrent en lecture seule, avec un bandeau noir « Copie : page enregistrée le 20 novembre à 13:58. Les modifications ne sont pas
+  possibles. » (et « Actualiser » une fois la connexion revenue). Les pages qu'on a consultées entre-temps sont mises à jour ; « Mettre à jour la copie »
+  les rafraîchit toutes.
+- **Jamais gardés** : profil (donc la sauvegarde), connexion, inscription, réinitialisation du mot de passe, imports, exports, formulaires de création et de
+  modification, actions. Hors ligne, ces pages donnent la page de secours.
+- **Effacement** : la copie disparaît quand on **se déconnecte** (même hors ligne juste avant), quand on **arrive sur la page de connexion**, quand une session
+  expirée redirige vers la connexion, quand on **décoche** l'interrupteur et avec « Effacer la copie ». Après une déconnexion, hors ligne : page de secours,
+  jamais de données. 40 pages au plus sont gardées (les plus anciennes sortent).
+- **Confidentialité** : le réglage prévient que les copies contiennent des données financières stockées dans le navigateur (à n'activer que sur un appareil personnel).
+  Pour inspecter : outils de développement → Application → Cache Storage (`finora-static-v1`, `finora-pages-v1`, `finora-meta-v1`).
+
 ## Sauvegarde et restauration (profil, section « Sauvegarde de mes données »)
 
 - **Télécharger une sauvegarde** : un fichier `finora-sauvegarde-AAAA-MM-JJ.json` (environ 50 Ko pour le jeu de test : 5 comptes, 14 catégories,

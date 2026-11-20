@@ -7,5 +7,5 @@ import './stimulus_bootstrap.js';
  */
 import './styles/app.css';
 import './styles/motion.css';
-
-console.log('This log comes from assets/app.js - welcome to AssetMapper! 🎉');
+// Mode hors ligne : enregistrement du service worker (public/sw.js).
+import './pwa.js';

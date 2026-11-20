@@ -84,9 +84,12 @@ final class BackupRestorerTest extends TestCase
 
     public function testTheFileSizeIsLimited(): void
     {
+        // Sans fabriquer un fichier de 20 Mo (la mémoire de la suite complète n'y suffirait pas).
+        BackupRestorer::checkSize(BackupRestorer::MAX_BYTES);
+
         $this->expectException(\InvalidArgumentException::class);
         $this->expectExceptionMessage('20 Mo');
 
-        $this->restorer()->parse(str_repeat(' ', BackupRestorer::MAX_BYTES + 1));
+        BackupRestorer::checkSize(BackupRestorer::MAX_BYTES + 1);
     }
 }
