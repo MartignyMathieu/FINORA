@@ -13,3 +13,15 @@ when@test:
         test: true
         session:
             storage_factory_id: session.storage.factory.mock_file
+
+when@prod:
+    framework:
+        # Derrière le répartiteur de l'hébergeur (HTTPS terminé en amont) : on lit le protocole et l'adresse d'origine
+        # dans les en-têtes X-Forwarded-*, ce qui génère des URL en https et des cookies sécurisés.
+        trusted_proxies: 'REMOTE_ADDR'
+        trusted_headers: ['x-forwarded-for', 'x-forwarded-host', 'x-forwarded-proto', 'x-forwarded-port', 'x-forwarded-prefix']
+        # Sessions en base (table « sessions ») : elles survivent aux redéploiements, le disque du conteneur étant éphémère.
+        session:
+            handler_id: Symfony\Component\HttpFoundation\Session\Storage\Handler\PdoSessionHandler
+            cookie_secure: auto
+            cookie_samesite: lax

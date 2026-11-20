@@ -9,8 +9,9 @@
 parameters:
     # Devise dans laquelle sont agrégés les totaux du tableau de bord (pas de conversion entre devises).
     app.default_currency: 'EUR'
-    # Adresse d'expédition des e-mails de l'application.
-    app.mailer_from: 'no-reply@finora.local'
+    # Adresse d'expédition des e-mails de l'application (variable MAILER_FROM en production).
+    env(MAILER_FROM): 'no-reply@finora.local'
+    app.mailer_from: '%env(MAILER_FROM)%'
 
 services:
     # default configuration for services in *this* file
@@ -25,3 +26,10 @@ services:
 
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones
+
+when@prod:
+    services:
+        # Sessions en base : même connexion que l'application (voir config/packages/framework.yaml).
+        Symfony\Component\HttpFoundation\Session\Storage\Handler\PdoSessionHandler:
+            arguments:
+                - '%env(DATABASE_URL)%'

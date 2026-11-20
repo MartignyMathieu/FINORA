@@ -1,0 +1,41 @@
+# Blueprint Render : https://render.com/docs/blueprint-spec
+# Crée la base PostgreSQL et le service web (Docker) ; le HTTPS est fourni par Render.
+databases:
+  - name: finora-db
+    databaseName: finora
+    user: finora
+    plan: free # vérifier les conditions actuelles de l'offre gratuite (durée limitée) avant de la choisir
+
+services:
+  - type: web
+    name: finora
+    runtime: docker
+    plan: free # s'endort après un moment d'inactivité ; un plan payant évite la mise en veille
+    healthCheckPath: /login
+    envVars:
+      - key: APP_ENV
+        value: prod
+      - key: APP_DEBUG
+        value: "0"
+      - key: APP_SECRET
+        generateValue: true
+      - key: APP_SHARE_DIR
+        value: var/share
+      - key: DATABASE_URL
+        fromDatabase:
+          name: finora-db
+          property: connectionString
+      - key: MESSENGER_TRANSPORT_DSN
+        value: doctrine://default?auto_setup=0
+      - key: LOCK_DSN
+        value: flock
+      # À renseigner dans le tableau de bord Render à la création (« sync: false » : jamais écrits dans le dépôt).
+      # MAILER_DSN : null://null n'envoie rien ; pour de vrais e-mails, le DSN SMTP du fournisseur (ex. smtp://utilisateur:motdepasse@serveur:587).
+      - key: MAILER_DSN
+        sync: false
+      # Adresse d'expédition (celle d'un domaine que vous possédez), ex. no-reply@mon-domaine.fr
+      - key: MAILER_FROM
+        sync: false
+      # Adresse publique du service (https://<nom>.onrender.com), pour les URL générées hors requête web.
+      - key: DEFAULT_URI
+        sync: false

@@ -1,0 +1,28 @@
+<?php
+
+declare(strict_types=1);
+
+namespace DoctrineMigrations;
+
+use Doctrine\DBAL\Schema\Schema;
+use Doctrine\Migrations\AbstractMigration;
+
+/** Table des sessions (PdoSessionHandler), utilisée en production : les sessions survivent aux redéploiements. */
+final class Version20261120100000 extends AbstractMigration
+{
+    public function getDescription(): string
+    {
+        return 'Table sessions pour le stockage des sessions en base';
+    }
+
+    public function up(Schema $schema): void
+    {
+        $this->addSql('CREATE TABLE sessions (sess_id VARCHAR(128) NOT NULL PRIMARY KEY, sess_data BYTEA NOT NULL, sess_lifetime INTEGER NOT NULL, sess_time INTEGER NOT NULL)');
+        $this->addSql('CREATE INDEX sessions_sess_lifetime_idx ON sessions (sess_lifetime)');
+    }
+
+    public function down(Schema $schema): void
+    {
+        $this->addSql('DROP TABLE sessions');
+    }
+}

@@ -102,6 +102,8 @@ donnent une icône, un nom court (« FINORA ») et une ouverture plein écran, s
 Chrome sur Android n'installe une vraie application que pour un site en **HTTPS** (ou `localhost`) ; en HTTP sur le réseau local,
 on obtient un raccourci avec la bonne icône. Les icônes se régénèrent avec `node tools/icons/generate.mjs` (Chrome ou Edge requis).
 
+Pour une vraie installation (HTTPS, plein écran sur Android), voir le déploiement sur Render : [docs/DEPLOIEMENT.md](docs/DEPLOIEMENT.md).
+
 ## Technologies
 
 - PHP 8.4+ et Symfony 8.1 (Security, Form, Validator, Messenger, Scheduler, Lock, Mailer, Rate Limiter)
