@@ -9,6 +9,7 @@ et on automatise les opérations qui reviennent chaque mois. Chaque utilisateur 
 ## Fonctionnalités
 
 - **Comptes** : plusieurs comptes (courant, épargne, espèces, voyage…), chacun avec sa devise et son solde initial
+- **Solde masquable** : l'œil de la carte de solde masque ou affiche le solde total (choix mémorisé sur l'appareil)
 - **Transactions** : revenus et dépenses, regroupés par mois, avec onglets Toutes / Revenus / Dépenses et recherche
 - **Catégories** : nom, icône et couleur, propres à chaque utilisateur
 - **Budgets mensuels** : un plafond par catégorie et par mois, avec barre de progression (orange à partir de 80 %, rouge en cas de dépassement)

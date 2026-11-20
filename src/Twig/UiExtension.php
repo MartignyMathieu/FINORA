@@ -54,6 +54,7 @@ final class UiExtension
         'flame' => 'ph:fire-duotone',
         'bulb' => 'ph:lightbulb-duotone',
         'eye' => 'ph:eye-duotone',
+        'eye-off' => 'ph:eye-slash-duotone',
         'bell' => 'ph:bell-duotone',
         'logout' => 'ph:sign-out-duotone',
         'check' => 'ph:check-circle-duotone',

@@ -1,0 +1,2 @@
+{# Bouton « masquer / afficher le solde total » (privacy_controller). Paramètre : class (optionnel). #}
+<button type="button" class="eye-toggle {{ class|default('') }}" data-controller="privacy" data-action="privacy#toggle" aria-pressed="false" aria-label="Masquer le solde total" title="Masquer le solde total"><span class="eye-open">{{ icon('eye', 22) }}</span><span class="eye-closed">{{ icon('eye-off', 22) }}</span></button>

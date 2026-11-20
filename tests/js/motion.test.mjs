@@ -143,3 +143,26 @@ test('theme_controller : fondu entre thèmes (classe temporaire), choix mémoris
         mock.timers.reset();
     }
 });
+
+test('privacy_controller : masque et affiche le solde, choix mémorisé et appliqué à tous les boutons', async () => {
+    const browser = installBrowser({ fx: 'on' });
+    const { default: Privacy } = await loadController('controllers/privacy_controller.js');
+    const first = mount(Privacy, 'privacy', el('button'));
+    const second = mount(Privacy, 'privacy', el('button'));
+
+    assert.equal(first.element.getAttribute('aria-pressed'), 'false');
+    assert.equal(first.element.getAttribute('aria-label'), 'Masquer le solde total');
+
+    first.toggle();
+    assert.equal(browser.root.dataset.hideBalance, '1');
+    assert.equal(browser.store.get('finora-hide-balance'), '1');
+    assert.equal(first.element.getAttribute('aria-pressed'), 'true');
+    assert.equal(first.element.getAttribute('aria-label'), 'Afficher le solde total');
+    // L'autre bouton (carte mobile / carte bureau) suit, par l'événement partagé.
+    assert.equal(second.element.getAttribute('aria-pressed'), 'true');
+
+    second.toggle();
+    assert.equal(browser.root.dataset.hideBalance, undefined);
+    assert.equal(browser.store.has('finora-hide-balance'), false);
+    assert.equal(first.element.getAttribute('aria-pressed'), 'false');
+});

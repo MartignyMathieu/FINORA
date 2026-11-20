@@ -102,7 +102,7 @@ final class MotionTest extends AbstractCrudTestCase
         self::assertCount(4, $crawler->filter('.kpis .kpi[data-controller="tilt"]'));
         self::assertCount(1, $crawler->filter('.balance-card[data-controller="tilt"]'));
 
-        $amounts = $crawler->filter('.kpi strong[data-controller="countup"]');
+        $amounts = $crawler->filter('.kpi [data-controller="countup"]');
         self::assertCount(4, $amounts);
         foreach ($amounts as $node) {
             self::assertSame('EUR', $node->getAttribute('data-countup-currency-value'));

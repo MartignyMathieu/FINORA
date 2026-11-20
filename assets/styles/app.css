@@ -568,3 +568,18 @@ form ul { list-style: none; padding: 0; margin: 6px 0 0; color: var(--red); font
 
 /* Application en plein écran : le contenu ne passe pas sous l'encoche ou la caméra (0 dans un navigateur ordinaire). */
 body { padding-top: env(safe-area-inset-top); }
+
+/* ---------- Masquer le solde total (privacy_controller) ---------- */
+.amt-mask { display: none; letter-spacing: 0.12em; }
+[data-hide-balance="1"] .amt-real { display: none; }
+[data-hide-balance="1"] .amt-mask { display: inline; }
+.eye-toggle { display: inline-grid; place-items: center; width: 40px; height: 40px; margin: -8px -8px -8px 0; padding: 0; border: 0; border-radius: 50%; background: transparent; color: inherit; cursor: pointer; }
+.eye-toggle:hover { background: rgba(255, 255, 255, 0.16); }
+.eye-toggle:focus-visible { outline: 2px solid currentColor; outline-offset: 2px; }
+.eye-toggle-light { margin: 0 0 0 auto; color: var(--muted); }
+.eye-toggle-light:hover { background: var(--light); color: var(--ink); }
+.eye-closed { display: none; }
+[data-hide-balance="1"] .eye-open { display: none; }
+[data-hide-balance="1"] .eye-closed { display: inline-flex; }
+.eye-open { display: inline-flex; }
+.kpi .grow { flex: 1; min-width: 0; }
