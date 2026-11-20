@@ -215,3 +215,12 @@ navigateur les pages, les débordements mobiles et les interactions décrites ci
 - **Pages publiques** : connexion, inscription et mot de passe oublié suivent le thème (sans bouton : réglage de l'appareil ou
   choix déjà enregistré).
 - **Navigateur mobile** : la barre d'état prend la couleur du fond du thème.
+
+## Sur téléphone et installation
+
+- Avec `symfony serve -d --allow-all-ip --no-tls` et Docker démarré (`docker compose up -d`), ouvrir `http://<adresse-ip-du-pc>:8000` sur le
+  téléphone (même Wi-Fi) : la connexion et toutes les pages fonctionnent. Si la connexion échoue alors que la page de connexion s'affiche,
+  la base de données (Docker) n'est probablement pas démarrée.
+- *Ajouter à l'écran d'accueil* : l'icône FINORA (le « F » bleu sur fond marine) et le nom « FINORA » apparaissent ; l'ouverture se fait
+  en plein écran sur iPhone, dans le navigateur sur Android tant que le site n'est pas en HTTPS.
+- Le menu d'appui long de l'icône (Android) propose « Nouvelle transaction », « Budgets » et « Objectifs » (une fois installée).

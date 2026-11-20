@@ -90,6 +90,18 @@ Détails de mise en œuvre :
 - La couleur de la barre d'état du navigateur suit le thème clair ou sombre.
 - Aucun défilement horizontal attendu, quel que soit l'écran : à vérifier avec `docs/TESTING.md` (section « Affichage »).
 
+## Installer sur un téléphone
+
+FINORA est installable comme une application : un manifeste (`public/manifest.webmanifest`) et des icônes (`public/icons/`)
+donnent une icône, un nom court (« FINORA ») et une ouverture plein écran, sans barre d'adresse.
+
+1. Lancer le serveur pour le réseau local : `symfony serve -d --allow-all-ip --no-tls` (Docker doit tourner : `docker compose up -d`).
+2. Sur le téléphone, connecté au même Wi-Fi, ouvrir `http://<adresse-ip-du-pc>:8000` (adresse donnée par `ipconfig`).
+3. Android (Chrome) : menu ⋮ → *Ajouter à l'écran d'accueil* ; iPhone (Safari) : Partager → *Sur l'écran d'accueil*.
+
+Chrome sur Android n'installe une vraie application que pour un site en **HTTPS** (ou `localhost`) ; en HTTP sur le réseau local,
+on obtient un raccourci avec la bonne icône. Les icônes se régénèrent avec `node tools/icons/generate.mjs` (Chrome ou Edge requis).
+
 ## Technologies
 
 - PHP 8.4+ et Symfony 8.1 (Security, Form, Validator, Messenger, Scheduler, Lock, Mailer, Rate Limiter)
