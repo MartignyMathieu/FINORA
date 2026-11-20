@@ -1,0 +1,2 @@
+{# Pastille rouge à côté de « Budgets » : au moins un budget est dépassé, atteint ou proche de son plafond. #}
+<span class="alert-badge" role="img" aria-label="{{ budget_alerts()|length > 1 ? budget_alerts()|length ~ ' budgets à surveiller' : '1 budget à surveiller' }}">{{ budget_alerts()|length }}</span>

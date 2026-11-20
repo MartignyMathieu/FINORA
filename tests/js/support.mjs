@@ -264,7 +264,8 @@ export class Controller {
             const type = typeof definition === 'object' ? definition.type : definition;
             const fallback = typeof definition === 'object' ? definition.default : undefined;
             // data-countup-value-value="1" => dataset.countupValueValue (identifiant + nom de la valeur + « Value »).
-            const key = identifier + name[0].toUpperCase() + name.slice(1) + 'Value';
+            // (un identifiant à tiret, comme « alert-dismiss », devient alertDismiss dans le dataset)
+            const key = identifier.replace(/-([a-z])/g, (_, c) => c.toUpperCase()) + name[0].toUpperCase() + name.slice(1) + 'Value';
             Object.defineProperty(this, name + 'Value', {
                 get: () => {
                     const raw = element.dataset[key];

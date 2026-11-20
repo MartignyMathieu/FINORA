@@ -166,3 +166,24 @@ test('privacy_controller : masque et affiche le solde, choix mémorisé et appli
     assert.equal(browser.store.has('finora-hide-balance'), false);
     assert.equal(first.element.getAttribute('aria-pressed'), 'false');
 });
+
+test('alert_dismiss_controller : se ferme, mémorise l\'empreinte et ne revient que si les alertes changent', async () => {
+    const browser = installBrowser({ fx: 'on' });
+    const { default: AlertDismiss } = await loadController('controllers/alert_dismiss_controller.js');
+
+    // Première visite : visible.
+    const first = mount(AlertDismiss, 'alert-dismiss', el('section', { 'data-alert-dismiss-signature-value': '1:warn' }));
+    assert.ok(!first.element.hidden, 'Première visite : visible');
+
+    first.dismiss();
+    assert.equal(first.element.hidden, true);
+    assert.equal(browser.store.get('finora-dismissed-alerts'), '1:warn');
+
+    // Même empreinte (page suivante) : reste cachée.
+    const same = mount(AlertDismiss, 'alert-dismiss', el('section', { 'data-alert-dismiss-signature-value': '1:warn' }));
+    assert.equal(same.element.hidden, true);
+
+    // Un budget change de niveau : la bannière revient.
+    const changed = mount(AlertDismiss, 'alert-dismiss', el('section', { 'data-alert-dismiss-signature-value': '1:over' }));
+    assert.ok(!changed.element.hidden, 'Empreinte différente : la bannière revient');
+});

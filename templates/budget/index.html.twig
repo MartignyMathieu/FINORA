@@ -13,6 +13,10 @@
         </div>
     </header>
 
+    {% if month|date('Y-m') == 'now'|date('Y-m') %}
+        {{ include('_budget_alerts.html.twig') }}
+    {% endif %}
+
     <ul class="list">
         {% for row in rows %}
             {% set budget = row.budget %}

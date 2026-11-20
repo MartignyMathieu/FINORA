@@ -1,0 +1,31 @@
+{# Bannière des budgets à surveiller (BudgetAlerts) : fermable, elle ne revient que si un budget change de niveau. #}
+{% set alerts = budget_alerts() %}
+{% if alerts is not empty %}
+    {% set worst = alerts|first %}
+    <section class="budget-alerts is-{{ worst.level }}" role="status" aria-label="Alertes de budget"
+             data-controller="alert-dismiss" data-alert-dismiss-signature-value="{{ budget_alerts_signature() }}">
+        <div class="budget-alerts-head">
+            <strong>{{ icon('bell', 20) }}{{ alerts|length > 1 ? alerts|length ~ ' budgets à surveiller' : '1 budget à surveiller' }}</strong>
+            <button type="button" class="budget-alerts-close" data-action="alert-dismiss#dismiss" aria-label="Fermer les alertes de budget" title="Fermer">&times;</button>
+        </div>
+        <ul>
+            {% for alert in alerts|slice(0, 4) %}
+                {% set currency = alert.budget.currency %}
+                <li class="is-{{ alert.level }}">
+                    <a href="{{ path('app_budget_show', {id: alert.budget.id}) }}">
+                        {% if alert.level == 'over' %}
+                            <strong>{{ alert.budget.category }}</strong> dépassé : {{ alert.spent|money(currency) }} dépensés sur {{ alert.limit|money(currency) }}
+                        {% elseif alert.level == 'full' %}
+                            <strong>{{ alert.budget.category }}</strong> atteint : {{ alert.spent|money(currency) }} sur {{ alert.limit|money(currency) }}
+                        {% else %}
+                            <strong>{{ alert.budget.category }}</strong> à {{ alert.percent }}&nbsp;% : {{ alert.spent|money(currency) }} sur {{ alert.limit|money(currency) }}
+                        {% endif %}
+                    </a>
+                </li>
+            {% endfor %}
+        </ul>
+        {% if alerts|length > 4 %}
+            <p class="budget-alerts-more"><a href="{{ path('app_budget_index') }}">… et {{ alerts|length - 4 }} autre{{ alerts|length - 4 > 1 ? 's' }} : voir les budgets</a></p>
+        {% endif %}
+    </section>
+{% endif %}

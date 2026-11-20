@@ -114,6 +114,19 @@ Pour chaque page, vérifier aussi : aucun message d'erreur, textes en français,
 - Créer une règle dont la première échéance est dans le passé : les transactions passées sont créées tout de suite
   (message de confirmation).
 
+## Alertes de budget
+
+- Seuils : à partir de **80 %** du plafond (« à 85 % »), plafond **atteint** (100 % exactement), plafond **dépassé**. Seul le **mois en cours** compte.
+- Jeu de test : « Loisirs dépassé » (180 € sur 150 €), « Restaurants atteint » (60 € sur 60 €), « Voyage à 94 % », « Shopping à 85 % » et
+  « Alimentation » : **5 budgets à surveiller**. Les plus graves viennent d'abord (dépassé, atteint, puis proche du plafond) ; quatre lignes sont
+  affichées, puis « … et 1 autre : voir les budgets ». Chaque ligne mène au budget.
+- La bannière rouge (dépassé ou atteint) ou orange (seulement proche du plafond) s'affiche sur **l'accueil** et sur **Budgets** (mois en cours ;
+  pas en changeant de mois). Une pastille rouge avec le nombre de budgets à surveiller est à côté de « Budgets » dans le menu et sur l'onglet
+  mobile, **sur toutes les pages**.
+- La croix ferme la bannière **et la mémorise** : elle reste fermée sur les autres pages et après rechargement. Elle **revient** si un budget
+  change de niveau (par exemple en dépensant davantage pour dépasser un budget « à 85 % »). La pastille du menu reste affichée.
+- Les budgets des autres mois et ceux des autres utilisateurs ne déclenchent jamais d'alerte ; rien n'est affiché sur les pages publiques.
+
 ## Budgets (`/budget`)
 
 - Mois en cours : **Loisirs 180/150 (120 %, barre rouge)**, **Transport 82,50/200 (41 %)**, **Shopping 85/100 (85 %, orange)**,
