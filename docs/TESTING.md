@@ -48,10 +48,21 @@ Pour chaque page, vérifier aussi : aucun message d'erreur, textes en français,
 
 ## Comptes (`/account`)
 
-- 5 comptes, un par type : Compte courant, **Livret A (5 212,50 €)**, Espèces, **Compte voyage en dollars ($)**,
+- 5 comptes, un par type : Compte courant, **Livret A (5 512,50 €)** (dont 300 € de virements reçus), Espèces, **Compte voyage en dollars ($)**,
   **Compte à découvert (−350,00 €, le seul solde négatif)**.
 - Créer, modifier, supprimer. La suppression d'un compte qui contient des transactions est refusée avec un message.
 - Vider un champ obligatoire en modifiant → message d'erreur (pas de page d'erreur).
+
+## Virements (`/transfer`)
+
+- Depuis « Comptes » (icône à deux flèches) ou le bouton « + » (« Nouveau virement ») : la liste est groupée par mois, le plus récent d'abord.
+  Le jeu de test contient deux virements de 150 € du Compte courant vers le Livret A (« Épargne du mois »).
+- Créer : compte débité, compte crédité, montant, date, note. **Refusés** : deux fois le même compte, deux devises différentes
+  (Compte voyage en dollars → un compte en euros), montant nul ou négatif ; le formulaire ne propose que vos comptes.
+- Après un virement : le solde du compte débité baisse, celui du compte crédité monte du même montant ; **le solde total, les revenus,
+  les dépenses et l'épargne du mois ne bougent pas**, et le virement n'apparaît pas dans la liste des transactions ni dans l'export CSV.
+- Modifier ou supprimer un virement (page de modification) rétablit les soldes. Un compte qui a des virements ne peut pas être supprimé
+  (message d'erreur). Le compte d'un autre utilisateur est inaccessible (403).
 
 ## Transactions (`/transaction`)
 
@@ -179,7 +190,7 @@ navigateur les pages, les débordements mobiles et les interactions décrites ci
   d'effort), sans échéance (« Aucune »). Au clavier, seule la face visible est atteignable.
 - **Connexion / inscription** : la pièce 3D tourne et flotte ; elle ne gêne pas la saisie.
 - **Ajout rapide** (bouton « + » en bas à droite, sur les pages de liste et d'accueil, pas sur les formulaires, le profil ni les
-  paramètres) : il déploie 5 raccourcis, le « + » devient une croix et la page s'assombrit derrière ; Échap, un clic ailleurs ou un
+  paramètres) : il déploie 6 raccourcis, le « + » devient une croix et la page s'assombrit derrière ; Échap, un clic ailleurs ou un
   raccourci le referment ; chaque raccourci mène à la bonne page de création. Sur mobile il reste au-dessus de la barre d'onglets.
 - **Messages** : en modifiant le prénom du profil, la confirmation glisse, peut être fermée par la croix, et disparaît seule après 6 s ; un
   message d'erreur ne disparaît pas tout seul.

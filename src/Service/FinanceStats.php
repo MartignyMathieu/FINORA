@@ -8,6 +8,7 @@ use App\Entity\Category;
 use App\Entity\Goal;
 use App\Entity\RecurringTransaction;
 use App\Entity\Transaction;
+use App\Entity\Transfer;
 use App\Entity\User;
 use App\Enum\Icon;
 use App\Enum\TransactionType;
@@ -120,6 +121,15 @@ final class FinanceStats
         )->setParameter('income', TransactionType::Income)->setParameter('user', $this->user())->getArrayResult();
         foreach ($rows as $row) {
             $net[$row['id']] = (float) $row['net'];
+        }
+
+        // Les virements déplacent l'argent d'un compte à l'autre : débit du compte source, crédit du compte cible.
+        foreach ($this->em->createQuery(
+            'SELECT IDENTITY(t.fromAccount) AS fromId, IDENTITY(t.toAccount) AS toId, t.amount AS amount
+             FROM '.Transfer::class.' t JOIN t.fromAccount f WHERE f.owner = :user'
+        )->setParameter('user', $this->user())->getArrayResult() as $transfer) {
+            $net[$transfer['fromId']] = ($net[$transfer['fromId']] ?? 0.0) - (float) $transfer['amount'];
+            $net[$transfer['toId']] = ($net[$transfer['toId']] ?? 0.0) + (float) $transfer['amount'];
         }
 
         $result = [];

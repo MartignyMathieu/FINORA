@@ -599,3 +599,5 @@ body { padding-top: env(safe-area-inset-top); }
 .color-choice:has(input:checked) { border-color: var(--primary); background: var(--white); box-shadow: var(--shadow); }
 .color-choice:has(input:checked) .color-name { color: var(--ink); }
 .color-choice:has(input:focus-visible) { outline: 3px solid var(--primary); outline-offset: 2px; }
+
+.transfer-amount { font-weight: 800; white-space: nowrap; }

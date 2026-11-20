@@ -126,7 +126,7 @@ try {
     const fab = await browser.rect('.fab-main');
     await browser.click(fab.cx, fab.cy);
     await sleep(800);
-    check(await browser.eval(`document.querySelector('.fab').classList.contains('is-open') && document.querySelector('.fab-main').getAttribute('aria-expanded') === 'true' && document.querySelectorAll('.fab-menu a').length === 5`), 'le bouton d\'ajout rapide ouvre ses 5 raccourcis');
+    check(await browser.eval(`document.querySelector('.fab').classList.contains('is-open') && document.querySelector('.fab-main').getAttribute('aria-expanded') === 'true' && document.querySelectorAll('.fab-menu a').length === 6`), 'le bouton d\'ajout rapide ouvre ses 6 raccourcis');
     await browser.screenshot(join(out, 'fab-open.png'));
     await browser.key('Escape');
     await sleep(500);

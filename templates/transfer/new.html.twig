@@ -1,0 +1,14 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Nouveau virement{% endblock %}
+
+{% block body %}
+    <header class="page-head">
+        <h1>Nouveau virement</h1>
+        <a class="btn btn-ghost" href="{{ path('app_transfer_index') }}">{{ icon('chevron-left', 16) }}Retour</a>
+    </header>
+
+    <div class="card form-card">
+        {{ include('transfer/_form.html.twig') }}
+    </div>
+{% endblock %}

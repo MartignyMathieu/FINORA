@@ -10,6 +10,7 @@ et on automatise les opérations qui reviennent chaque mois. Chaque utilisateur 
 
 - **Comptes** : plusieurs comptes (courant, épargne, espèces, voyage…), chacun avec sa devise et son solde initial
 - **Solde masquable** : l'œil de la carte de solde masque ou affiche le solde total (choix mémorisé sur l'appareil)
+- **Virements** : de l'argent déplacé d'un compte à l'autre (même devise), sans fausser les revenus, les dépenses ni le solde total
 - **Transactions** : revenus et dépenses, regroupés par mois, avec onglets Toutes / Revenus / Dépenses et recherche
 - **Catégories** : nom, icône et couleur (3 palettes de 8 couleurs à choisir d'un clic, ou « Automatique »), propres à chaque utilisateur
 - **Budgets mensuels** : un plafond par catégorie et par mois, avec barre de progression (orange à partir de 80 %, rouge en cas de dépassement)
@@ -46,7 +47,7 @@ ni de 3D) :
 | Barres de progression | budgets, objectifs | se remplissent en s'affichant |
 | Carte d'objectif à deux faces (3D) | objectifs | un bouton la retourne : reste à épargner, mois restants, effort mensuel, actions (Échap pour revenir) |
 | Pièce 3D | connexion, inscription | le « F » FINORA sur une pièce qui tourne |
-| Ajout rapide | bouton en bas à droite | déploie 5 raccourcis (transaction, récurrence, budget, objectif, compte) ; absent des pages de formulaire, de profil et de paramètres |
+| Ajout rapide | bouton en bas à droite | déploie 6 raccourcis (transaction, virement, récurrence, budget, objectif, compte) ; absent des pages de formulaire, de profil et de paramètres |
 | Messages | toutes les pages | glissent, se ferment d'un clic ; les confirmations disparaissent seules (pas les erreurs) |
 | Transitions | thème, navigation | fondu entre les thèmes clair et sombre ; transition fondue entre les pages (Turbo) |
 | Survol et appui | listes, boutons | la ligne se soulève, le bouton s'enfonce |

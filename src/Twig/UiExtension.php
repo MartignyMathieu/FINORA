@@ -63,6 +63,7 @@ final class UiExtension
         'moon' => 'ph:moon-duotone',
         'auto' => 'ph:circle-half-duotone',
         'repeat' => 'ph:arrows-clockwise-duotone',
+        'transfer' => 'ph:arrows-left-right-duotone',
         'pause' => 'ph:pause-duotone',
         'play' => 'ph:play-duotone',
         'edit' => 'ph:pencil-simple-duotone',

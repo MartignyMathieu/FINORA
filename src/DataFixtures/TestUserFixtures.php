@@ -8,6 +8,7 @@ use App\Entity\Category;
 use App\Entity\Goal;
 use App\Entity\RecurringTransaction;
 use App\Entity\Transaction;
+use App\Entity\Transfer;
 use App\Entity\User;
 use App\Enum\AccountType;
 use App\Enum\Avatar;
@@ -125,6 +126,12 @@ final class TestUserFixtures extends Fixture implements FixtureGroupInterface
         $cash = $this->account($user, 'Espèces', AccountType::Cash, 'EUR', '1000.00');
         $usd = $this->account($user, 'Compte voyage (USD)', AccountType::Travel, 'USD', '800.00');
         $overdraft = $this->account($user, 'Compte à découvert', AccountType::Other, 'EUR', '-250.00');
+
+        // Un virement ne change ni les revenus ni les dépenses : seuls les soldes des deux comptes bougent (Livret A : +300 €).
+        foreach ([[0, 'Épargne du mois dernier'], [1, 'Épargne du mois']] as [$monthsAgo, $note]) {
+            $this->em->persist((new Transfer())->setFromAccount($courant)->setToAccount($livret)->setAmount('150.00')
+                ->setDate($this->thisMonth->modify(sprintf('-%d month', $monthsAgo))->modify('+9 days'))->setNote($note));
+        }
 
         $categories = [];
         foreach ([

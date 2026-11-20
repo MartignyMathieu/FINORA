@@ -5,7 +5,10 @@
 {% block body %}
     <header class="page-head">
         <h1>Comptes</h1>
-        <a class="round-btn" href="{{ path('app_account_new') }}" aria-label="Nouveau compte">{{ icon('plus', 22) }}</a>
+        <div class="toolbar">
+            <a class="round-btn" href="{{ path('app_transfer_index') }}" title="Virements" aria-label="Virements entre comptes">{{ icon('transfer', 22) }}</a>
+            <a class="round-btn" href="{{ path('app_account_new') }}" aria-label="Nouveau compte">{{ icon('plus', 22) }}</a>
+        </div>
     </header>
 
     <ul class="list">

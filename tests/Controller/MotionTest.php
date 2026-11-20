@@ -299,10 +299,10 @@ final class MotionTest extends AbstractCrudTestCase
         $fab = $crawler->filter('.fab[data-controller="fab"]');
         self::assertCount(1, $fab);
         self::assertSame(
-            ['/account/new', '/goal/new', '/budget/new', '/recurring/new', '/transaction/new'],
+            ['/account/new', '/goal/new', '/budget/new', '/recurring/new', '/transfer/new', '/transaction/new'],
             $fab->filter('.fab-menu[data-fab-target="menu"] a')->each(static fn ($a) => $a->attr('href')),
         );
-        self::assertSame(['0', '1', '2', '3', '4'], array_reverse($fab->filter('.fab-menu li')->each(static fn ($li) => preg_replace('/\D/', '', (string) $li->attr('style')))), 'Le raccourci le plus proche du bouton apparaît en premier');
+        self::assertSame(['0', '1', '2', '3', '4', '5'], array_reverse($fab->filter('.fab-menu li')->each(static fn ($li) => preg_replace('/\D/', '', (string) $li->attr('style')))), 'Le raccourci le plus proche du bouton apparaît en premier');
 
         $button = $fab->filter('a.fab-main[data-fab-target="button"]');
         self::assertCount(1, $button);

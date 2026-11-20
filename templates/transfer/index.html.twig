@@ -1,0 +1,35 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Virements{% endblock %}
+
+{% block body %}
+    <header class="page-head">
+        <h1>Virements</h1>
+        <a class="round-btn" href="{{ path('app_transfer_new') }}" aria-label="Nouveau virement">{{ icon('plus', 22) }}</a>
+    </header>
+    <p class="muted">Déplacez de l'argent d'un compte à l'autre sans fausser vos revenus ni vos dépenses.</p>
+
+    {% set current = null %}
+    {% for transfer in transfers %}
+        {% set key = transfer.date|date('Y-m') %}
+        {% if key != current %}
+            {% if current is not null %}</ul>{% endif %}
+            <h2 class="month-heading">{{ transfer.date|month_label }}</h2>
+            <ul class="tx-list">
+            {% set current = key %}
+        {% endif %}
+        <li>
+            <a class="tx" href="{{ path('app_transfer_edit', {id: transfer.id}) }}">
+                <span class="tile">{{ icon('transfer', 24) }}</span>
+                <span class="grow">
+                    <span class="name">{{ transfer.fromAccount.name }} &rarr; {{ transfer.toAccount.name }}</span>
+                    <span class="sub">{{ transfer.date|short_date }}{% if transfer.note %} &bull; {{ transfer.note|slice(0, 50) }}{% endif %}</span>
+                </span>
+                <span class="transfer-amount">{{ transfer.amount|money(transfer.currency) }}</span>
+            </a>
+        </li>
+        {% if loop.last %}</ul>{% endif %}
+    {% else %}
+        <div class="card empty">Aucun virement pour le moment. <a href="{{ path('app_transfer_new') }}">Créer un virement</a></div>
+    {% endfor %}
+{% endblock %}

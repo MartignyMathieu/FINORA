@@ -8,6 +8,7 @@ use App\Entity\Category;
 use App\Entity\Goal;
 use App\Entity\RecurringTransaction;
 use App\Entity\Transaction;
+use App\Entity\Transfer;
 use App\Entity\User;
 use App\Enum\RecurrenceFrequency;
 use App\Enum\TransactionType;
@@ -34,7 +35,7 @@ abstract class AbstractCrudTestCase extends WebTestCase
         $this->manager = static::getContainer()->get('doctrine')->getManager();
 
         // Ordre imposé par les clés étrangères.
-        foreach ([Transaction::class, RecurringTransaction::class, Budget::class, Goal::class, Category::class, Account::class, User::class] as $class) {
+        foreach ([Transfer::class, Transaction::class, RecurringTransaction::class, Budget::class, Goal::class, Category::class, Account::class, User::class] as $class) {
             $this->manager->createQuery(sprintf('DELETE FROM %s e', $class))->execute();
         }
 
@@ -142,6 +143,15 @@ abstract class AbstractCrudTestCase extends WebTestCase
         $this->manager->flush();
 
         return $rule;
+    }
+
+    protected function createTransfer(Account $from, Account $to, string $amount = '100.00', string $date = '2026-11-15'): Transfer
+    {
+        $transfer = (new Transfer())->setFromAccount($from)->setToAccount($to)->setAmount($amount)->setDate(new \DateTimeImmutable($date));
+        $this->manager->persist($transfer);
+        $this->manager->flush();
+
+        return $transfer;
     }
 
     protected function createBudget(Category $category, string $month = '2026-11-01', string $amount = '300.00'): Budget

@@ -8,6 +8,7 @@ use App\Entity\Category;
 use App\Entity\Goal;
 use App\Entity\RecurringTransaction;
 use App\Entity\Transaction;
+use App\Entity\Transfer;
 use App\Entity\User;
 use Doctrine\ORM\EntityManagerInterface;
 
@@ -37,6 +38,7 @@ final class UserDataPurger
         $this->em->wrapInTransaction(function () use ($user, $userId): void {
             // Ordre imposé par les clés étrangères.
             $this->em->createQuery('DELETE FROM '.Transaction::class.' t WHERE t.account IN (SELECT a FROM '.Account::class.' a WHERE a.owner = :user)')->setParameter('user', $user)->execute();
+            $this->em->createQuery('DELETE FROM '.Transfer::class.' t WHERE t.fromAccount IN (SELECT a FROM '.Account::class.' a WHERE a.owner = :user)')->setParameter('user', $user)->execute();
             $this->em->createQuery('DELETE FROM '.RecurringTransaction::class.' r WHERE r.account IN (SELECT a FROM '.Account::class.' a WHERE a.owner = :user)')->setParameter('user', $user)->execute();
             $this->em->createQuery('DELETE FROM '.Budget::class.' b WHERE b.category IN (SELECT c FROM '.Category::class.' c WHERE c.owner = :user)')->setParameter('user', $user)->execute();
             foreach ([Goal::class, Category::class, Account::class] as $class) {

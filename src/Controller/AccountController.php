@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Entity\Account;
 use App\Form\AccountType;
+use App\Repository\TransferRepository;
 use App\Service\FinanceStats;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -76,11 +77,11 @@ final class AccountController extends AbstractController
 
     #[IsGranted(OwnerVoter::MANAGE, 'account')]
     #[Route('/{id}', name: 'app_account_delete', methods: ['POST'])]
-    public function delete(Request $request, Account $account, EntityManagerInterface $entityManager): Response
+    public function delete(Request $request, Account $account, EntityManagerInterface $entityManager, TransferRepository $transfers): Response
     {
         if ($this->isCsrfTokenValid('delete'.$account->getId(), $request->getPayload()->getString('_token'))) {
-            if (!$account->getTransactions()->isEmpty()) {
-                $this->addFlash('error', 'Ce compte contient des transactions et ne peut pas être supprimé.');
+            if (!$account->getTransactions()->isEmpty() || $transfers->countForAccount($account) > 0) {
+                $this->addFlash('error', 'Ce compte contient des transactions ou des virements et ne peut pas être supprimé.');
 
                 return $this->redirectToRoute('app_account_show', ['id' => $account->getId()], Response::HTTP_SEE_OTHER);
             }
