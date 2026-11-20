@@ -87,6 +87,9 @@ try {
     check(await browser.eval(`!!document.querySelector('.kpi:nth-child(2).tilt.is-tilting') && document.querySelector('.kpi:nth-child(2)').style.getPropertyValue('--ry') !== ''`), 'une carte s\'incline en 3D sous le pointeur');
     await browser.move(5, 5);
 
+    // Le graphique et le donut sont sous la prévision de fin de mois : on les amène à l'écran avant de survoler.
+    await browser.eval(`document.querySelector('.chart svg').scrollIntoView({ block: 'center' })`);
+    await sleep(300);
     const chart = await browser.rect('.chart svg');
     await browser.move(chart.x + chart.w * 0.62, chart.y + chart.h * 0.45);
     await sleep(300);
@@ -94,6 +97,8 @@ try {
     check(/Revenus.*Dépenses/s.test(tip), 'l\'info-bulle de la courbe affiche revenus et dépenses', tip.replace(/\n/g, ' / '));
     await browser.move(5, 5);
 
+    await browser.eval(`document.querySelector('.donut-legend li:nth-child(2)').scrollIntoView({ block: 'center' })`);
+    await sleep(300);
     const legend = await browser.rect('.donut-legend li:nth-child(2)');
     await browser.move(legend.cx, legend.cy);
     await sleep(300);
@@ -136,7 +141,8 @@ try {
     await browser.eval(`window.__marker = 1`);
     const link = await browser.rect('.sidebar a[href="/account"]');
     await browser.click(link.cx, link.cy);
-    await sleep(1400);
+    // Le serveur de développement peut mettre plusieurs secondes à répondre : on attend la navigation au lieu d'un délai fixe.
+    for (let i = 0; i < 40 && (await browser.eval('location.pathname')) !== '/account'; i++) { await sleep(250); }
     check(await browser.eval(`location.pathname === '/account' && window.__marker === 1`), 'la navigation se fait sans rechargement complet (Turbo)');
 
     // ------------------------------------------------------------------ 4. animations réduites

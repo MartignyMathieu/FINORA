@@ -781,3 +781,6 @@ body.has-selection .fab { display: none; }
     .budget-alerts li:nth-child(n+3) { display: none; }
     .content { padding-bottom: 150px; }
 }
+
+/* Aperçu du mois (mobile) : espace avant la carte suivante (la prévision de fin de mois). */
+.overview { margin-bottom: 20px; }
