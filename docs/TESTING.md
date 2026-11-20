@@ -120,6 +120,14 @@ Pour chaque page, vérifier aussi : aucun message d'erreur, textes en français,
 - 7 objectifs : Voiture **64 %**, Vacances **100 %** (atteint), Nouveau PC **0 %** (sans échéance), Voyage aux États-Unis **17 %** ($),
   « dépassé » **100 %** (250 € épargnés pour 100 € visés, barre plafonnée), « en retard » **40 %** (échéance passée),
   un nom très long qui ne doit pas déborder.
+- **Versements** : au dos d'une carte (bouton de retournement) ou sur la page de l'objectif, « Verser » / « Verser ou retirer » ouvre un
+  formulaire (Versement ou Retrait, montant, date, note). La voiture a un historique de 4 lignes (3 versements, 1 retrait) déjà compris
+  dans ses 3 200 € : l'historique ne couvre pas tout le montant épargné.
+  - Un versement augmente « Déjà épargné » et l'avancement ; un retrait les baisse. Un retrait supérieur à l'épargne est **refusé**.
+  - Verser de quoi atteindre le montant visé affiche « Objectif … atteint, bravo ! » (une seule fois : pas de nouveau message si l'objectif
+    était déjà atteint).
+  - Supprimer une ligne de l'historique (corbeille) rétablit l'épargne ; elle ne descend jamais sous 0.
+  - Supprimer l'objectif supprime son historique. Les objectifs d'un autre utilisateur sont inaccessibles (403).
 
 ## Calendrier (`/calendar`)
 

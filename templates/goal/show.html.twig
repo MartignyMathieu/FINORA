@@ -20,8 +20,34 @@
         </table>
 
         <div class="actions">
-            <a class="btn btn-primary" href="{{ path('app_goal_edit', {'id': goal.id}) }}">Modifier</a>
+            <a class="btn btn-primary" href="{{ path('app_goal_contribution_new', {goal: goal.id}) }}">Verser ou retirer</a>
+            <a class="btn" href="{{ path('app_goal_edit', {'id': goal.id}) }}">Modifier</a>
             {{ include('goal/_delete_form.html.twig') }}
         </div>
     </div>
+
+    <section class="card form-card contributions" aria-labelledby="contributions-title">
+        <h2 id="contributions-title">Historique</h2>
+        {% if goal.contributions is empty %}
+            <p class="muted">Aucun versement enregistré. <a href="{{ path('app_goal_contribution_new', {goal: goal.id}) }}">Ajouter un versement</a></p>
+        {% else %}
+            <ul class="mini-list">
+                {% for contribution in goal.contributions %}
+                    <li>
+                        <span class="tile {{ contribution.withdrawal ? 'tile-red' : 'tile-green' }}">{{ icon(contribution.withdrawal ? 'arrow-down' : 'arrow-up', 20) }}</span>
+                        <span class="grow">
+                            <span class="name">{{ contribution.withdrawal ? 'Retrait' : 'Versement' }}</span>
+                            <span class="sub">{{ contribution.date|short_date }}{% if contribution.note %} &bull; {{ contribution.note|slice(0, 60) }}{% endif %}</span>
+                        </span>
+                        <span class="{{ contribution.withdrawal ? 'amount-out' : 'amount-in' }}">{{ contribution.amount|money(goal.currency, true) }}</span>
+                        <form method="post" action="{{ path('app_goal_contribution_delete', {goal: goal.id, contribution: contribution.id}) }}" onsubmit="return confirm('Supprimer cette ligne ? L\'épargne de l\'objectif sera rétablie.');">
+                            <input type="hidden" name="_token" value="{{ csrf_token('delete-contribution' ~ contribution.id) }}">
+                            <button class="icon-btn" type="submit" aria-label="Supprimer cette ligne" title="Supprimer cette ligne">{{ icon('trash', 18) }}</button>
+                        </form>
+                    </li>
+                {% endfor %}
+            </ul>
+            <p class="muted">L'historique ne couvre pas forcément tout le montant épargné : l'épargne indiquée au départ n'y figure pas.</p>
+        {% endif %}
+    </section>
 {% endblock %}

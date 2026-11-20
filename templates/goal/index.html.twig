@@ -55,7 +55,8 @@
                             {% endif %}
                         </ul>
                         <div class="goal-back-actions">
-                            <a class="btn btn-primary" href="{{ path('app_goal_show', {id: goal.id}) }}">Voir</a>
+                            <a class="btn btn-primary" href="{{ path('app_goal_contribution_new', {goal: goal.id}) }}">Verser</a>
+                            <a class="btn" href="{{ path('app_goal_show', {id: goal.id}) }}">Voir</a>
                             <a class="btn" href="{{ path('app_goal_edit', {id: goal.id}) }}">Modifier</a>
                             <button type="button" class="btn btn-ghost" data-action="flip#toggle">Retour</button>
                         </div>

@@ -10,6 +10,7 @@ et on automatise les opérations qui reviennent chaque mois. Chaque utilisateur 
 
 - **Comptes** : plusieurs comptes (courant, épargne, espèces, voyage…), chacun avec sa devise et son solde initial
 - **Solde masquable** : l'œil de la carte de solde masque ou affiche le solde total (choix mémorisé sur l'appareil)
+- **Objectifs d'épargne** : montant visé, échéance, avancement, **versements et retraits** avec historique (l'épargne suit)
 - **Virements** : de l'argent déplacé d'un compte à l'autre (même devise), sans fausser les revenus, les dépenses ni le solde total
 - **Transactions** : revenus et dépenses, regroupés par mois, avec onglets Toutes / Revenus / Dépenses et recherche
 - **Catégories** : nom, icône et couleur (3 palettes de 8 couleurs à choisir d'un clic, ou « Automatique »), propres à chaque utilisateur

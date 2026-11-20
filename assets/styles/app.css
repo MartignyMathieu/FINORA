@@ -601,3 +601,21 @@ body { padding-top: env(safe-area-inset-top); }
 .color-choice:has(input:focus-visible) { outline: 3px solid var(--primary); outline-offset: 2px; }
 
 .transfer-amount { font-weight: 800; white-space: nowrap; }
+
+/* ---------- Versements sur un objectif ---------- */
+.kind-switch { border: 0; margin: 0 0 16px; padding: 0; min-width: 0; }
+.kind-switch legend { padding: 0; font-weight: 700; margin-bottom: 8px; }
+.kind-switch .segmented { margin-bottom: 0; }
+.kind-choice { position: relative; flex: 1; text-align: center; border-radius: 12px; cursor: pointer; font-weight: 700; font-size: 14px; }
+.kind-choice input { position: absolute; opacity: 0; inset: 0; margin: 0; cursor: pointer; }
+.kind-choice span { display: block; padding: 10px 14px; border-radius: 12px; }
+.kind-choice:has(input:checked) span { background: var(--primary); color: #fff; box-shadow: 0 6px 14px rgba(31, 111, 239, 0.28); }
+.kind-choice:has(input:focus-visible) { outline: 3px solid var(--primary); outline-offset: 2px; }
+.contribution-summary { margin: 0 0 18px; }
+.contributions { margin-top: 20px; }
+.contributions h2 { margin-top: 0; }
+.contributions .mini-list li { display: flex; align-items: center; gap: 12px; padding: 11px 0; }
+.contributions .mini-list li + li { border-top: 1px solid var(--line); }
+.icon-btn { display: inline-grid; place-items: center; width: 36px; height: 36px; padding: 0; border: 0; border-radius: 50%; background: transparent; color: var(--muted); cursor: pointer; }
+.icon-btn:hover { background: var(--light); color: var(--red); }
+.icon-btn:focus-visible { outline: 2px solid var(--primary); outline-offset: 2px; }

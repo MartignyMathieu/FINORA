@@ -6,6 +6,7 @@ use App\Entity\Account;
 use App\Entity\Budget;
 use App\Entity\Category;
 use App\Entity\Goal;
+use App\Entity\GoalContribution;
 use App\Entity\RecurringTransaction;
 use App\Entity\Transaction;
 use App\Entity\Transfer;
@@ -330,6 +331,7 @@ final class TestUserFixtures extends Fixture implements FixtureGroupInterface
 
     private function createGoals(User $user): void
     {
+        $goals = [];
         foreach ([
             ['Achat d\'une voiture', '5000.00', '3200.00', 'EUR', '+7 months', Icon::Car],
             ['Vacances (objectif atteint)', '2000.00', '2000.00', 'EUR', '+2 months', Icon::Umbrella],
@@ -339,10 +341,16 @@ final class TestUserFixtures extends Fixture implements FixtureGroupInterface
             ['Objectif en retard (échéance passée)', '800.00', '320.00', 'EUR', '-1 month', null],
             ['Objectif au nom très long pour vérifier que le titre de la carte reste lisible et ne déborde pas', '10000.00', '1234.56', 'EUR', null, null],
         ] as [$name, $target, $saved, $currency, $when, $icon]) {
-            $this->em->persist(
-                (new Goal())->setOwner($user)->setName($name)->setTargetAmount($target)->setSavedAmount($saved)->setCurrency($currency)
-                    ->setTargetDate(null === $when ? null : $this->thisMonth->modify($when))->setIcon($icon)
-            );
+            $goal = (new Goal())->setOwner($user)->setName($name)->setTargetAmount($target)->setSavedAmount($saved)->setCurrency($currency)
+                ->setTargetDate(null === $when ? null : $this->thisMonth->modify($when))->setIcon($icon);
+            $this->em->persist($goal);
+            $goals[$name] = $goal;
+        }
+
+        // Historique de la voiture : versements et un retrait, déjà compris dans les 3 200 € épargnés (le reste est l'épargne de départ).
+        foreach ([[-3, '300.00', 'Prime de fin d\'année'], [-2, '250.00', null], [-1, '-100.00', 'Réparation imprévue'], [0, '200.00', 'Versement du mois']] as [$monthsAgo, $amount, $note]) {
+            $this->em->persist((new GoalContribution())->setGoal($goals["Achat d'une voiture"])->setAmount($amount)
+                ->setDate($this->thisMonth->modify(sprintf('%+d months', $monthsAgo))->modify('+4 days'))->setNote($note));
         }
     }
 

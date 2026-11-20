@@ -1,0 +1,36 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Verser ou retirer · {{ goal.name }}{% endblock %}
+
+{% block body %}
+    <header class="page-head">
+        <h1>Verser ou retirer</h1>
+        <a class="btn btn-ghost" href="{{ path('app_goal_show', {id: goal.id}) }}">{{ icon('chevron-left', 16) }}Retour</a>
+    </header>
+
+    <div class="card form-card">
+        <p class="muted contribution-summary">
+            <strong>{{ goal.name }}</strong> : {{ goal.savedAmount|money(goal.currency) }} épargnés sur {{ goal.targetAmount|money(goal.currency) }}
+            ({{ goal.progress }}&nbsp;%).
+        </p>
+
+        {{ form_start(form) }}
+            <fieldset class="kind-switch">
+                <legend>{{ form_label(form.kind) }}</legend>
+                {{ form_errors(form.kind) }}
+                <div class="segmented">
+                    {% for choice in form.kind %}
+                        <label class="kind-choice">{{ form_widget(choice) }}<span>{{ choice.vars.label }}</span></label>
+                    {% endfor %}
+                </div>
+            </fieldset>
+            {{ form_row(form.amount) }}
+            {{ form_row(form.date) }}
+            {{ form_row(form.note) }}
+            {{ form_rest(form) }}
+            <div class="actions">
+                <button class="btn btn-primary">Enregistrer</button>
+            </div>
+        {{ form_end(form) }}
+    </div>
+{% endblock %}

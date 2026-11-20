@@ -4,6 +4,8 @@ namespace App\Entity;
 
 use App\Enum\Icon;
 use App\Repository\GoalRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -46,6 +48,22 @@ class Goal implements OwnedInterface
 
     #[ORM\Column(enumType: Icon::class, nullable: true)]
     private ?Icon $icon = null;
+
+    /** @var Collection<int, GoalContribution> */
+    #[ORM\OneToMany(targetEntity: GoalContribution::class, mappedBy: 'goal', orphanRemoval: true)]
+    #[ORM\OrderBy(['date' => 'DESC', 'id' => 'DESC'])]
+    private Collection $contributions;
+
+    public function __construct()
+    {
+        $this->contributions = new ArrayCollection();
+    }
+
+    /** Versements et retraits, du plus récent au plus ancien. @return Collection<int, GoalContribution> */
+    public function getContributions(): Collection
+    {
+        return $this->contributions;
+    }
 
     public function getId(): ?int
     {
