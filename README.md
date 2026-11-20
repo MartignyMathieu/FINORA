@@ -1,5 +1,7 @@
 # FINORA
 
+[![CI](https://github.com/MartignyMathieu/FINORA/actions/workflows/ci.yml/badge.svg)](https://github.com/MartignyMathieu/FINORA/actions/workflows/ci.yml)
+
 > Maîtrisez votre argent.
 
 FINORA est une application web de suivi de budget personnel : on y enregistre ses revenus et ses dépenses sur
@@ -211,6 +213,19 @@ Le plan de vérification page par page est dans [docs/TESTING.md](docs/TESTING.m
 `src/DataFixtures/DemoFixtures.php` et `src/DataFixtures/TestUserFixtures.php`.
 **Toujours utiliser `--append`** : sans cette option, Doctrine vide toutes les tables, utilisateurs compris.
 Recharger un groupe remplace uniquement les données de ses utilisateurs. Ne jamais charger ces fixtures en production.
+
+## Intégration continue
+
+À chaque envoi sur `main` et à chaque pull request, GitHub Actions rejoue tout sur une machine propre (`.github/workflows/ci.yml`) :
+
+- **Tests** (PHP 8.4 et 8.5, PostgreSQL 16) : dépendances, `lint:yaml` / `lint:twig` / `lint:container`, migrations puis
+  `doctrine:schema:validate` (les migrations doivent produire exactement le schéma des entités), tests JavaScript, puis toute la suite PHPUnit ;
+- **Image de production** : construction du `Dockerfile`, démarrage avec les capacités retirées (comme sur Render), puis vérification que
+  `/login`, `/register` et le manifeste répondent et qu'une page privée renvoie vers la connexion.
+
+Le badge en haut de cette page passe au rouge dès qu'une de ces étapes échoue ; le détail est dans l'onglet *Actions* du dépôt.
+Pour que Render ne déploie qu'un commit qui a passé la CI : service `finora` → *Settings* → *Build & Deploy* → *Auto-Deploy* →
+**After CI Checks Pass**.
 
 ## Tests
 

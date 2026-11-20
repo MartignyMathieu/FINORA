@@ -38,6 +38,12 @@ Pour présenter l'application avec des données réalistes, sans ouvrir la base 
 
 Le mot de passe est celui du dépôt : le changer après la première connexion (Profil → Mot de passe) si le dépôt est public.
 
+## Ne déployer que ce qui a passé les tests
+
+La CI (`.github/workflows/ci.yml`) rejoue les tests et construit l'image à chaque envoi sur `main`. Par défaut, Render déploie dès le push, sans
+attendre son résultat. Pour qu'il attende : service `finora` → *Settings* → *Build & Deploy* → *Auto-Deploy* → **After CI Checks Pass**.
+Si la CI échoue, rien n'est déployé et la version en ligne reste celle d'avant.
+
 ## Points d'attention
 
 - L'offre gratuite met le service en veille après un moment sans visite (premier chargement lent) et limite la durée de la base :

@@ -1,0 +1,169 @@
+# Intégration continue : à chaque envoi sur main et à chaque pull request, les tests, les contrôles de configuration et la construction
+# de l'image de production sont rejoués sur une machine propre. Un échec s'affiche en rouge dans GitHub avant toute mise en ligne.
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+# Un nouvel envoi sur la même branche annule l'exécution précédente encore en cours.
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  tests:
+    name: Tests (PHP ${{ matrix.php }})
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        # 8.4 : version minimale (et celle de l'image de production) ; 8.5 : version utilisée en développement.
+        php: ['8.4', '8.5']
+
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_DB: app
+          POSTGRES_USER: app
+          POSTGRES_PASSWORD: app
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U app -d app"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+
+    # Toute la configuration vient de l'environnement (le fichier .env du dépôt est vide).
+    env:
+      APP_ENV: test
+      APP_SECRET: ci-secret-pour-les-tests
+      APP_SHARE_DIR: var/share
+      DATABASE_URL: postgresql://app:app@127.0.0.1:5432/app
+      MESSENGER_TRANSPORT_DSN: doctrine://default?auto_setup=0
+      MAILER_DSN: 'null://null'
+      LOCK_DSN: flock
+      DEFAULT_URI: http://localhost
+
+    steps:
+      - name: Récupérer le code
+        uses: actions/checkout@v4
+
+      - name: Installer PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php }}
+          extensions: ctype, iconv, intl, mbstring, pdo_pgsql, zip
+          coverage: none
+          tools: composer:v2
+          ini-values: memory_limit=-1
+
+      - name: Installer Node.js (tests des contrôleurs JavaScript)
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Chercher le cache de Composer
+        id: composer-cache
+        run: echo "dir=$(composer config cache-files-dir)" >> "$GITHUB_OUTPUT"
+
+      - name: Cache de Composer
+        uses: actions/cache@v4
+        with:
+          path: ${{ steps.composer-cache.outputs.dir }}
+          key: composer-${{ matrix.php }}-${{ hashFiles('composer.lock') }}
+          restore-keys: composer-${{ matrix.php }}-
+
+      # Les scripts de Composer vident le cache, installent les ressources publiques et les bibliothèques JavaScript (importmap).
+      - name: Installer les dépendances
+        run: composer install --prefer-dist --no-progress --no-interaction
+
+      - name: Contrôler la configuration
+        run: |
+          php bin/console lint:yaml config --parse-tags
+          php bin/console lint:twig templates
+          php bin/console lint:container
+
+      - name: Préparer la base de test
+        run: |
+          php bin/console doctrine:database:create --env=test --if-not-exists
+          php bin/console doctrine:migrations:migrate --env=test --no-interaction
+          # Les migrations doivent produire exactement le schéma décrit par les entités.
+          php bin/console doctrine:schema:validate --env=test
+
+      - name: Tests des contrôleurs JavaScript
+        run: node --test tests/js
+
+      - name: Tests PHP
+        run: php bin/phpunit
+
+  docker:
+    name: Image de production
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_DB: app
+          POSTGRES_USER: app
+          POSTGRES_PASSWORD: app
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U app -d app"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+
+    steps:
+      - name: Récupérer le code
+        uses: actions/checkout@v4
+
+      - name: Préparer Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Construire l'image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          load: true
+          push: false
+          tags: finora-ci:latest
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      # Même démarrage que sur l'hébergeur : capacités retirées (Render les retire), migrations, puis le serveur.
+      - name: Démarrer l'image
+        run: |
+          docker run -d --name finora --network host --cap-drop=ALL --security-opt no-new-privileges \
+            -e PORT=10000 -e APP_SECRET=ci-secret-pour-l-image \
+            -e DATABASE_URL=postgresql://app:app@127.0.0.1:5432/app \
+            -e MAILER_DSN=null://null -e "MESSENGER_TRANSPORT_DSN=doctrine://default?auto_setup=0" \
+            -e LOCK_DSN=flock -e DEFAULT_URI=http://localhost:10000 \
+            finora-ci:latest
+
+      - name: Vérifier que l'application répond
+        run: |
+          for i in $(seq 1 40); do
+            if curl -fsS -o /dev/null http://127.0.0.1:10000/login; then break; fi
+            sleep 3
+          done
+          test "$(curl -s -o /dev/null -w '%{http_code}' http://127.0.0.1:10000/login)" = "200"
+          test "$(curl -s -o /dev/null -w '%{http_code}' http://127.0.0.1:10000/register)" = "200"
+          test "$(curl -s -o /dev/null -w '%{http_code}' http://127.0.0.1:10000/manifest.webmanifest)" = "200"
+          # Une page privée renvoie vers la connexion : l'authentification est active.
+          test "$(curl -s -o /dev/null -w '%{http_code}' http://127.0.0.1:10000/)" = "302"
+
+      - name: Journal du conteneur (en cas d'échec)
+        if: failure()
+        run: docker logs finora
