@@ -1,0 +1,6 @@
+# Fins de ligne : les scripts exécutés sous Linux (conteneur Docker, Render) doivent rester en LF,
+# même si le dépôt est cloné sous Windows.
+*.sh text eol=lf
+Dockerfile text eol=lf
+.dockerignore text eol=lf
+render.yaml text eol=lf
