@@ -82,7 +82,7 @@ final class CiWorkflowTest extends TestCase
             'lint:container',
             'doctrine:migrations:migrate --env=test',
             'doctrine:schema:validate --env=test',
-            'node --test tests/js',
+            'node --test "tests/js/*.test.mjs"',
             'php bin/phpunit',
         ] as $command) {
             self::assertStringContainsString($command, $all, $command);

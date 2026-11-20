@@ -97,6 +97,22 @@ Pour chaque page, vérifier aussi : aucun message d'erreur, textes en français,
 - Créer, modifier, supprimer ; le formulaire propose uniquement les comptes et catégories de l'utilisateur ;
   montant négatif ou nul refusé.
 
+## Sauvegarde et restauration (profil, section « Sauvegarde de mes données »)
+
+- **Télécharger une sauvegarde** : un fichier `finora-sauvegarde-AAAA-MM-JJ.json` (environ 50 Ko pour le jeu de test : 5 comptes, 14 catégories,
+  153 transactions, 12 récurrences, 10 budgets, 7 objectifs avec 4 versements, 2 virements). Ouvrir le fichier : lisible, accents conservés, **ni
+  mot de passe ni adresse e-mail**, aucune donnée d'un autre utilisateur.
+- **Restaurer une sauvegarde** (page dédiée) : fichier + mot de passe actuel + case « Je comprends que… ». Les trois sont obligatoires
+  (sans mot de passe ou sans case cochée : erreur 422, rien ne change).
+- **Aller-retour** : télécharger, puis restaurer ce même fichier : message « Sauvegarde restaurée : 5 comptes, 14 catégories, 153 transactions… »
+  et mêmes totaux partout (solde total, prévision de fin de mois, nombre de transactions, objectifs, virements, budgets).
+- **Remplacement** : ce qui a été ajouté depuis la sauvegarde disparaît ; votre compte (e-mail, mot de passe, prénom) n'est pas touché.
+- **Autre utilisateur** : créer un compte vide, y restaurer le fichier : toutes les données arrivent chez lui, celles du premier sont intactes.
+- **Tout ou rien** : modifier le fichier à la main (changer une date en `2026-02-30`, un type en `virement`, un montant en `-5.00`, un numéro de compte
+  inexistant, dupliquer un nom de catégorie…) : message « Transaction n°2 : … Vos données actuelles n'ont pas été modifiées. » ; rien n'est supprimé.
+  Un fichier qui n'est pas du JSON, d'un autre format ou d'une version inconnue est refusé de la même façon.
+- Limites : 20 Mo, 20 000 transactions, 200 comptes, 500 catégories, 500 récurrences, 5 000 budgets / virements, 200 objectifs.
+
 ## Modification en lot (page Transactions)
 
 - Chaque ligne a une **case à cocher** ; « Tout sélectionner » (au-dessus de la liste) coche toutes les lignes affichées (état « partiel » quand

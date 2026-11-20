@@ -31,11 +31,27 @@ final class UserDataPurger
         }
     }
 
+    /** Supprime l'utilisateur et toutes ses données. */
     public function purge(User $user): void
     {
         $userId = $user->getId();
 
         $this->em->wrapInTransaction(function () use ($user, $userId): void {
+            $this->purgeData($user);
+            // Les demandes de réinitialisation de mot de passe disparaissent avec l'utilisateur (ON DELETE CASCADE).
+            $this->em->createQuery('DELETE FROM '.User::class.' u WHERE u.id = :id')->setParameter('id', $userId)->execute();
+        });
+
+        $this->em->clear();
+    }
+
+    /**
+     * Supprime toutes les données de l'utilisateur (comptes, catégories, transactions, récurrences, budgets, objectifs, virements)
+     * mais garde son compte : utilisé avant une restauration de sauvegarde.
+     */
+    public function purgeData(User $user): void
+    {
+        $this->em->wrapInTransaction(function () use ($user): void {
             // Ordre imposé par les clés étrangères.
             $this->em->createQuery('DELETE FROM '.Transaction::class.' t WHERE t.account IN (SELECT a FROM '.Account::class.' a WHERE a.owner = :user)')->setParameter('user', $user)->execute();
             $this->em->createQuery('DELETE FROM '.Transfer::class.' t WHERE t.fromAccount IN (SELECT a FROM '.Account::class.' a WHERE a.owner = :user)')->setParameter('user', $user)->execute();
@@ -44,10 +60,6 @@ final class UserDataPurger
             foreach ([Goal::class, Category::class, Account::class] as $class) {
                 $this->em->createQuery(sprintf('DELETE FROM %s e WHERE e.owner = :user', $class))->setParameter('user', $user)->execute();
             }
-            // Les demandes de réinitialisation de mot de passe disparaissent avec l'utilisateur (ON DELETE CASCADE).
-            $this->em->createQuery('DELETE FROM '.User::class.' u WHERE u.id = :id')->setParameter('id', $userId)->execute();
         });
-
-        $this->em->clear();
     }
 }

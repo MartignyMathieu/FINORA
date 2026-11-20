@@ -100,7 +100,7 @@ jobs:
           php bin/console doctrine:schema:validate --env=test
 
       - name: Tests des contrôleurs JavaScript
-        run: node --test tests/js
+        run: node --test "tests/js/*.test.mjs"
 
       - name: Tests PHP
         run: php bin/phpunit

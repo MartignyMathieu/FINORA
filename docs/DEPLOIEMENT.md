@@ -38,6 +38,25 @@ Pour présenter l'application avec des données réalistes, sans ouvrir la base 
 
 Le mot de passe est celui du dépôt : le changer après la première connexion (Profil → Mot de passe) si le dépôt est public.
 
+## Sauvegardes
+
+Deux niveaux, à combiner :
+
+1. **Chaque utilisateur** peut télécharger la sauvegarde de ses données (Profil → « Télécharger une sauvegarde ») et la restaurer plus tard,
+   y compris sur une autre base ou un autre hébergeur : créer un compte, puis Profil → « Restaurer une sauvegarde ». Le fichier ne contient ni
+   mot de passe ni adresse e-mail. À faire régulièrement, et **avant l'expiration** de la base gratuite de Render (durée limitée : vérifier
+   la date sur la page de la base `finora-db`).
+2. **Toute la base** (administrateur) : depuis un poste où PostgreSQL est installé, avec l'*External Database URL* de `finora-db` :
+   ```
+   pg_dump "<External Database URL>" --format=custom --file=finora.dump
+   pg_restore --no-owner --dbname="<URL de la nouvelle base>" finora.dump
+   ```
+   Le fichier contient les mots de passe hachés de tous les comptes : le garder hors du dépôt Git et ne jamais le publier. Les plans payants
+   de Render proposent aussi des sauvegardes automatiques.
+
+Si la base gratuite expire : créer une nouvelle base (le blueprint la recrée), mettre à jour `DATABASE_URL`, puis chaque utilisateur
+recrée son compte et restaure sa sauvegarde.
+
 ## Ne déployer que ce qui a passé les tests
 
 La CI (`.github/workflows/ci.yml`) rejoue les tests et construit l'image à chaque envoi sur `main`. Par défaut, Render déploie dès le push, sans

@@ -1,0 +1,25 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Restaurer une sauvegarde{% endblock %}
+
+{% block body %}
+    <header class="page-head">
+        <h1>Restaurer une sauvegarde</h1>
+        <a class="btn btn-ghost" href="{{ path('app_profile') }}">{{ icon('chevron-left', 16) }}Retour</a>
+    </header>
+
+    <div class="card form-card danger-zone">
+        <h2>Cette action remplace toutes vos données</h2>
+        <p class="muted">
+            Comptes, catégories, transactions, récurrences, budgets, objectifs et virements actuels sont <strong>supprimés</strong> et remplacés par ceux du fichier.
+            Votre compte (adresse e-mail, mot de passe) n'est pas touché. Si le fichier contient une erreur, <strong>rien n'est modifié</strong>.
+            Vous n'avez pas encore de sauvegarde de vos données actuelles ?
+            <a href="{{ path('app_backup_download') }}" data-turbo="false">Téléchargez-la d'abord.</a>
+        </p>
+
+        {{ form_start(form, {attr: {enctype: 'multipart/form-data'}}) }}
+            {{ form_widget(form) }}
+            <div class="actions"><button class="btn btn-danger" type="submit">{{ icon('upload', 18) }}Remplacer mes données par la sauvegarde</button></div>
+        {{ form_end(form) }}
+    </div>
+{% endblock %}

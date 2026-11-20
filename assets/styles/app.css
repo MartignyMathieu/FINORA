@@ -728,3 +728,9 @@ li:last-child > .tx-check { border-bottom: 0; }
 .bulk-bar .btn-ghost { color: #cfd9ea; }
 body.has-selection .fab { display: none; }
 @media (max-width: 899px) { .bulk-bar { position: fixed; left: 12px; right: 12px; bottom: calc(76px + env(safe-area-inset-bottom)); margin: 0; } body.has-selection .content { padding-bottom: 190px; } }
+
+.backup-card { max-width: none; margin-bottom: 20px; }
+
+.form-card div:has(> input[type="checkbox"]) { display: flex; flex-direction: row-reverse; justify-content: flex-end; align-items: flex-start; gap: 10px; }
+.form-card div:has(> input[type="checkbox"]) label { margin: 0; font-weight: 600; }
+.form-card div:has(> input[type="checkbox"]) input { margin-top: 3px; flex: none; }

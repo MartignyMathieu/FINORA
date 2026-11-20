@@ -12,6 +12,7 @@ et on automatise les opérations qui reviennent chaque mois. Chaque utilisateur 
 
 - **Comptes** : plusieurs comptes (courant, épargne, espèces, voyage…), chacun avec sa devise et son solde initial
 - **Solde masquable** : l'œil de la carte de solde masque ou affiche le solde total (choix mémorisé sur l'appareil)
+- **Sauvegarde et restauration** : un fichier JSON avec toutes les données de l'utilisateur (sans mot de passe ni e-mail), téléchargeable depuis le profil et restaurable en un bloc, tout ou rien
 - **Modification en lot** : cases à cocher sur la liste des transactions pour supprimer, changer de catégorie ou de compte plusieurs lignes d'un coup
 - **Annulation** : après une suppression (transaction, virement, lot) ou une modification en lot, un bouton « Annuler » du message de confirmation rétablit l'état précédent (dix minutes, usage unique)
 - **Import CSV** : d'un export FINORA ou d'un relevé de banque, en trois étapes (fichier, correspondance des colonnes avec aperçu, import) ; séparateur, encodage, dates et montants reconnus automatiquement, doublons ignorés, lignes invalides signalées

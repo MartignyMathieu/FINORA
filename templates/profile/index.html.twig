@@ -31,6 +31,18 @@
         </p>
     </section>
 
+    <section class="card form-card backup-card" id="sauvegarde" aria-labelledby="backup-title">
+        <h2 id="backup-title">Sauvegarde de mes données</h2>
+        <p class="muted">
+            Téléchargez un fichier avec <strong>toutes</strong> vos données (comptes, catégories, transactions, récurrences, budgets, objectifs, virements).
+            Gardez-le en lieu sûr : il permet de tout retrouver si l'hébergement change. Il ne contient ni votre mot de passe ni votre adresse e-mail.
+        </p>
+        <div class="actions">
+            <a class="btn btn-primary" href="{{ path('app_backup_download') }}" data-turbo="false">{{ icon('download', 18) }}Télécharger une sauvegarde</a>
+            <a class="btn" href="{{ path('app_backup_restore') }}">{{ icon('upload', 18) }}Restaurer une sauvegarde</a>
+        </div>
+    </section>
+
     <div class="profile-forms">
         <section class="card form-card" id="informations">
             <h2>Informations</h2>
